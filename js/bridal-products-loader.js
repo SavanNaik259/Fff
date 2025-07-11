@@ -45,60 +45,40 @@ const BridalProductsLoader = (function() {
     }
 
     /**
-     * Load bridal products from server API (with server-side caching)
+     * Load bridal products from Firestore
      */
     async function loadBridalProducts(forceRefresh = false) {
-        // Check memory cache first (client-side)
-        const now = Date.now();
-        if (!forceRefresh && cachedProducts && (now - lastFetchTime) < CACHE_DURATION) {
-            console.log('Using client memory cached bridal products');
-            return cachedProducts;
-        }
-
-        try {
-            console.log('Loading bridal products from server API...');
-            
-            const response = await fetch('/api/products/bridal');
-            const result = await response.json();
-            
-            if (result.success) {
-                const products = result.data;
-                console.log(`Loaded ${products.length} products from ${result.source}`);
-                console.log('Server cache age:', result.cached_at ? Math.round((now - result.cached_at) / 1000) + 's' : 'fresh');
-                
-                // Cache on client side too
-                cachedProducts = products;
-                lastFetchTime = now;
-                
-                try {
-                    localStorage.setItem('bridalProducts', JSON.stringify(products));
-                    localStorage.setItem('bridalProductsTime', now.toString());
-                } catch (e) {
-                    console.warn('Error saving to localStorage:', e);
-                }
-                
-                return products;
-            } else {
-                console.error('Server API error:', result.error);
-                return await fallbackToFirebase(); // Fallback to direct Firebase
-            }
-        } catch (error) {
-            console.error('Error calling server API:', error);
-            return await fallbackToFirebase(); // Fallback to direct Firebase
-        }
-    }
-
-    /**
-     * Fallback to direct Firebase if server API fails
-     */
-    async function fallbackToFirebase() {
         if (!isInitialized) {
-            console.error('Fallback failed - Firebase not initialized');
+            console.error('Bridal Products Loader not initialized - Firebase connection failed');
             return [];
         }
 
+        // Check memory cache first
+        const now = Date.now();
+        if (!forceRefresh && cachedProducts && (now - lastFetchTime) < CACHE_DURATION) {
+            console.log('Using memory cached bridal products');
+            return cachedProducts;
+        }
+
+        // Check localStorage cache
+        if (!forceRefresh) {
+            try {
+                const stored = localStorage.getItem('bridalProducts');
+                const storedTime = localStorage.getItem('bridalProductsTime');
+                if (stored && storedTime && (now - parseInt(storedTime)) < CACHE_DURATION) {
+                    console.log('Using localStorage cached bridal products');
+                    cachedProducts = JSON.parse(stored);
+                    lastFetchTime = parseInt(storedTime);
+                    return cachedProducts;
+                }
+            } catch (e) {
+                console.warn('Error reading from localStorage cache:', e);
+            }
+        }
+
         try {
-            console.log('Falling back to direct Firebase...');
+            console.log('Loading bridal products from Firestore...');
+            console.log('Firebase DB instance:', db);
 
             // First, let's see what products exist in general
             try {
