@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Login - Auric - Timeless & Classic Jewellery</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpLGCJKypKP/lLCgB9MlH/lX+/Pvw2DNA" crossorigin="anonymous">
+    <!-- Fallback font awesome icons if CDN fails -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <link rel="stylesheet" href="css/navbar.css?v=1.1.1">
+    <link rel="stylesheet" href="css/cart.css?v=1.0.2">
+    <link rel="stylesheet" href="css/auth.css">
+    
+
+  </head>
+  <body>
+
+    <!-- Header -->
+    <header class="header">
+        <!-- Promo Banner -->
+        <div class="promo-banner">
+            <button class="banner-arrow banner-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <p>Save 21% on exclusive selections - <a href="#">Shop Now</a></p>
+            <button class="banner-arrow banner-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <!-- New Responsive Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <!-- Logo -->
+                <a href="index.html" class="brand">SP Jewellers</a>
+                
+                
+                <!-- Mobile Toggle Button - Match RIDHI MEHRA design -->
+                <div class="hamburger" id="navToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="nav-menu" id="navMenu">
+                    <!-- Close button for mobile menu in the top right corner -->
+                    <button class="close-menu" id="closeMenu">×</button>
+                    
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="#"class="nav-link">New Arrivals</a></li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Collection <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Necklace</a></li>
+                                <li><a href="#">Bangles</a></li>
+                                <li><a href="#">Earrings</a></li>
+                                <li><a href="#">Ring</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Testimonials</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Order Track</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                    </ul>
+                    
+                    <!-- Mobile account links in separate div after Contact -->
+                    <div class="mobile-account-links mobile-special">
+                        <a href="#" class="mobile-account-link">
+                            <i class="fas fa-user"></i> Account
+                        </a>
+                        <a href="#" class="mobile-account-link wishlist-toggle">
+                            <i class="fas fa-heart"></i> Wishlist (<span class="mobile-wishlist-count">0</span>)
+                        </a>
+                        <a href="#" class="mobile-account-link mobile-cart-toggle">
+                            <i class="fas fa-shopping-bag"></i> Shopping Bag (<span class="mobile-cart-count">0</span>)
+                        </a>
+                    
+                    </div>
+                </div>
+                
+                <!-- Navigation Icons - Exact match to RIDHI MEHRA design -->
+                <div class="nav-icons">
+                    <a href="#" class="icon-link search-icon">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <a href="#" class="icon-link account-icon" id="user-icon">
+                        <i class="far fa-user"></i>
+                    </a>
+                    <a href="#" class="icon-link wishlist-icon-container">
+                        <i class="far fa-heart"></i>
+                        <div class="wishlist-count">0</div>
+                    </a>
+                    <a href="#" class="icon-link cart-icon-container cart-toggle" id="cartToggleButton">
+                        <i class="fas fa-shopping-bag"></i>
+                        <div class="cart-count">0</div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Overlay for menu background -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Login Section -->
+    <section class="auth-container">
+        <div class="auth-header">
+            <h2 class="auth-title">Login to Your Account</h2>
+            <p class="auth-subtitle">Welcome back, please enter your details</p>
+        </div>
+        
+        <div id="error-message" class="error-message" style="display: none;"></div>
+        <div id="success-message" class="success-message" style="display: none;"></div>
+        
+        <!-- Debug instructions for users, hidden by default -->
+        <div class="error-message" style="display: none;" id="debug-instructions">
+            <p>If you continue experiencing issues, please check your browser console for detailed error messages (press F12 and go to Console tab).</p>
+        </div>
+        
+        <form id="login-form" class="auth-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="auth-button" id="login-button">Login</button>
+        </form>
+        
+        <div class="auth-divider">
+            <span>Or continue with</span>
+        </div>
+        
+        <div class="social-login">
+            <button id="google-login" class="google-button">
+                <img src="https://cdn-icons-png.flaticon.com/128/300/300221.png" alt="Google">
+                Sign in with Google
+            </button>
+        </div>
+        
+        <div class="auth-footer">
+            Don't have an account? <a href="signup.html">Sign up</a>
+        </div>
+    </section>
+
+    <!-- Footer - Modern Redesign -->
+    <footer class="footer-modern" style="margin-top: 0;">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-logo">
+                    <h2>SP Jewellers</h2>
+                    <p>Timeless Elegance, Modern Design</p>
+                </div>
+                
+                <div class="footer-newsletter-container">
+                    <h3>Subscribe For Updates</h3>
+                    <div class="newsletter-box">
+                        <form class="modern-newsletter-form">
+                            <input type="email" placeholder="Your email address">
+                            <button type="submit">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-main">
+            <div class="container">
+                        <div class="footer-widgets">
+                    <div class="footer-widget contact-widget">
+                            <h4>Contact</h4>
+                        <p><i class="fas fa-map-marker-alt"></i> 123 Fashion Street, City, Country</p>
+                        <p><i class="fas fa-phone"></i> 099990 68838</p>
+                        <p><i class="fas fa-envelope"></i> spjewellers@yahoo.co.in</p>
+                        
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-pinterest"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-widget">
+                        <h4>Shop</h4>
+                        <ul>
+                            <li><a href="#">Necklaces</a></li>
+                            <li><a href="#">Bracelets</a></li>
+                            <li><a href="#">Earrings</a></li>
+                            <li><a href="#">Rings</a></li>
+                            <li><a href="#">Anklets</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>Customer Care</h4>
+                        <ul>
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Returns & Exchanges</a></li>
+                            <li><a href="#">FAQs</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>About Us</h4>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            
+                            <li><a href="#">Testimonials</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-info">
+                    <div class="copyright">
+                        <p>&copy; 2025 SP Jewellers. All rights reserved. | Developed by <a href="https://savannaik.netlify.app/" target="_blank" style="color: #9c7c38; text-decoration: none; font-weight: 500;">Savan Naik</a></p>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="reset-cart-flags-simplified.html">Reset Cart</a>
+                        <a href="reset-flags-simplified.html">Reset System</a>
+                        <a href="#">Sitemap</a>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <span><i class="fab fa-cc-amex"></i></span>
+                       <!-- <span><i class="fab fa-apple-pay"></i></span>
+                        <span><i class="fab fa-cc-diners-club"></i></span>-->
+                        <span><i class="fab fa-cc-discover"></i></span>
+                        <span><i class="fab fa-google-pay"></i></span>
+                        <span><i class="fab fa-cc-mastercard"></i></span>
+                        <span><i class="fab fa-cc-paypal"></i></span>
+                        <span class="union-pay">UP</span>
+                        <span><i class="fab fa-cc-visa"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+      // Firebase configuration - you should replace these with your actual Firebase project details
+      const firebaseConfig = {
+        apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+        authDomain: "auric-a0c92.firebaseapp.com",
+        projectId: "auric-a0c92",
+        storageBucket: "auric-a0c92.appspot.com",
+        messagingSenderId: "878979958342",
+        appId: "1:878979958342:web:e6092f7522488d21eaec47",
+        measurementId: "G-ZYZ750JHMB"
+      };
+      
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      
+      // Enable session persistence
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .catch(error => {
+          console.error("Auth persistence error:", error);
+        });
+    </script>
+    
+    <!-- Navigation script -->
+    <script src="js/navigation.js?v=1.0.4"></script>
+    
+    <!-- Banner rotator script -->
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+    
+    <!-- Firebase Auth Global Module -->
+    <script src="js/firebase/firebase-auth.js"></script>
+    
+    <!-- Cart System -->
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    <script src="js/cart-manager.js?v=1.0.1"></script>
+    
+    <!-- Wishlist Scripts -->
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Login Script -->
+    <script>
+      
+      // DOM elements for login page
+      const loginForm = document.getElementById('login-form');
+      const googleLoginBtn = document.getElementById('google-login');
+      const errorMessageEl = document.getElementById('error-message');
+      const successMessageEl = document.getElementById('success-message');
+      const loginButton = document.getElementById('login-button');
+      
+      // Check if user is already logged in
+      if (FirebaseAuth.isLoggedIn()) {
+        console.log("User is already logged in, redirecting to home page...");
+        window.location.href = 'index.html';
+      }
+      
+      // Also set up auth state observer to catch auth changes
+      FirebaseAuth.observeAuthState((user) => {
+        if (user) {
+          console.log("Auth state changed - user is signed in:", user.uid);
+          window.location.href = 'index.html';
+        } else {
+          console.log("Auth state changed - user is signed out");
+        }
+      });
+      
+      // Handle regular email/password login
+      if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const email = document.getElementById('email').value.trim();
+          const password = document.getElementById('password').value;
+          
+          if (!email || !password) {
+            showError('Please enter both email and password');
+            return;
+          }
+          
+          // Set loading state
+          setLoadingState(true);
+          
+          try {
+            // Attempt to sign in using our simplified auth module
+            const result = await FirebaseAuth.loginWithEmail(email, password);
+            
+            if (result.success) {
+              showSuccess('Login successful!');
+              
+              // Redirect to home page
+              setTimeout(() => {
+                window.location.href = 'index.html';
+              }, 1000);
+            } else {
+              // Handle error
+              console.error("Login failed:", result.error);
+              handleAuthError(result);
+            }
+          } catch (error) {
+            console.error("Login error:", error);
+            showError('An unexpected error occurred. Please try again.');
+          } finally {
+            setLoadingState(false);
+          }
+        });
+      }
+      
+      // Handle Google sign-in
+      if (googleLoginBtn) {
+        googleLoginBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          
+          // Set Google button to loading state
+          googleLoginBtn.disabled = true;
+          googleLoginBtn.innerHTML = '<span class="spinner"></span> Connecting...';
+          
+          try {
+            // Sign in with Google using our simplified auth module
+            const result = await FirebaseAuth.loginWithGoogle();
+            
+            if (result.success) {
+              showSuccess('Google sign-in successful!');
+              
+              // Redirect to home page
+              setTimeout(() => {
+                window.location.href = 'index.html';
+              }, 1000);
+            } else {
+              // Handle error
+              console.error("Google login failed:", result.error);
+              handleAuthError(result);
+            }
+          } catch (error) {
+            console.error("Google sign-in error:", error);
+            showError('An unexpected error occurred. Please try again.');
+          } finally {
+            // Reset Google button state
+            googleLoginBtn.disabled = false;
+            googleLoginBtn.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/128/300/300221.png" alt="Google"> Sign in with Google';
+          }
+        });
+      }
+      
+      // Helper functions
+      function setLoadingState(isLoading) {
+        if (loginButton) {
+          if (isLoading) {
+            loginButton.disabled = true;
+            loginButton.innerHTML = '<span class="spinner"></span> Logging in...';
+          } else {
+            loginButton.disabled = false;
+            loginButton.textContent = 'Login';
+          }
+        }
+      }
+      
+      function handleAuthError(result) {
+        let errorMessage = 'Login failed. Please check your credentials and try again.';
+        
+        if (result.code) {
+          switch(result.code) {
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+              errorMessage = 'Incorrect email or password. Please try again.';
+              break;
+            case 'auth/invalid-email':
+              errorMessage = 'Invalid email address format.';
+              break;
+            case 'auth/too-many-requests':
+              errorMessage = 'Too many unsuccessful login attempts. Please try again later.';
+              break;
+            case 'auth/popup-closed-by-user':
+              errorMessage = 'Sign-in window was closed. Please try again.';
+              break;
+            case 'auth/unauthorized-domain':
+              errorMessage = 'Authentication not allowed from this domain.';
+              document.getElementById('debug-instructions').style.display = 'block';
+              break;
+            case 'auth/network-request-failed':
+              errorMessage = 'Network error. Please check your internet connection.';
+              document.getElementById('debug-instructions').style.display = 'block';
+              break;
+          }
+        }
+        
+        showError(errorMessage);
+      }
+      
+      function showError(message) {
+        if (errorMessageEl) {
+          errorMessageEl.textContent = message;
+          errorMessageEl.style.display = 'block';
+          
+          if (successMessageEl) {
+            successMessageEl.style.display = 'none';
+          }
+          
+          setTimeout(() => {
+            errorMessageEl.style.display = 'none';
+          }, 5000);
+        } else {
+          alert(message);
+        }
+      }
+      
+      function showSuccess(message) {
+        if (successMessageEl) {
+          successMessageEl.textContent = message;
+          successMessageEl.style.display = 'block';
+          
+          if (errorMessageEl) {
+            errorMessageEl.style.display = 'none';
+          }
+          
+          setTimeout(() => {
+            successMessageEl.style.display = 'none';
+          }, 3000);
+        }
+      }
+    </script>
+    
+    <!-- Add spinner styles -->
+    <style>
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+    
+    <!-- Cart Panel -->
+    <div id="auricCartPanel" class="cart-panel" style="position:fixed !important; top:0 !important; right:-400px !important; width:400px !important; max-width:90% !important; height:100% !important; background:#ffffff !important; box-shadow:-2px 0 10px rgba(0,0,0,0.3) !important; z-index:999999 !important; transition:right 0.3s ease-in-out !important; display:flex !important; flex-direction:column !important; overflow:hidden !important; visibility:visible !important; pointer-events:auto !important;">
+      <div class="cart-panel-header">
+        <h3>Your Shopping Bag</h3>
+        <button class="close-cart-btn" onclick="closeCartDirectly(); return false;">×</button>
+      </div>
+      <div class="cart-items">
+        <!-- Cart items will be inserted here by JavaScript -->
+        <div class="empty-cart-message">Your cart is empty</div>
+      </div>
+      <div class="cart-panel-footer">
+        <div class="cart-panel-subtotal">
+          <span>Subtotal:</span>
+          <span class="subtotal-amount">₹0.00</span>
+        </div>
+        <div class="cart-panel-buttons">
+          <button class="view-cart-btn continue-shopping-btn" onclick="closeCartDirectly(); return false;">Continue Shopping</button>
+          <a href="checkout.html" class="checkout-btn">Checkout</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Ultra-direct Cart Overlay with ALL inline styles -->
+    <div id="auricCartOverlay" class="cart-overlay" onclick="closeCartDirectly(); return false;" style="position:fixed !important; top:0 !important; left:0 !important; width:100% !important; height:100% !important; background:rgba(0,0,0,0.5) !important; z-index:999998 !important; display:none !important; visibility:hidden !important;"></div>
+  </body>
+  <!-- Fix for closeCartDirectly error -->
+  <script>
+    // Define the missing closeCartDirectly function
+    window.closeCartDirectly = function() {
+      // Call the regular closeCart function
+      if (window.closeCart) {
+        return window.closeCart();
+      }
+    };
+  </script>
+</html>

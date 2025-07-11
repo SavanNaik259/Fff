@@ -1,0 +1,25 @@
+    <div class="cart-panel">
+      <div class="cart-panel-header">
+        <h3>Your Shopping Bag</h3>
+        <button class="close-cart-btn" onclick="closeCart()">×</button>
+      </div>
+      <div class="cart-items">
+        <!-- Cart items will be inserted here by JavaScript -->
+        <div class="empty-cart-message">Your cart is empty</div>
+      </div>
+      <div class="cart-panel-footer">
+        <div class="cart-panel-subtotal">
+          <span>Subtotal:</span>
+          <span class="subtotal-amount">₹0.00</span>
+        </div>
+        <div class="cart-panel-buttons">
+          <button onclick="closeCart()" class="view-cart-btn">Continue Shopping</button>
+          <a href="checkout.html" class="checkout-btn">Checkout</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" onclick="closeCart()"></div>
+  </body>
+</html>

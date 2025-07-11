@@ -1,0 +1,404 @@
+/* Custom CSS for Multi-step Checkout Page */
+
+body {
+    font-family: 'Lato', sans-serif;
+    color: #333;
+    background-color: #fafafa;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+}
+
+.btn {
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #7a4012;
+    border-color: #7a4012;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #4e2700;
+    border-color: #4e2700;
+}
+
+.btn-outline-secondary {
+    color: #7a4012;
+    border-color: #7a4012;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #7a4012;
+    border-color: #7a4012;
+    color: white;
+}
+
+/* Custom Button Styles */
+.custom-back-btn:hover,
+.custom-continue-btn:hover {
+    background-color: #7a4012;
+    border-color: #7a4012;
+    color: white !important; /* This ensures the text color stays white on hover */
+}
+
+.card {
+    border-radius: 0;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    background-color: white;
+    border-bottom: 1px solid #f0f0f0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* Progress bar and steps styles */
+.checkout-progress {
+    margin-bottom: 40px;
+}
+
+.step-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    margin: 0 auto 10px;
+    border: 2px solid #eee;
+    color: #999;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.step-icon.active {
+    background-color: #7a4012;
+    border-color: #7a4012;
+    color: white;
+}
+
+.step-icon.completed {
+    background-color: #25ab00;
+    border-color: #25ab00;
+    color: white;
+}
+
+.step-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.checkout-step {
+    display: none;
+}
+
+.checkout-step.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: #7a4012;
+    transition: width 0.6s ease;
+}
+
+/* Address confirmation box */
+.address-summary {
+    margin-top: 20px;
+    background-color: #f9f6f0;
+    padding: 15px;
+    border-left: 3px solid #7a4012;
+}
+
+#address-confirmation {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Order summary styling */
+.order-items-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.simple-header {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.simple-header .logo a {
+    color: #7a4012;
+    font-family: 'Playfair Display', serif;
+    text-decoration: none;
+}
+
+.checkout-step {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.order-item {
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.order-item-image img {
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.order-item-image img:hover {
+    transform: scale(1.05);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 32px;
+    margin-left: 8px;
+}
+
+.quantity-controls button {
+    width: 28px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-controls button:hover {
+    background-color: #e9ecef;
+}
+
+.quantity-controls button:active {
+    background-color: #dee2e6;
+}
+
+.btn-quantity-minus, .btn-quantity-plus {
+    font-size: 14px;
+}
+
+.quantity-value {
+    min-width: 30px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    user-select: none;
+    background-color: white;
+    padding: 0 5px;
+}
+
+/* Style for the cart item in checkout */
+.cart-item {
+    transition: all 0.2s;
+}
+
+.cart-item:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Detailed cart item styling for step 1 */
+.cart-item-detail {
+    transition: all 0.3s;
+    border: 1px solid #eee;
+}
+
+.cart-item-detail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.cart-item-detail .fw-medium {
+    font-weight: 500;
+    color: #555;
+}
+
+.item-subtotal {
+    color: #9c7c38;
+    font-weight: 600;
+    min-width: 70px;
+    text-align: right;
+}
+
+.order-item-price {
+    font-weight: 500;
+    color: #333;
+}
+
+.order-item-total {
+    color: #9c7c38;
+}
+
+.form-control {
+    border-radius: 0;
+    border-color: #ddd;
+    padding: 10px 15px;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #7a4012;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #555;
+}
+
+/* Continue shopping button */
+.continue-shopping-btn {
+    display: block;
+    margin: 20px auto;
+    background-color: transparent;
+    color: #9c7c38;
+    border: 1px solid #9c7c38;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+}
+
+.continue-shopping-btn:hover {
+    background-color: #7a4012;
+    color: white;
+}
+
+/* Legacy product item styling - keeping for compatibility */
+.product-item {
+    transition: all 0.3s ease;
+}
+
+.product-item:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Order summary table styling */
+.summary-table {
+    width: 100%;
+}
+
+.summary-table th,
+.summary-table td {
+    padding: 0.5rem;
+}
+
+.summary-table tr:not(:last-child) {
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* Toast container styling */
+.toast-container {
+    z-index: 1050;
+}
+
+/* Error message styling */
+.error-message {
+    color: var(--bs-danger);
+}
+
+/* Custom icons */
+.icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+}
+
+/* Animation for form submission */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 0.5s ease-in-out;
+}
+
+.success-animation {
+    color: var(--bs-success);
+}
+
+/* EmailJS config section */
+#emailConfig {
+    transition: max-height 0.3s ease;
+}
+
+/* Order confirmation styles */
+.order-confirm-header {
+    background-color: var(--bs-success);
+    color: #fff;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.order-reference {
+    font-family: monospace;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Footer styling */
+footer {
+    background-color: #f9f6f0 !important;
+}
+
+footer a {
+    color: #7a4012;
+    font-weight: 500;
+}
+
+footer a:hover {
+    color: #603000;
+    text-decoration: underline !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}

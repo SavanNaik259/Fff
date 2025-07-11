@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- Ensure proper character encoding for currency symbols -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style>
+        /* Additional currency symbol support */
+        .price-currency {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Arial Unicode MS', 'Noto Sans', sans-serif !important;
+            font-feature-settings: "tnum";
+            -webkit-font-feature-settings: "tnum";
+        }
+
+        /* Ensure all price elements use proper font stack */
+        .current-price, .original-price, .arrival-price, .featured-price, 
+        .price-value, .subtotal-amount, .product-pricing span {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Arial Unicode MS', 'Noto Sans', sans-serif !important;
+        }
+
+        /* Cart icon styling */
+        .cart-icon-container img {
+            transition: transform 0.2s ease;
+        }
+
+        .cart-icon-container:hover img {
+            transform: scale(1.1);
+        }
+    </style>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>SP Jewellers - Timeless & Classic Jewellery</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpLGCJKypKP/lLCgB9MlH/lX+/Pvw2DNA" crossorigin="anonymous">
+    <!-- Fallback font awesome icons if CDN fails -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Flaticon CSS for additional icons -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-thin-straight/css/uicons-thin-straight.css'>
+    <!-- Additional Flaticon icon sets for shopping cart -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-straight/css/uicons-solid-straight.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-straight/css/uicons-regular-straight.css'>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/futura-pt" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <link rel="stylesheet" href="css/navbar.css?v=1.1.1">
+   <!-- <link rel="stylesheet" href="css/mobile-menu.css?v=1.0.0">-->
+    <link rel="stylesheet" href="css/cart.css?v=1.0.2">
+    <link rel="stylesheet" href="css/testimonials.css?v=1.0.0">
+    <link rel="stylesheet" href="css/hero-slider.css?v=1.0.0">
+    <link rel="stylesheet" href="css/about.css?v=1.0.0">
+    <link rel="stylesheet" href="css/bridal-section.css?v=1.0.0">
+    <link rel="stylesheet" href="css/shop-by-category.css?v=1.0.0">
+  </head>
+    <style>
+.bridal-edit-header2 {
+    text-align: center;
+    margin-bottom: 0;
+}
+        .bridal-edit-header2 .section-title {
+
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 400;
+        }
+
+@media (max-width: 1024px) and (min-width: 769px) {
+.bridal-edit-header2 .section-title {
+        font-size: 2.2rem;
+}
+}
+    @media (max-width: 768px) {
+    .bridal-edit-header2 .section-title {
+        font-size: 2rem;
+    }
+}
+        @media (max-width: 480px) {
+            .bridal-edit-header2 .section-title {
+        font-size: 1.8rem;
+            }
+        }
+    </style>
+  <body>
+
+    <!-- Header -->
+    <header class="header">
+        <!-- Promo Banner -->
+        <div class="promo-banner">
+            <button class="banner-arrow banner-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <p>Save 21% on exclusive selections - <a href="#">Shop Now</a></p>
+            <button class="banner-arrow banner-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- New Responsive Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <!-- Logo -->
+                <a href="index.html" class="brand">
+                    <img src="sp_jewellers_logo1.png" alt="SP Jewellers" class="brand-logo">
+                </a>
+
+
+                <!-- Mobile Toggle Button - Match RIDHI MEHRA design -->
+                <div class="hamburger" id="navToggle"><img src="bars-staggered (2).png" alt="SP Jewellers"style="width: 25px; height: 25px;">
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="nav-menu" id="navMenu">
+                    <!-- Close button for mobile menu in the top right corner -->
+                    <button class="close-menu" id="closeMenu">×</button>
+
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="#"class="nav-link">New Arrivals</a></li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Collection <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Necklace</a></li>
+                                <li><a href="#">Bangles</a></li>
+                                <li><a href="#">Earrings</a></li>
+                                <li><a href="#">Ring</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Testimonials</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Order Track</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                    </ul>
+
+                    <!-- Mobile account links in separate div after Contact -->
+                    <div class="mobile-account-links mobile-special">
+                        <a href="#" class="mobile-account-link">
+                            <img src="user.png" alt="Cart" style="width: 18px; height: 18px;">  &nbsp; Account
+                        </a>
+                        <a href="#" class="mobile-account-link wishlist-toggle">
+                            <img src="heart.png" alt="Cart" style="width: 18px; height: 18px;"> &nbsp;   Wishlist (<span class="mobile-wishlist-count">0</span>)
+                        </a>
+                        <a href="#" class="mobile-account-link mobile-cart-toggle">
+                            <img src="cart-minus.png" alt="Cart" style="width:18px; height: 18px; vertical-align: middle;">  &nbsp; Shopping Bag (<span class="mobile-cart-count">0</span>)
+                        </a>
+
+                    </div>
+                </div>
+
+                <!-- Navigation Icons - Exact match to RIDHI MEHRA design -->
+                <div class="nav-icons">
+                    <a href="#" class="icon-link search-icon">
+                        <img src="search.png" alt="Cart" style="width: 20px; height: 20px;">
+                    </a>
+                    <a href="#" class="icon-link account-icon" id="user-icon">
+                        <img src="user.png" alt="Cart" style="width: 25px; height: 25px;">
+
+                    </a>
+                    <a href="#" class="icon-link wishlist-icon-container wishlist-toggle">
+                        <img src="heart.png" alt="Cart" style="width: 20px; height: 20px;">
+
+                        <div class="wishlist-count">0</div>
+                    </a>
+                    <a href="#" class="icon-link cart-icon-container cart-toggle" id="cartToggleButton">
+                        <img src="cart-minus.png" alt="Cart" style="width: 20px; height: 20px;">
+                        <div class="cart-count">0</div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Overlay for menu background -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Circular Product Categories Section -->
+    <section class="circular-categories">
+        <div class="circular-category-container">
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="IMG_20250523_222953.jpg" alt="Royal Bridal Collection">
+                </div>
+                <p class="circular-category-name">Royal Collection</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="eb3b0733b3c325615b8735176cbef7ae.jpg" alt="Elegant Bridal Set">
+                </div>
+                <p class="circular-category-name">Elegant Sets</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="6339870c1cceec3e9e9333661cc98e30.jpg" alt="Traditional Bridal Ensemble">
+                </div>
+                <p class="circular-category-name">Traditional Ensemble</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="3a7a17db005caf9b60eb7c5a59523937.jpg" alt="Classic Bridal Jewelry">
+                </div>
+                <p class="circular-category-name">Classic Jewelry</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="IMG_20250523_175451.jpg" alt="Luxury Bridal Collection">
+                </div>
+                <p class="circular-category-name">Luxury Collection</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="IMG_20250523_223005.jpg" alt="Premium Bridal Set">
+                </div>
+                <p class="circular-category-name">Premium Sets</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="IMG_20250523_222953.jpg" alt="Royal Bridal Collection">
+                </div>
+                <p class="circular-category-name">Bridal Special</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="eb3b0733b3c325615b8735176cbef7ae.jpg" alt="Elegant Bridal Set">
+                </div>
+                <p class="circular-category-name">Wedding Jewelry</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="6339870c1cceec3e9e9333661cc98e30.jpg" alt="Traditional Bridal Ensemble">
+                </div>
+                <p class="circular-category-name">Bridal Ensemble</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="3a7a17db005caf9b60eb7c5a59523937.jpg" alt="Classic Bridal Jewelry">
+                </div>
+                <p class="circular-category-name">Designer Collection</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="IMG_20250523_175451.jpg" alt="Luxury Bridal Collection">
+                </div>
+                <p class="circular-category-name">Exclusive Range</p>
+            </a>
+            <a href="#" class="circular-category-item">
+                <div class="circular-category-image">
+                    <img src="IMG_20250523_223005.jpg" alt="Premium Bridal Set">
+                </div>
+                <p class="circular-category-name">Signature Collection</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- Hero Slider Section -->
+    <section class="hero-slider">
+        <div class="slider-container">
+            <div class="slide active">
+                <img  src="3a7a17db005caf9b60eb7c5a59523937.jpg" alt="IN THE folds - Summer Celebrations 2025" class="slide-image">
+                <div class="slide-content">
+                    <h1 class="slide-title">IN THE</h1>
+                    <h2 class="slide-subtitle">folds</h2>
+                    <p class="slide-description">SUMMER CELEBRATIONS 2025</p>
+                    <button class="shop-now-btn">SHOP NOW</button>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="bride.jpg" alt="Elegant Collection" class="slide-image">
+                <div class="slide-content">
+                    <h1 class="slide-title">ELEGANT</h1>
+                    <h2 class="slide-subtitle">Collection</h2>
+                    <p class="slide-description">TIMELESS BEAUTY 2025</p>
+                    <button class="shop-now-btn">SHOP NOW</button>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="bride2.jpg" alt="Luxury Series" class="slide-image">
+                <div class="slide-content">
+                    <h1 class="slide-title">LUXURY</h1>
+                    <h2 class="slide-subtitle">Series</h2>
+                    <p class="slide-description">PREMIUM COLLECTION 2025</p>
+                    <button class="shop-now-btn">SHOP NOW</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider Navigation -->
+        <div class="slider-nav">
+            <button class="slider-prev" onclick="changeSlide(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="slider-next" onclick="changeSlide(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Slider Dots -->
+        <div class="slider-dots">
+            <span class="dot active" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+        </div>
+    </section>
+
+    <!-- The Bridal Edit Section -->
+    <section class="bridal-edit">
+        <div class="bridal-edit-container">
+            <div class="bridal-edit-header">
+                <h2 class="section-title">The Bridal Edit</h2>
+                <p class="section-subtitle">Exquisite pieces for your special day</p>
+            </div>
+
+           <div class="arrivals-grid">
+              <!--  <div class="arrival-item bridal-card" data-product-id="RBC-01">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="IMG_20250523_222953.jpg" alt="Royal Bridal Collection">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Royal Bridal Collection</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">&#8377;1,25,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="arrival-item bridal-card" data-product-id="EBS-02">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="eb3b0733b3c325615b8735176cbef7ae.jpg" alt="Elegant Bridal Set">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Elegant Bridal Set</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹98,500</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="arrival-item bridal-card" data-product-id="TBE-03">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="6339870c1cceec3e9e9333661cc98e30.jpg" alt="Traditional Bridal Ensemble">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Traditional Bridal Ensemble</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,45,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="arrival-item bridal-card" data-product-id="CBJ-04">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="3a7a17db005caf9b60eb7c5a59523937.jpg" alt="Classic Bridal Jewelry">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Classic Bridal Jewelry</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,15,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="arrival-item bridal-card" data-product-id="LBC-05">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="IMG_20250523_175451.jpg" alt="Luxury Bridal Collection">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Luxury Bridal Collection</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,68,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="arrival-item bridal-card" data-product-id="PBS-06">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="IMG_20250523_223005.jpg" alt="Premium Bridal Set">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Premium Bridal Set</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,35,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>-->
+            </div>
+
+            <div class="bridal-edit-cta">
+                <a href="#" class="view-all-button">View Complete Bridal Collection</a>
+            </div>
+        </div>
+    </section>
+
+      <!-- Polki Collection Section -->
+    <div class="polki-collection-header">
+        <h2 class="section-title">Polki Collection</h2>
+        <p class="section-subtitle">Exquisite Polki jewelry crafted with traditional artistry</p>
+    </div>
+    <section class="polki-collection">
+        <div class="polki-collection-container">
+            <div class="arrivals-hero-container">
+                <img src="3a7a17db005caf9b60eb7c5a59523937.jpg" alt="Polki Collection" class="arrivals-hero-image">
+                <div class="arrivals-hero-overlay"></div>
+                <div class="arrivals-hero-content">
+                    <h2 class="arrivals-hero-title">POLKI COLLECTION</h2>
+                    <div class="arrivals-hero-divider"></div>
+                    <a href="#" class="arrivals-hero-button">VIEW ALL</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Polki Product Categories Section -->
+    <section class="polki-products full-width-section" style="margin-bottom: 20px;">
+        <div class="product-scroll-container">
+            <div class="product-item" data-product-id="PKN-01" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="490A9712.jpg">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Exquisite Polki Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹2,45,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" data-product-id="PKB-02" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="490A9757.jpg" alt="Polki Bangles">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Traditional Polki Bangles</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹1,85,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="product-item" data-product-id="PKB-02" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="490A9973.jpg" alt="Polki Bangles">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Traditional Polki Bangles</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹1,85,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" data-product-id="PKE-03" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="6Y4A6534.jpg" alt="Polki Earrings">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Royal Polki Earrings</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹1,25,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" data-product-id="PKR-04" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="490A9706.jpg" alt="Polki Rings">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Elegant Polki Rings</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹95,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" data-product-id="PKS-05" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="490A9761.jpg" alt="Polki Set">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Complete Polki Set</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹3,15,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="view-all-container">
+            <a href="#" class="view-all-btn">VIEW ALL</a>
+        </div>
+    </section>
+<div class="polki-collection-header2">
+                <h2 class="section-title">Choose By Category</h2>
+
+</div>
+    <!-- Shop by Category Section -->
+    <section class="shop-by-category">
+        <div class="category-container">
+
+
+            <div class="category-grid">
+                <!-- Row 1 -->
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="d3268961-a795-4d9c-a4fd-a9a208519453_7a3f17fb-bf85-476a-810b-5991bb3874eb.jpg" alt="Lehengas Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">POLKI NECKLACE</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="490A9744.jpg" alt="Sarees Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">POLKI BANGLES</span>
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="Frame_1000005344.png" alt="Anarkalis Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">POLKI EARRINGS</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="490A0064.jpg" alt="Shararas Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">POLKI RINGS</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- New Arrivals Section --
+      <div class="bridal-edit-header">
+                <h2 class="section-title">New Arrivals</h2>
+                <p class="section-subtitle">Discover our latest exquisite jewelry collections</p>
+      </div>-->
+      <div class="new-arrivals-header">
+                <h2 class="section-title">New Arrivals</h2>
+                <p class="section-subtitle">Discover our latest exquisite jewelry collections</p>
+      </div>
+    <section class="new-arrivals">
+        <div class="new-arrivals-container">
+
+
+
+            <div class="arrivals-hero-container">
+                <img src="eb3b0733b3c325615b8735176cbef7ae.jpg" alt="New Arrivals Collection" class="arrivals-hero-image">
+                <div class="arrivals-hero-overlay"></div>
+                <div class="arrivals-hero-content">
+                    <h2 class="arrivals-hero-title">NEW ARRIVALS</h2>
+                    <div class="arrivals-hero-divider"></div>
+                    <a href="#" class="arrivals-hero-button">VIEW ALL</a>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- Product Categories Section -->
+    <section class="you-may-also-like full-width-section" style="margin-bottom: 20px;">
+       <!-- <div class="container" style="text-align: center;">
+            <h2 class="section-title">New Arrivals</h2>
+        </div>-->
+        <div class="product-scroll-container">
+                <div class="product-item" data-product-id="RBC-01" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="6Y4A6490.jpg" alt="Royal Bridal Collection">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Royal Bridal Collection</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,25,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="EBS-02" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+        <!--  490A9757.jpg      -->            <img src="6Y4A6534.jpg" alt="Elegant Bridal Set">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Elegant Bridal Set</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹98,500</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            <div class="product-item" data-product-id="TBE-03" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="6Y4A6225.jpg" alt="Traditional Bridal Ensemble">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Traditional Bridal Ensemble</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,45,000</span>
+                            </div>
+                        </div>
+                    </a>
+            </div>
+            <div class="product-item" data-product-id="TBE-03" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="6Y4A6490.jpg" alt="Traditional Bridal Ensemble">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Traditional Bridal Ensemble</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,45,000</span>
+                            </div>
+                        </div>
+                    </a>
+            </div>
+<div class="product-item" data-product-id="CBJ-04" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="6Y4A6225.jpg" alt="Classic Bridal Jewelry">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Classic Bridal Jewelry</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,15,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+        </div>
+
+            <div class="view-all-container">
+                <a href="#" class="view-all-btn">VIEW ALL</a>
+            </div>
+
+    </section>
+    <!-- Testimonials Section -->
+    <section class="testimonials-section" id="testimonials" style="margin-top: -10px; padding-top: 10px;">
+        <div class="bridal-edit-header2">
+            <h2 class="section-title">Watch And Buy</h2>
+
+        </div>
+        <div class="testimonials-container">
+            <div class="testimonials-scroll">
+                <!-- Video 1 -->
+                <div class="testimonial-item">
+                    <div class="video-container">
+                        <a href="#video1-link" class="video-link-icon">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <div class="play-button-overlay">
+                            <div class="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">
+                            <source src="1024X768(8).mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-title">Royal Multigem And Kundan Choker</div>
+                    </div>
+                </div>
+
+                <!-- Video 2 -->
+                <div class="testimonial-item">
+                    <div class="video-container">
+                        <a href="#video2-link" class="video-link-icon">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <div class="play-button-overlay">
+                            <div class="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">1024X768(9).mp4
+                            <source src="Embracing_the_glow_🕊️_._Makeup_that_enhances_✨_._._Now_book_for_your_2025_and_2026_events_with_us._._Outfit__@tamannapunjabikapoor__Jewellers___@spje.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-title">Traditional Gold Necklace</div>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <div class="video-container">
+                        <a href="#video2-link" class="video-link-icon">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <div class="play-button-overlay">
+                            <div class="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">
+                            <source src="Deal_price_-12.5_lakhs__18_karat_hallmark_gold_with_certified_natural_syndicate_polki.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-title">Traditional Gold Necklace</div>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <div class="video-container">
+                        <a href="#video2-link" class="video-link-icon">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <div class="play-button-overlay">
+                            <div class="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">
+                            <source src="Stunning_@vaibhavichaturvedi_🍂🍂__makeup_and_styling_by_@jessicamakeovers_🪞🪞__bride’s_outfit_@lalitdalmiaofficial___jewerly_@spjewellerspvt___For_a.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-title">Traditional Gold Necklace</div>
+                    </div>
+                </div>
+                <div class="testimonial-item">
+                    <div class="video-container">
+                        <a href="#video2-link" class="video-link-icon">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <div class="play-button-overlay">
+                            <div class="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">
+                            <source src="1024X768(5).mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-title">Traditional Gold Necklace</div>
+                    </div>
+                </div>
+                <!-- Video 3 -->
+                <div class="testimonial-item">
+                    <div class="video-container">
+                        <a href="#video3-link" class="video-link-icon">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <div class="play-button-overlay">
+                            <div class="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">
+                            <source src="1024X768(9).mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-title">Elegant Diamond Earrings</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bridal Jewelry Video Section -->
+    <section class="bridal-jewelry-section">
+        <div class="video-background">
+            <video autoplay muted loop playsinline class="background-video">
+                <source src="1024X768(6).mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+        <div class="bridal-content">
+            <h1 class="bridal-title">Let's Create Your<br>Perfect Bridal Jewels</h1>
+            <p class="bridal-description">
+                Dreaming of something truly <span class="highlight">unique</span>?<br>
+                Discover our <span class="highlight">personalized</span> designs. Connect with<br>
+                our artisans and create your perfect masterpiece.
+            </p>
+            <button class="chat-now-btn" onclick="openWhatsAppChat()">CHAT NOW</button>
+        </div>
+    </section>
+
+    <!-- Shop by Category Section --
+    <section class="shop-by-category">
+        <div class="category-container">
+            <div class="category-header">
+                <h2 class="category-main-title">SHOP BY CATEGORY</h2>
+            </div>
+
+            <div class="category-grid">
+                <!-- Row 1 --
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="IMG_20250523_212531.jpg" alt="Lehengas Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">LEHENGAS</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="IMG_20250523_213512.jpg" alt="Sarees Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">SAREES</span>
+                    </div>
+                </div>
+
+                <!-- Row 2 --
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="IMG_20250523_213622.jpg" alt="Anarkalis Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">ANARKALIS</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="IMG_20250525_232925.jpg" alt="Shararas Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">SHARARAS</span>
+                    </div>
+                </div>-->
+
+                <!-- Row 3 --
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="IMG_20250523_175451.jpg" alt="Suits Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">SUITS</span>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-image-wrapper">
+                        <img src="IMG_20250523_223005.jpg" alt="Gowns Collection">
+                        <div class="category-overlay"></div>
+                    </div>
+                    <div class="category-label">
+                        <span class="category-title">GOWNS</span>
+                    </div>--
+                </div>
+            </div>
+        </div>
+    </section>-->
+
+    <!-- About Us Section--
+    <section class="about-section">
+        <div class="about-container">
+            <div class="about-image">
+                <img src="PIC15-1432x1536.webp" alt="Auric Jewelry Craftsmanship">
+            </div>
+            <div class="about-content">
+                <h2 class="about-title">About SP Jewellers</h2>
+                <p class="about-description">
+                    At SP Jewellers, our mission goes beyond simply creating beautiful jewellery we are committed to crafting pieces that embody both authenticity and uncompromising quality. Every ornament, whether it's a bold statement piece or a delicate detail, is thoughtfully designed and meticulously handcrafted. We source our materials responsibly and work with skilled artisans to ensure that each creation reflects our dedication to timeless elegance and ethical craftsmanship. With every piece we deliver, we uphold our promise of integrity, precision, and a passion for excellence that shines through in every sparkle.
+                </p>
+                <div class="additional-content" style="display: none;">
+                    <p class="about-description">
+                        Founded with a passion for exceptional craftsmanship, SP Jewellers has grown from a small home-based studio to an internationally recognized brand. Our collections are inspired by both traditional Indian heritage and contemporary global aesthetics, creating pieces that are timeless yet distinctive.
+                    </p>
+                    <p class="about-description">
+                        Every piece in our collection tells a story – of ancient traditions, of skilled craftsmanship, and of women who wear them with pride. We believe jewelry should be more than just an accessory; it should be an expression of your unique personality and an heirloom to be treasured for generations.
+                    </p>
+                </div>
+                <a href="#" class="about-link" id="learnMoreLink">Learn More About Our Story</a>
+            </div>
+        </div>
+    </section>
+
+
+
+     <!--       <div class="arrivals-grid">
+                <div class="arrival-item">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="images/newarrivals/IMG_20250504_150241.jpg" alt="Emerald Studs">
+                            <div class="product-badge">SAVE 17%</div>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Emerald Studs</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹32,500</span>
+                                <span class="original-price">₹38,999</span>
+                                <span class="discount-tag">-17%</span>
+                            </div>
+                            <span class="arrival-new">New</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="arrival-item">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="images/newarrivals/IMG_20250504_150418.jpg" alt="Rose Gold Bracelet">
+                            <div class="product-badge">SAVE 17%</div>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Rose Gold Bracelet</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹41,200</span>
+                                <span class="original-price">₹49,750</span>
+                                <span class="discount-tag">-17%</span>
+                            </div>
+                            <span class="arrival-new">New</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="arrival-item">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="images/newarrivals/IMG_20250504_150523.jpg" alt="Royal Bangle Set">
+                            <div class="product-badge">SAVE 19%</div>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Royal Bangle Set</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹36,800</span>
+                                <span class="original-price">₹45,200</span>
+                                <span class="discount-tag">-19%</span>
+                            </div>
+                            <span class="arrival-new">New</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="arrival-item">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="arrival-image">
+                            <img src="images/newarrivals/IMG_20250504_150655.jpg" alt="Pearl & Diamond Necklace">
+                            <div class="product-badge">SAVE 17%</div>
+                        </div>
+                        <div class="arrival-details">
+                            <h3 class="arrival-title">Pearl & Diamond Necklace</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹52,900</span>
+                                <span class="original-price">₹63,500</span>
+                                <span class="discount-tag">-17%</span>
+                            </div>
+                            <span class="arrival-new">New</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="arrivals-cta">
+                <a href="#" class="view-all-button">View All New Arrivals</a>
+            </div>
+        </div>-->
+    </section>
+
+    <!-- Product Categories Section -->
+    <section class="you-may-also-like full-width-section">
+       <!-- <div class="container" style="text-align: center;">
+            <h2 class="section-title">New Arrivals</h2>
+        </div>-->
+      <!--  <div class="product-scroll-container">
+                <div class="product-item" data-product-id="RBC-01" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="6Y4A6490.jpg" alt="Royal Bridal Collection">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Royal Bridal Collection</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,25,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="EBS-02" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+        <!--  490A9757.jpg      --        <img src="6Y4A6534.jpg" alt="Elegant Bridal Set">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Elegant Bridal Set</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹98,500</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="TBE-03" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="490A0091.jpg" alt="Traditional Bridal Ensemble">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Traditional Bridal Ensemble</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,45,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="CBJ-04" style="background: none;">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="6Y4A6225.jpg" alt="Classic Bridal Jewelry">
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Classic Bridal Jewelry</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,15,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+        </div>
+
+            <div class="view-all-container">
+                <a href="#" class="view-all-btn">VIEW ALL</a>
+            </div>-->
+
+        <!-- Categories Section IMG_20250504_150418.jpg--
+    <section class="categories">
+        <div class="categories-header">
+            <h2 class="section-title">Choose By Category</h2>
+        </div>
+        <div class="category-full-width-container">
+            <div class="category-full-item">
+                <img src="images/product-category/IMG_20250504_150241.jpg" alt="Leelah Collection">
+                <div class="category-info">
+                    <a href="#"><h3 class="category-name">Gold Collection</h3></a>
+                </div>
+            </div>
+            <div class="category-full-item">
+                <img src="IMG_20250520_101813.jpg" alt="Chettinad Collection">
+                <div class="category-info">
+                    <a href="#"><h3 class="category-name">Dimond Collection</h3></a>
+                </div>
+            </div>
+            <div class="category-full-item">
+                <img src="IMG_20250520_101423.jpg" alt="Nabah Collection">
+                <div class="category-info">
+                    <a href="#"><h3 class="category-name">pearls Collection</h3></a>
+                </div>
+            </div>
+            <div class="category-full-item">
+                <img src="Screenshot_20250520_095145.jpg" alt="Mathuram Collection">
+                <div class="category-info">
+                    <a href="#"><h3 class="category-name">Polki Jewellery</h3></a>
+                </div>
+            </div>
+        </div>
+    </section>-->
+
+
+        <div class="polki-collection-header">
+                        <h2 class="section-title">Featured Collection</h2>
+
+        </div>
+
+        <div class="featured-collection-wrapper">
+            <button class="scroll-arrow scroll-arrow-left" id="featuredScrollLeft">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="product-scroll-container" id="featuredProductContainer">
+                <div class="product-item" data-product-id="LBC-05">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="490A9712.jpg" alt="Luxury Bridal Collection">
+
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Luxury Bridal Collection</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,68,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="PBS-06">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="6Y4A6534.jpg" alt="Premium Bridal Set">
+
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Premium Bridal Set</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,35,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="RBC-01">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="490A9761.jpg" alt="Royal Bridal Collection">
+
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Royal Bridal Collection</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹1,25,000</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="EBS-02">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="490A9757.jpg" alt="Elegant Bridal Set">
+
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details" style="text-align: center;">
+                            <h3 class="product-name">Elegant Bridal Set</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">₹98,500</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <button class="scroll-arrow scroll-arrow-right" id="featuredScrollRight">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+            <div class="view-all-container">
+                <a href="#" class="view-all-btn">VIEW ALL</a>
+            </div>
+    </section>
+         <!--   <h2 class="section-title">Earrings</h2>
+
+            <div class="product-scroll-container">
+                <div class="product-item sold-out" data-product-id="NBMFE-12">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="images/category/IMG_20250504_145653.jpg" alt="Navy Blue Meenakshi Fusion Golden Earrings">
+                            <div class="product-badge">SAVE 33%</div>
+                            <div class="sold-out-badge">SOLD OUT</div>
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">Navy Blue Meenakshi Fusion Golden Earrings</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">Rs. 21,300.00</span>
+                                <span class="original-price">Rs. 31,949.00</span>
+                                <span class="discount-tag">-33%</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="BMFE-09">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="images/category/Screenshot_20250504_130638.jpg" alt="Blue Meenakshi Fusion Earrings">
+                            <div class="product-badge">SAVE 33%</div>
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">Blue Meenakshi Fusion Earrings</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">Rs. 21,300.00</span>
+                                <span class="original-price">Rs. 31,949.00</span>
+                                <span class="discount-tag">-33%</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="PDRE-10">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="images/category/Screenshot_20250504_130717.jpg" alt="Pearl Drop Earrings">
+                            <div class="product-badge">SAVE 30%</div>
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">Pearl Drop Earrings</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">Rs. 19,980.00</span>
+                                <span class="original-price">Rs. 28,400.00</span>
+                                <span class="discount-tag">-30%</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="product-item" data-product-id="GSSE-11">
+                    <a href="#" style="text-decoration: none; color: inherit;">
+                        <div class="product-image">
+                            <img src="images/category/Screenshot_20250504_130805.jpg" alt="Gemstone Stud Earrings">
+                            <div class="product-badge">SAVE 25%</div>
+                            <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="product-details">
+                            <h3 class="product-name">Gemstone Stud Earrings</h3>
+                            <div class="product-pricing">
+                                <span class="current-price">Rs. 17,750.00</span>
+                                <span class="original-price">Rs. 23,999.00</span>
+                                <span class="discount-tag">-25%</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="view-all-container">
+                <a href="#" class="view-all-btn">VIEW ALL</a>
+            </div>
+        </div>-->
+    </section>
+
+    <!-- Polki Collection Section --
+    <div class="new-arrivals-header">
+        <h2 class="section-title">Polki Collection</h2>
+        <p class="section-subtitle">Discover our exquisite polki jewelry collection</p>
+    </div>
+    <section class="new-arrivals">
+        <div class="new-arrivals-container">
+            <div class="arrivals-hero-container">
+                <img src="Screenshot_20250520_095145.jpg" alt="Polki Collection" class="arrivals-hero-image">
+                <div class="arrivals-hero-overlay"></div>
+                <div class="arrivals-hero-content">
+                    <h2 class="arrivals-hero-title">POLKI COLLECTION</h2>
+                    <div class="arrivals-hero-divider"></div>
+                    <a href="#" class="arrivals-hero-button">VIEW ALL</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Polki Product Categories Section --
+    <section class="you-may-also-like full-width-section" style="margin-bottom: 20px;">
+        <div class="product-scroll-container">
+            <div class="product-item" data-product-id="PNC-01" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="d3268961-a795-4d9c-a4fd-a9a208519453_7a3f17fb-bf85-476a-810b-5991bb3874eb.jpg" alt="Polki Necklace Collection">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Polki Necklace Collection</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹2,45,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" data-product-id="PBG-02" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="490A9744.jpg" alt="Polki Bangles Set">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Polki Bangles Set</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹1,85,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" data-product-id="PER-03" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="Frame_1000005344.png" alt="Polki Earrings">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Polki Earrings</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹95,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" data-product-id="PRG-04" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="490A0064.jpg" alt="Polki Rings">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Polki Rings</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹75,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" data-product-id="PCS-05" style="background: none;">
+                <a href="#" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="6Y4A6225.jpg" alt="Polki Choker Set">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Polki Choker Set</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹3,25,000</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="view-all-container">
+            <a href="#" class="view-all-btn">VIEW ALL</a>
+        </div>
+    </section>-->
+
+    <!-- Customer Testimonials Section --
+    <section class="customer-testimonials-section" id="customer-testimonials">
+        <h2 class="customer-testimonials-title">Testimonials</h2>
+        <div class="customer-testimonials-container">
+            <div class="customer-testimonials-scroll">
+                <!-- Video 1 (Left) --
+                <div class="customer-testimonial-item">
+                    <div class="video-container">
+                        <div class="play-button-overlay">
+                            <div class="customer-play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">
+                            <source src="1024X768(3).mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <!-- Video 2 (Center) --
+                <div class="customer-testimonial-item">
+                    <div class="video-container">
+                        <div class="play-button-overlay">
+                            <div class="customer-play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">
+                            <source src="1024X768.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+
+                <!-- Video 3 (Right) --
+                <div class="customer-testimonial-item">
+                    <div class="video-container">
+                        <div class="play-button-overlay">
+                            <div class="customer-play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5.14v14l11-7-11-7z" fill="#ffffff"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="testimonial-video">
+                            <source src="1024X768(2).mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+
+
+    <!-- Minimalist Collapsible Footer -->
+    <footer class="footer-minimalist">
+        <div class="container">
+            <!-- Info Section -->
+            <div class="footer-section">
+                <button class="footer-toggle" data-section="info-content">
+                    <span class="footer-title">Info</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="footer-content" id="info-content">
+                    <ul>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Returns & Exchanges</a></li>
+                        <li><a href="#">Size Guide</a></li>
+                        <li><a href="#">Care Instructions</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div class="footer-section">
+                <button class="footer-toggle" data-section="categories-content">
+                    <span class="footer-title">Categories</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="footer-content" id="categories-content">
+                    <ul>
+                        <li><a href="#">Necklaces</a></li>
+                        <li><a href="#">Earrings</a></li>
+                        <li><a href="#">Bracelets</a></li>
+                        <li><a href="#">Rings</a></li>
+                        <li><a href="#">Bangles</a></li>
+                        <li><a href="#">Anklets</a></li>
+                        <li><a href="#">Sets</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Collection Section -->
+            <div class="footer-section">
+                <button class="footer-toggle" data-section="collection-content">
+                    <span class="footer-title">Collection</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="footer-content" id="collection-content">
+                    <ul>
+                        <li><a href="#">The Bridal Edit</a></li>
+                        <li><a href="#">Polki Collection</a></li>
+                        <li><a href="#">New Arrivals</a></li>
+                        <li><a href="#">Featured Collection</a></li>
+                        <li><a href="#">Traditional</a></li>
+                        <li><a href="#">Contemporary</a></li>
+                        <li><a href="#">Custom Design</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Exclusive Benefits Section -->
+            <div class="footer-section">
+                <button class="footer-toggle" data-section="benefits-content">
+                    <span class="footer-title">Exclusive benefits</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="footer-content" id="benefits-content">
+                    <ul>
+                        <li><a href="#">VIP Customer Program</a></li>
+                        <li><a href="#">Free Shipping</a></li>
+                        <li><a href="#">30-Day Returns</a></li>
+                        <li><a href="#">Lifetime Warranty</a></li>
+                        <li><a href="#">Personal Styling</a></li>
+                        <li><a href="#">Early Access</a></li>
+                        <li><a href="#">Member Discounts</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Payment Methods Section --
+            <div class="footer-payment">
+                <div class="payment-icons">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1024px-American_Express_logo_%282018%29.svg.png" alt="American Express" class="payment-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1024px-Mastercard-logo.svg.png" alt="Mastercard" class="payment-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1024px-Visa_Inc._logo.svg.png" alt="Visa" class="payment-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/1024px-Google_Pay_Logo.svg.png" alt="Google Pay" class="payment-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/1024px-PayPal.svg.png" alt="PayPal" class="payment-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Discover_Card_logo.svg/1024px-Discover_Card_logo.svg.png" alt="Discover" class="payment-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_Pay_logo.svg/1024px-Apple_Pay_logo.svg.png" alt="Apple Pay" class="payment-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Paytm_logo.svg/1024px-Paytm_logo.svg.png" alt="Paytm" class="payment-icon">
+                </div>
+            </div>-->
+            <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-info">
+                    <div class="copyright">
+                        <p>&copy; 2025 SP Jewellers. All rights reserved. | Developed by <a href="https://savannaik.netlify.app/" target="_blank" style="color: #9c7c38; text-decoration: none; font-weight: 500;">Savan Naik</a></p>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="reset-cart-flags-simplified.html">Reset Cart</a>
+                        <a href="reset-flags-simplified.html">Reset System</a>
+                        <a href="#">Sitemap</a>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <span><i class="fab fa-cc-amex"></i></span>
+                       <!-- <span><i class="fab fa-apple-pay"></i></span>
+                        <span><i class="fab fa-cc-diners-club"></i></span>-->
+                        <span><i class="fab fa-cc-discover"></i></span>
+                        <span><i class="fab fa-google-pay"></i></span>
+                        <span><i class="fab fa-cc-mastercard"></i></span>
+                        <span><i class="fab fa-cc-paypal"></i></span>
+                        <span class="union-pay">UP</span>
+                        <span><i class="fab fa-cc-visa"></i></span>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Button -->
+    <a href="#" class="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+      // Network status monitoring
+      let isOnline = navigator.onLine;
+      window.addEventListener('online', () => {
+        console.log('Network connection restored');
+        isOnline = true;
+        document.dispatchEvent(new CustomEvent('network-status-changed', { detail: { online: true } }));
+      });
+      window.addEventListener('offline', () => {
+        console.log('Network connection lost');
+        isOnline = false;
+        document.dispatchEvent(new CustomEvent('network-status-changed', { detail: { online: false } }));
+      });
+    </script>
+
+    <!-- Navigation scripts -->
+    <script src="js/navigation.js?v=1.0.4"></script>
+    <script src="js/auto-slider.js?v=1.0.1"></script>
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+
+    <!-- Global Error Handler - Place this before any other scripts -->
+    <script src="js/error-handler.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script>
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+        authDomain: "auric-a0c92.firebaseapp.com",
+        projectId: "auric-a0c92",
+        storageBucket: "auric-a0c92.appspot.com",
+        messagingSenderId: "878979958342",
+        appId: "1:878979958342:web:e6092f7522488d21eaec47",
+        measurementId: "G-ZYZ750JHMB"
+      };
+
+      // Initialize Firebase directly (like in login.html)
+      firebase.initializeApp(firebaseConfig);
+
+      // Enable session persistence
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .catch(error => {
+          console.error("Auth persistence error:", error);
+        });
+    </script>
+
+    <!-- Firebase Auth Global Module -->
+
+    <!-- Firebase Auth Module -->
+    <script src="js/firebase/firebase-auth.js"></script>
+
+    <!-- Cart System Scripts -->
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    <script src="js/cart-manager.js?v=1.0.1"></script>
+
+    <!-- Wishlist Scripts -->
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Featured Collection Scroll Arrows -->
+    <script src="js/featured-collection-scroll.js?v=1.0.0"></script>
+
+    <!-- Bridal Products Loader -->
+    <script src="js/bridal-products-loader.js?v=1.0.0"></script>
+
+    <!-- Firebase Authentication Check -->
+    <script>
+      // Wait for FirebaseAuth to be available and handle authentication
+      function handleAuthentication() {
+        const FirebaseAuth = window.FirebaseAuth;
+        
+        if (!FirebaseAuth) {
+          console.warn('FirebaseAuth module not yet available, retrying...');
+          setTimeout(handleAuthentication, 100);
+          return;
+        }
+
+        // Handle user authentication state
+        const userIcon = document.getElementById('user-icon');
+
+        if (userIcon) {
+          try {
+            // First check current Firebase user
+            const currentUser = firebase.auth().currentUser;
+
+            if (currentUser) {
+              // Firebase user is logged in
+              console.log("Firebase user is logged in:", currentUser.uid);
+              userIcon.href = "profile.html";
+              userIcon.classList.add('logged-in');
+            } else {
+              // No current Firebase user, check session
+              if (FirebaseAuth.isLoggedIn()) {
+                // User is logged in according to session
+                console.log("User is logged in from session");
+                userIcon.href = "profile.html";
+                userIcon.classList.add('logged-in');
+              } else {
+                // No session found
+                console.log("No user session found");
+                userIcon.href = "#";
+                userIcon.classList.remove('logged-in');
+              }
+            }
+          } catch (error) {
+            console.error('Error checking authentication state:', error);
+            userIcon.href = "#";
+            userIcon.classList.remove('logged-in');
+          }
+        }
+
+        // Set up auth state observer for real-time updates
+        try {
+          FirebaseAuth.observeAuthState((user) => {
+            // Get the reference to the user icon again, since this may run at a different time
+            const userIcon = document.getElementById('user-icon');
+
+            // Only proceed if userIcon exists
+            if (userIcon) {
+              if (user) {
+                // User is signed in, update icon to go to profile
+                console.log("Auth state: User is signed in:", user.uid);
+
+                // Save session data in case it was missing
+                FirebaseAuth.saveSession({
+                  uid: user.uid,
+                  email: user.email,
+                  displayName: user.displayName || 'User',
+                  photoURL: user.photoURL,
+                  loggedIn: true
+                });
+
+                userIcon.href = "profile.html";
+                userIcon.classList.add('logged-in');
+              } else {
+                // User is not signed in, keep login link
+                console.log("Auth state: User is signed out");
+                FirebaseAuth.clearSession();
+                userIcon.href = "#";
+                userIcon.classList.remove('logged-in');
+              }
+            }
+          });
+        } catch (error) {
+          console.error('Error setting up auth state observer:', error);
+        }
+      }
+
+      // Start authentication handling when DOM is ready
+      document.addEventListener('DOMContentLoaded', handleAuthentication);
+    </script>
+  <style>
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+    <!-- Cart Panel -->
+    <div id="auricCartPanel" class="cart-panel" style="position:fixed !important; top:0 !important; right:-400px !important; width:400px !important; max-width:90% !important; height:100% !important; background:#ffffff !important; box-shadow:-2px 0 10px rgba(0,0,0,0.3) !important; z-index:999999 !important; transition:right 0.3s ease-in-out !important; display:flex !important; flex-direction:column !important; overflow:hidden !important; visibility:visible !important; pointer-events:auto !important;">
+      <div class="cart-panel-header">
+        <h3>Your Shopping Bag</h3>
+        <button class="close-cart-btn" onclick="closeCartDirectly(); return false;">×</button>
+      </div>
+      <div class="cart-items">
+        <!-- Cart items will be inserted here by JavaScript -->
+        <div class="empty-cart-message">Your cart is empty</div>
+      </div>
+      <div class="cart-panel-footer">
+        <div class="cart-panel-subtotal">
+          <span>Subtotal:</span>
+          <span class="subtotal-amount">₹0.00</span>
+        </div>
+        <div class="cart-panel-buttons">
+          <button class="view-cart-btn continue-shopping-btn" onclick="closeCartDirectly(); return false;">Continue Shopping</button>
+          <a href="checkout.html" class="checkout-btn">Checkout</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ultra-direct Cart Overlay with ALL inline styles -->
+    <div id="auricCartOverlay" class="cart-panel-overlay" onclick="closeCartDirectly(); return false;" style="position:fixed !important; top:0 !important; left:0 !important; width:100% !important; height:100% !important; background:rgba(0,0,0,0.5) !important; z-index:999998 !important; display:none !important; visibility:hidden !important;"></div>
+
+
+    <!-- Fix for closeCartDirectly error -->
+    <script>
+      // Define the missing closeCartDirectly function
+      window.closeCartDirectly = function() {
+        // Call the regular closeCart function
+        if (window.closeCart) {
+          return window.closeCart();
+        }
+      };
+    </script>
+
+    <!-- Testimonial Script -->
+    <script src="js/testimonial-scroller.js"></script>
+    <script src="js/hero-slider.js"></script>
+    <script src="js/product-scroll-auto.js"></script>
+
+    <!-- About Section Learn More Script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const learnMoreLink = document.getElementById('learnMoreLink');
+          const additionalContent = document.querySelector('.additional-content');
+
+          if (learnMoreLink && additionalContent) {
+              learnMoreLink.addEventListener('click', function(e) {
+                  e.preventDefault();
+
+                  if (additionalContent.style.display === 'none') {
+                      additionalContent.style.display = 'block';
+                      learnMoreLink.textContent = 'Show Less';
+                  } else {
+                      additionalContent.style.display = 'none';
+                      learnMoreLink.textContent = 'Learn More About Our Story';
+                  }
+              });
+          }
+      });
+    </script>
+
+    <script>
+        // WhatsApp Chat Function
+        function openWhatsAppChat() {
+            const phoneNumber = "+919999068838"; // SP Jewellers WhatsApp business number
+            const message = "Hi! I'm interested in creating custom bridal jewelry. Can you help me?";
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+    <!-- Footer Toggle Script -->
+    <script src="js/footer-toggle.js"></script>
+  </body>
+</html>

@@ -1,0 +1,430 @@
+/* Testimonials Section */
+/* Buy and Watch Section - Keeping original */
+.testimonials-section {
+    padding: 10px 0 20px 0;
+    background-color: #f8f8f5;
+    margin-top: 0px;
+}
+
+.testimonials-title {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: #333;
+    font-family: 'Playfair Display', serif;
+}
+
+/* New Testimonials Section */
+.customer-testimonials-section {
+    padding: 60px 0 20px 0;
+    background-color: #C1B2A3; /* Brown background color like in the reference */
+    margin-top: 30px;
+    margin-bottom: 0;
+    color: white;
+}
+
+.customer-testimonials-title {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: white;
+    font-family: 'Playfair Display', serif;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.customer-testimonials-title::after {
+    content: '';
+    display: block;
+    width: 200px;
+    height: 2px;
+    background-color: #d4af37; /* Gold color for divider */
+    margin: 10px auto 0;
+}
+
+.testimonials-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Buy and Watch Navigation Buttons */
+.buy-watch-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(212, 175, 55, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.buy-watch-nav:hover {
+    background: rgba(212, 175, 55, 1);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.buy-watch-prev {
+    left: 10px;
+}
+
+.buy-watch-next {
+    right: 10px;
+}
+
+.buy-watch-nav:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: translateY(-50%);
+}
+
+.buy-watch-nav:disabled:hover {
+    transform: translateY(-50%);
+    background: rgba(212, 175, 55, 0.5);
+}
+
+.testimonials-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 30px; /* Increased spacing between videos */
+    padding: 20px 15px 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #d4af37 #5a3f2a;
+    justify-content: flex-start;
+    scroll-snap-type: x mandatory; /* Enable snap scrolling */
+}
+
+.testimonials-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.testimonials-scroll::-webkit-scrollbar-track {
+    background: #5a3f2a;
+    border-radius: 10px;
+}
+
+.testimonials-scroll::-webkit-scrollbar-thumb {
+    background-color: #d4af37;
+    border-radius: 10px;
+}
+
+.testimonial-item {
+    flex: 0 0 auto;
+    width: 250px; /* Further reduced width */
+    min-width: 250px; /* Minimum width */
+    max-width: 280px; /* Reduced max-width */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.4s ease;
+    scroll-snap-align: center; /* Snap each video to center */
+}
+
+.testimonial-item.in-focus {
+    transform: scale(1.05) translateY(-8px);
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);
+    border: 2px solid #d4af37;
+}
+
+/* Customer testimonials styling */
+.customer-testimonials-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.customer-testimonials-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding: 20px 15px 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-start;
+    position: relative;
+    touch-action: pan-y pinch-zoom;
+    scroll-snap-type: x mandatory;
+}
+
+.customer-testimonials-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.customer-testimonials-scroll::-webkit-scrollbar-track {
+    background: #5a3f2a;
+    border-radius: 10px;
+}
+
+.customer-testimonials-scroll::-webkit-scrollbar-thumb {
+    background-color: #d4af37;
+    border-radius: 10px;
+}
+
+.customer-testimonial-item {
+    flex: 0 0 auto;
+    width: 80%; /* Width for customer testimonials */
+    max-width: 600px; /* Increased max-width */
+    background-color: transparent; /* Transparent background */
+    border-radius: 0; /* No border radius */
+    box-shadow: none; /* No shadow to match reference design */
+    overflow: hidden;
+    margin: 0 15px; /* Add margin to space out items */
+    scroll-snap-align: center;
+}
+
+/* Navigation arrows for testimonials */
+.testimonial-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    color: #5a3f2a;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.testimonial-nav-button:hover {
+    background-color: white;
+    color: #d4af37;
+    border-color: #d4af37;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.testimonial-prev {
+    left: 10px;
+}
+
+.testimonial-next {
+    right: 10px;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.4s ease;
+    transform: scale(1);
+}
+
+.video-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.video-container.playing {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+    border: 2px solid #d4af37;
+}
+
+.video-container.playing .video-title {
+    color: #d4af37;
+    font-weight: 600;
+}
+
+.video-link-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #d4af37;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.video-link-icon:hover {
+    background-color: #d4af37;
+    color: white;
+    transform: scale(1.1);
+}
+
+.video-link-icon i {
+    font-size: 18px;
+}
+
+.play-button-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+
+.play-button {
+    width: 1500px;
+    height: 1500px;
+    background-color: transparent; /* Transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: none;
+    cursor: pointer;
+    position: relative;
+    border-radius: 50%;
+}
+
+.play-button svg {
+    margin-left: 4px;
+    width: 120px;
+    height: 120px;
+}
+
+.play-button svg path {
+    fill: rgba(255, 255, 255, 0.6); /* More transparent white */
+}
+
+/* Removed the ::before pseudo-element with the border */
+
+.play-button:hover {
+    transform: scale(1.05);
+}
+
+.customer-play-button {
+    border-radius:50px;
+    width: 170px;
+    height: 170px;
+    background-color: transparent; /* Transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.customer-play-button svg {
+    margin-left: 4px;
+    width: 1200px;
+    height: 1200px;
+}
+
+.customer-play-button svg path {
+    border-radius:50px;
+    fill: rgba(255, 255, 255, 0.6); /* More transparent white */
+}
+
+/* Removed the before pseudo-element with the border */
+
+.customer-play-button:hover {
+    transform: scale(1.05);
+}
+
+.video-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-weight: 500;
+    z-index: 6;
+}
+
+.testimonial-video {
+    width: 100%;
+    height: 500px; /* Increased height from 450px */
+    display: block;
+    object-fit: cover; /* Ensures the video fills the container without distortion */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+    .testimonial-item {
+        width: 60%;
+        max-width: 400px;
+    }
+    
+    .testimonial-video {
+        height: 460px;
+    }
+}
+
+@media (max-width: 767px) {
+    .testimonial-item {
+        width: 60%;
+        max-width: 320px;
+    }
+    
+    .testimonial-video {
+        height: 420px;
+    }
+    
+    /* Reduce spacing on mobile devices */
+    .testimonials-section {
+        padding: 15px 0 20px 0;
+        margin-top: 0px;
+    }
+    
+    /* Responsive play button sizes */
+    
+}
+
+@media (max-width: 480px) {
+    /* Further reduce spacing on small mobile devices */
+    .testimonials-section {
+        padding: 5px 0 15px 0;
+        margin-top: -5px;
+    }
+}
+
+@media (max-width: 360px) {
+    /* Minimal spacing on very small screens */
+    .testimonials-section {
+        padding: 0px 0 10px 0;
+        margin-top: -10px;
+    }
+}

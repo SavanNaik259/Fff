@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>About Us - Auric Jewelry</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpLGCJKypKP/lX+/Pvw2DNA" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <link rel="stylesheet" href="css/navbar.css?v=1.1.1">
+    <link rel="stylesheet" href="css/cart.css?v=1.0.2">
+    <link rel="stylesheet" href="css/shop.css?v=1.0.2">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    
+    <script>
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+        authDomain: "auric-a0c92.firebaseapp.com",
+        projectId: "auric-a0c92",
+        storageBucket: "auric-a0c92.appspot.com",
+        messagingSenderId: "878979958342",
+        appId: "1:878979958342:web:e6092f7522488d21eaec47",
+        measurementId: "G-ZYZ750JHMB"
+      };
+      
+        // Initialize Firebase directly (like in login.html)
+          firebase.initializeApp(firebaseConfig);
+
+          // Enable session persistence
+          firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .catch(error => {
+              console.error("Auth persistence error:", error);
+            });
+    </script>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <!-- Promo Banner -->
+        <div class="promo-banner">
+            <button class="banner-arrow banner-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <p>Save 21% on exclusive selections - <a href="#">Shop Now</a></p>
+            <button class="banner-arrow banner-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <!-- New Responsive Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <!-- Logo -->
+                <a href="index.html" class="brand">Auric</a>
+                
+                <!-- Mobile Toggle Button -->
+                <div class="hamburger" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="nav-menu" id="navMenu">
+                    <!-- Close button for mobile menu in the top right corner -->
+                    <button class="close-menu" id="closeMenu">×</button>
+                    
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="new-arrivals.html" class="nav-link">New Arrivals</a></li>
+                        <li class="nav-item"><a href="shop.html" class="nav-link">Shop</a></li>
+                        <li class="nav-item"><a href="about.html" class="nav-link active">About</a></li>
+                        <li class="nav-item"><a href="index.html#testimonials" class="nav-link">Testimonials</a></li>
+                        <li class="nav-item"><a href="order-track.html" class="nav-link">Order Track</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                    </ul>
+                    
+                    <!-- Mobile account links in separate div after Contact -->
+                    <div class="mobile-account-links mobile-special">
+                        <a href="login.html" class="mobile-account-link">
+                            <i class="fas fa-user"></i> Account
+                        </a>
+                        <a href="#" class="mobile-account-link wishlist-toggle">
+                            <i class="fas fa-heart"></i> Wishlist (<span class="mobile-wishlist-count">0</span>)
+                        </a>
+                        <a href="#" class="mobile-account-link mobile-cart-toggle">
+                            <i class="fas fa-shopping-bag"></i> Shopping Bag (<span class="mobile-cart-count">0</span>)
+                        </a>
+                    
+                    </div>
+                </div>
+                
+                <!-- Navigation Icons - Matching the image -->
+                <div class="nav-icons">
+                    <a href="#" class="icon-link"><i class="fa-solid fa-magnifying-glass"></i></a>
+                    <a href="login.html" class="icon-link" id="user-icon"><i class="fa-solid fa-user"></i></a>
+                    <a href="#" class="icon-link wishlist-icon-container">
+                        <i class="fa-solid fa-heart"></i>
+                        <div class="wishlist-count">0</div>
+                    </a>
+                    <a href="#" class="icon-link cart-icon-container cart-toggle" id="cartToggleButton">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <div class="cart-count">0</div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Overlay for menu background -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <!--add content here-->
+ 
+    <a href="#" class="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <!-- Footer Section -->
+    <footer class="footer-modern">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-logo">
+                    <h2>Auric</h2>
+                    <p>Timeless Elegance, Modern Design</p>
+                </div>
+
+                <div class="footer-newsletter-container">
+                    <h3>Subscribe For Updates</h3>
+                    <div class="newsletter-box">
+                        <form class="modern-newsletter-form">
+                            <input type="email" placeholder="Your email address">
+                            <button type="submit">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-widgets">
+                    <div class="footer-widget contact-widget">
+                            <h4>Contact</h4>
+                        <p><i class="fas fa-map-marker-alt"></i> 123 Fashion Street, City, Country</p>
+                        <p><i class="fas fa-phone"></i> 090003 95566</p>
+                        <p><i class="fas fa-envelope"></i> auric@gmail.com</p>
+                        
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-pinterest"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-widget">
+                        <h4>Shop</h4>
+                        <ul>
+                            <li><a href="#">Necklaces</a></li>
+                            <li><a href="#">Bracelets</a></li>
+                            <li><a href="#">Earrings</a></li>
+                            <li><a href="#">Rings</a></li>
+                            <li><a href="#">Anklets</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>Customer Care</h4>
+                        <ul>
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Returns & Exchanges</a></li>
+                            <li><a href="#">FAQs</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>About Us</h4>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            
+                            <li><a href="#">Testimonials</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-info">
+                    <div class="copyright">
+                        <p>&copy; 2025 Auric. All rights reserved.</p>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Sitemap</a>
+                        </div>
+                    
+                    <div class="payment-methods">
+                        <span><i class="fab fa-cc-amex"></i></span>
+                        <!-- <span><i class="fab fa-apple-pay"></i></span>
+                        <span><i class="fab fa-cc-diners-club"></i></span>-->
+                        <span><i class="fab fa-cc-discover"></i></span>
+                        <span><i class="fab fa-google-pay"></i></span>
+                        <span><i class="fab fa-cc-mastercard"></i></span>
+                        <span><i class="fab fa-cc-paypal"></i></span>
+                        <span class="union-pay">UP</span>
+                        <span><i class="fab fa-cc-visa"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+<!-- Shop JS for filtering and sorting -->
+    <script src="js/shop.js"></script>
+    
+    <!-- Core JS Files -->
+    <script src="js/navigation.js?v=1.0.4"></script>
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+    <script src="js/error-handler.js"></script>
+    <script src="js/firebase/firebase-auth.js"></script>
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    <script src="js/cart-manager.js?v=1.0.1"></script>
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Firebase Authentication Check -->
+    <script>
+      // Use the already loaded firebase-auth.js
+      const FirebaseAuth = window.FirebaseAuth;
+      
+      // Handle user authentication state
+      document.addEventListener('DOMContentLoaded', () => {
+        const userIcon = document.getElementById('user-icon');
+        
+        if (userIcon) {
+          // First check current Firebase user
+          const currentUser = firebase.auth().currentUser;
+          
+          if (currentUser) {
+            // Firebase user is logged in
+            console.log("Firebase user is logged in:", currentUser.uid);
+            userIcon.href = "profile.html";
+            userIcon.classList.add('logged-in');
+          } else {
+// No current Firebase user, check session
+            if (FirebaseAuth.isLoggedIn()) {
+              // User is logged in according to session
+              console.log("User is logged in from session");
+              userIcon.href = "profile.html";
+              userIcon.classList.add('logged-in');
+            } else {
+              // No session found
+              console.log("No user session found");
+              userIcon.href = "login.html";
+              userIcon.classList.remove('logged-in');
+            }
+          }
+        }
+      });
+        
+        
+      // Also set up auth state observer for real-time updates
+FirebaseAuth.observeAuthState((user) => {
+        // Get the reference to the user icon again, since this may run at a different time
+        const userIcon = document.getElementById('user-icon');
+        
+        // Only proceed if userIcon exists
+        if (userIcon) {
+          if (user) {
+            // User is signed in, update icon to go to profile
+            console.log("Auth state: User is signed in:", user.uid);
+            
+            // Save session data in case it was missing
+            FirebaseAuth.saveSession({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName || 'User',
+              photoURL: user.photoURL,
+              loggedIn: true
+            });
+            
+            userIcon.href = "profile.html";
+            userIcon.classList.add('logged-in');
+          } else {
+// User is not signed in, keep login link
+            console.log("Auth state: User is signed out");
+            FirebaseAuth.clearSession();
+            userIcon.href = "login.html";
+            userIcon.classList.remove('logged-in');
+          }
+        }
+      });
+
+    </script>
+    <!-- Cart Panel --
+    <div id="auricCartPanel" class="cart-panel" style="position:fixed !important; top:0 !important; right:-400px !important; width:400px !important; max-width:90% !important; height:100% !important; background:#ffffff !important; box-shadow:-2px 0 10px rgba(0,0,0,0.3) !important; z-index:999999 !important; transition:right 0.3s ease-in-out !important; display:flex !important; flex-direction:column !important; overflow:hidden !important; visibility:visible !important; pointer-events:auto !important;">
+      <div class="cart-panel-header">
+        <h3>Your Shopping Bag</h3>
+        <button class="close-cart-btn" onclick="closeCartDirectly(); return false;">×</button>
+      </div>
+      <div class="cart-items">
+        <!-- Cart items will be inserted here by JavaScript --
+        <div class="empty-cart-message">Your cart is empty</div>
+      </div>
+      <div class="cart-panel-footer">
+        <div class="cart-panel-subtotal">
+          <span>Subtotal:</span>
+          <span class="subtotal-amount">₹0.00</span>
+        </div>
+        <div class="cart-panel-buttons">
+          <button class="view-cart-btn continue-shopping-btn" onclick="closeCartDirectly(); return false;">Continue Shopping</button>
+          <a href="checkout.html" class="checkout-btn">Checkout</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ultra-direct Cart Overlay with ALL inline styles --
+    <div id="auricCartOverlay" class="cart-overlay" onclick="closeCartDirectly(); return false;" style="position:fixed !important; top:0 !important; left:0 !important; width:100% !important; height:100% !important; background:rgba(0,0,0,0.5) !important; z-index:999998 !important; display:none !important; visibility:hidden !important;"></div>
+    
+    <!-- Wishlist Panel --
+    <div class="wishlist-panel">
+        <div class="wishlist-header">
+            <h3>Wishlist</h3>
+            <button class="close-wishlist"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="wishlist-items">
+            <!-- Wishlist items will be dynamically added here --
+            <div class="empty-wishlist-message">Your wishlist is empty</div>
+        </div>
+    </div>
+    
+    <!-- Overlay for Wishlist --
+    <div class="wishlist-overlay"></div>
+
+    <!-- Scripts -
+    <script src="js/navigation.js?v=1.0.4"></script>
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+    <script src="js/error-handler.js"></script>
+    <script src="js/firebase/firebase-auth.js"></script>
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    <script src="js/cart-manager.js?v=1.0.1"></script>
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Fix for closeCartDirectly function --
+    <script>
+      // Define the closeCartDirectly function
+      function closeCartDirectly() {
+        // Call the regular closeCart function if available
+        if (window.closeCart) {
+          window.closeCart();
+        } else {
+          // Direct panel manipulation as fallback
+          const panel = document.getElementById('auricCartPanel');
+          const overlay = document.getElementById('auricCartOverlay');
+          if (panel) panel.style.right = '-400px';
+          if (overlay) {
+            overlay.style.display = 'none';
+            overlay.style.visibility = 'hidden';
+          }
+        }
+        return false;
+      }
+      
+      // Add a direct function for toggling as well
+      function toggleCartDirectly() {
+        const panel = document.getElementById('auricCartPanel');
+        const overlay = document.getElementById('auricCartOverlay');
+        
+        if (panel && panel.style.right === '0px') {
+          // Close it
+          closeCartDirectly();
+        } else {
+          // Open it
+          if (panel) panel.style.right = '0px';
+          if (overlay) {
+            overlay.style.display = 'block';
+            overlay.style.visibility = 'visible';
+          }
+        }
+        return false;
+      }
+    </script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get reference to the user icon
+        const userIcon = document.getElementById('user-icon');
+        
+        // Listen for auth state changes
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // User is signed in
+            console.log("Auth state: User is signed in", user.email);
+            
+            // Store user info in session storage
+            FirebaseAuth.saveSession({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName || 'User',
+              photoURL: user.photoURL,
+              loggedIn: true
+            });
+            
+            userIcon.href = "profile.html";
+            userIcon.classList.add('logged-in');
+          } else {
+            // User is not signed in, keep login link
+            console.log("Auth state: User is signed out");
+            FirebaseAuth.clearSession();
+            userIcon.href = "login.html";
+            userIcon.classList.remove('logged-in');
+          }
+        });
+      });
+    </script>-->
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "functions/**",
+      "server/**",
+      "package.json",
+      "package-lock.json",
+      "README.md"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/send-order-email",
+        "function": "sendOrderEmail"
+      },
+      {
+        "source": "/api/create-razorpay-order",
+        "function": "createRazorpayOrder"
+      },
+      {
+        "source": "/api/verify-razorpay-payment",
+        "function": "verifyRazorpayPayment"
+      },
+      {
+        "source": "/api/health",
+        "function": "healthCheck"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "functions": {
+    "source": "functions"
+  }
+}

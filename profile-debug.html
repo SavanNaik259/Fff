@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Debug - SP Jewellers</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <link rel="stylesheet" href="css/navbar.css?v=1.1.1">
+    <link rel="stylesheet" href="css/cart.css?v=1.0.2">
+    <link rel="stylesheet" href="css/auth.css">
+    
+    <style>
+        .debug-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .debug-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        
+        .debug-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .status-good { color: #4CAF50; }
+        .status-bad { color: #F44336; }
+        .status-warning { color: #FF9800; }
+        
+        .debug-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        
+        .firestore-rules {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            margin: 15px 0;
+        }
+        
+        .btn {
+            background: #c8a97e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #b39063;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="promo-banner">
+            <p>Profile Debug Mode - <a href="index.html">Back to Home</a></p>
+        </div>
+        
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="index.html" class="brand">SP Jewellers</a>
+                <div class="nav-icons">
+                    <a href="login.html" class="icon-link">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="debug-container">
+        <h1>Firebase Profile Debug</h1>
+        
+        <div class="debug-section">
+            <div class="debug-title">Authentication Status</div>
+            <div id="auth-status" class="debug-item">Checking...</div>
+            <div id="user-info" class="debug-item" style="display: none;"></div>
+        </div>
+        
+        <div class="debug-section">
+            <div class="debug-title">Firebase Connection</div>
+            <div id="firebase-status" class="debug-item">Checking...</div>
+        </div>
+        
+        <div class="debug-section">
+            <div class="debug-title">Firestore Access Test</div>
+            <div id="firestore-test" class="debug-item">Not tested</div>
+            <button id="test-firestore" class="btn">Test Firestore Access</button>
+        </div>
+        
+        <div class="debug-section">
+            <div class="debug-title">Required Firestore Security Rules</div>
+            <p>Your current Firestore rules are blocking access. You need to update them in the Firebase Console:</p>
+            <ol>
+                <li>Go to <strong>Firebase Console</strong> → Your Project → <strong>Firestore Database</strong></li>
+                <li>Click on the <strong>Rules</strong> tab</li>
+                <li>Replace your current rules with the rules below</li>
+                <li>Click <strong>Publish</strong></li>
+            </ol>
+            
+            <div class="firestore-rules">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow authenticated users to read and write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow access to user's subcollections
+      match /{subcollection=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Allow public read access to products (if needed)
+    match /products/{productId} {
+      allow read: if true;
+    }
+  }
+}</div>
+            
+            <button id="copy-rules" class="btn">Copy Rules to Clipboard</button>
+        </div>
+        
+        <div class="debug-section">
+            <div class="debug-title">Actions</div>
+            <button id="force-login" class="btn">Force Login Check</button>
+            <button id="clear-cache" class="btn">Clear Browser Cache</button>
+            <button id="retry-profile" class="btn">Retry Profile Load</button>
+        </div>
+        
+        <div class="debug-section">
+            <div class="debug-title">Console Logs</div>
+            <div id="console-logs" style="max-height: 200px; overflow-y: auto; background: #f5f5f5; padding: 10px; border-radius: 4px;"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.appspot.com",
+            messagingSenderId: "878979958342",
+            appId: "1:878979958342:web:e6092f7522488d21eaec47",
+            measurementId: "G-ZYZ750JHMB"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Debug logging
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logContainer = document.getElementById('console-logs');
+        
+        function addLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.createElement('div');
+            logDiv.innerHTML = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            logDiv.style.color = type === 'error' ? '#F44336' : '#333';
+            logContainer.appendChild(logDiv);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        console.log = function(message) {
+            addLog(message, 'log');
+            originalLog.apply(console, arguments);
+        };
+        
+        console.error = function(message) {
+            addLog(message, 'error');
+            originalError.apply(console, arguments);
+        };
+
+        // Debug functions
+        function updateAuthStatus() {
+            const authStatus = document.getElementById('auth-status');
+            const userInfo = document.getElementById('user-info');
+            
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    authStatus.innerHTML = '<span class="status-good">✓ User is authenticated</span>';
+                    userInfo.style.display = 'block';
+                    userInfo.innerHTML = `
+                        <strong>User Details:</strong><br>
+                        UID: ${user.uid}<br>
+                        Email: ${user.email}<br>
+                        Display Name: ${user.displayName || 'Not set'}<br>
+                        Email Verified: ${user.emailVerified}
+                    `;
+                    console.log('Authentication successful for user:', user.uid);
+                } else {
+                    authStatus.innerHTML = '<span class="status-bad">✗ No user authenticated</span>';
+                    userInfo.style.display = 'none';
+                    console.log('No user authenticated');
+                }
+            });
+        }
+        
+        function updateFirebaseStatus() {
+            const firebaseStatus = document.getElementById('firebase-status');
+            
+            try {
+                if (firebase.app()) {
+                    firebaseStatus.innerHTML = '<span class="status-good">✓ Firebase SDK loaded and initialized</span>';
+                    console.log('Firebase initialized successfully');
+                } else {
+                    firebaseStatus.innerHTML = '<span class="status-bad">✗ Firebase not initialized</span>';
+                }
+            } catch (error) {
+                firebaseStatus.innerHTML = `<span class="status-bad">✗ Firebase error: ${error.message}</span>`;
+                console.error('Firebase initialization error:', error);
+            }
+        }
+        
+        async function testFirestoreAccess() {
+            const firestoreTest = document.getElementById('firestore-test');
+            firestoreTest.innerHTML = 'Testing...';
+            
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                firestoreTest.innerHTML = '<span class="status-warning">⚠ Must be logged in to test Firestore</span>';
+                return;
+            }
+            
+            try {
+                // Test reading user document
+                const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    firestoreTest.innerHTML = '<span class="status-good">✓ Firestore access successful - User document exists</span>';
+                    console.log('Firestore test successful - document exists');
+                } else {
+                    // Try to create user document
+                    await firebase.firestore().collection('users').doc(user.uid).set({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName || user.email.split('@')[0],
+                        createdAt: firebase.firestore.Timestamp.now()
+                    });
+                    firestoreTest.innerHTML = '<span class="status-good">✓ Firestore access successful - User document created</span>';
+                    console.log('Firestore test successful - document created');
+                }
+            } catch (error) {
+                firestoreTest.innerHTML = `<span class="status-bad">✗ Firestore access failed: ${error.code || error.message}</span>`;
+                console.error('Firestore test failed:', error);
+                
+                if (error.code === 'permission-denied') {
+                    firestoreTest.innerHTML += '<br><strong>Solution:</strong> Update your Firestore security rules as shown above.';
+                }
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('test-firestore').addEventListener('click', testFirestoreAccess);
+        
+        document.getElementById('copy-rules').addEventListener('click', () => {
+            const rules = document.querySelector('.firestore-rules').textContent;
+            navigator.clipboard.writeText(rules).then(() => {
+                alert('Firestore rules copied to clipboard!');
+            });
+        });
+        
+        document.getElementById('force-login').addEventListener('click', () => {
+            window.location.href = 'login.html';
+        });
+        
+        document.getElementById('clear-cache').addEventListener('click', () => {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('Browser cache cleared. Please refresh the page.');
+        });
+        
+        document.getElementById('retry-profile').addEventListener('click', () => {
+            window.location.href = 'profile-fixed.html';
+        });
+        
+        // Initialize debug checks
+        updateFirebaseStatus();
+        updateAuthStatus();
+        
+        console.log('Debug page loaded - check Firebase authentication and Firestore access');
+    </script>
+</body>
+</html>

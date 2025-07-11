@@ -1,0 +1,208 @@
+/* Responsive Styles for Divas Mantra Website */
+
+/* Small devices (smartphones and small tablets) */
+@media (max-width: 680px) {
+    /* Mobile Menu takes 70% width on small screens as requested */
+    .mobile-menu {
+        width: 70%;
+    }
+    
+    /* Menu Header adjustments */
+    .menu-header {
+        padding: 15px;
+    }
+    
+    /* Menu items slightly smaller */
+    .menu-link {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .submenu-link {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    /* Footer adjustments */
+    .menu-footer {
+        padding: 15px;
+    }
+    
+    /* Product detail page for mobile */
+    .product-detail-container {
+        flex-direction: column;
+        padding: 15px;
+    }
+    
+    .product-detail-left,
+    .product-detail-right {
+        width: 100%;
+        padding: 0;
+    }
+    
+    /* Override the default horizontal layout for mobile */
+    .product-details-horizontal {
+        flex-direction: column !important;
+        padding: 15px;
+        gap: 20px;
+        width: 100% !important;
+    }
+    
+    .product-details-horizontal > div {
+        margin-bottom: 20px !important;
+        width: 100% !important; /* Full width on mobile, override desktop setting */
+        margin: 0 0 20px 0 !important;
+        box-sizing: border-box !important;
+        flex: none !important; /* Don't allow flex to override */
+        display: block !important; /* Ensure no flexbox issues */
+    }
+    
+
+}
+
+/* Small-to-medium tablets (681px-767px) */
+@media (min-width: 681px) and (max-width: 767px) {
+    /* Menu width for smaller tablets */
+    .mobile-menu {
+        width: 70%;
+    }
+    
+    /* Product detail page for small tablets */
+    .product-detail-container {
+        flex-direction: column;
+        padding: 15px;
+    }
+    
+    .product-detail-left,
+    .product-detail-right {
+        width: 100%;
+        padding: 0;
+    }
+    
+    /* Override the default horizontal layout for small tablets */
+    .product-details-horizontal {
+        flex-direction: column !important;
+        padding: 15px;
+        gap: 20px;
+        width: 100% !important;
+    }
+    
+    .product-details-horizontal > div {
+        margin-bottom: 20px !important;
+        width: 100% !important;
+        margin: 0 0 20px 0 !important;
+        box-sizing: border-box !important;
+        flex: none !important;
+        display: block !important;
+    }
+    
+
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991px) {
+    /* Menu width for tablets - 70% as requested */
+    .mobile-menu {
+        width: 70%;
+    }
+    
+    /* Desktop navigation hidden on tablets */
+    .desktop-nav {
+        display: none !important;
+    }
+    
+    /* Menu button visible */
+    .nav-icon.menu-icon {
+        display: flex;
+    }
+    
+    /* Product detail page for tablets */
+    .product-detail-container {
+        padding: 2870px;
+    }
+    
+    .product-detail-left,
+    .product-detail-right {
+        width: 50%;
+        padding: 0 10px;
+    }
+    
+    .product-details-horizontal {
+        flex-direction: row;
+        padding: 20px;
+    }
+    
+    .product-details-horizontal > div {
+        width: 33.33%;
+        flex: 1;
+        margin-bottom: 0;
+    }
+}
+
+/* Large devices (desktops) */
+@media (min-width: 992px) {
+    /* Main navigation styles */
+    .nav-container {
+        max-width: 1255500px;
+        margin: 0 auto;
+    }
+    
+    /* Desktop navigation shown */
+    .desktop-nav {
+        display: flex;
+    }
+    
+    /* Menu width for larger screens */
+    .mobile-menu {
+        width: 380px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.15);
+    }
+    
+    /* Main menu links - desktop specific */
+    .menu-link {
+        padding: 18px 25px;
+    }
+    
+    /* Allow body scroll when menu is open on desktop */
+    body.menu-open {
+        overflow: auto !important;
+    }
+    
+    /* Desktop specific menu styling */
+    .submenu-view {
+        padding-top: 0;
+    }
+
+    /* Smoother transitions for desktop */
+    .mobile-menu {
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    /* Enhanced submenu items for desktop */
+    .submenu-link {
+        padding: 15px 25px;
+        font-size: 14px;
+    }
+    
+    /* More visible click targets in desktop */
+    .menu-close, 
+    .category-header,
+    .back-link {
+        cursor: pointer;
+    }
+}
+
+/* Extra Large devices */
+@media (min-width: 1200px) {
+    /* Some extra space in the menu for larger screens */
+    .menu-link, .submenu-link {
+        padding-left: 25px;
+        padding-right: 25px;
+    }
+    
+    /* Larger menu width for very large screens */
+    .mobile-menu {
+        width: 400px;
+    }
+
+}

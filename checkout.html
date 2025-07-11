@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Auric Jewelry</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="checkout-styles.css">
+    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Site Styles -->
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Netlify Functions Helper -->
+    <script src="js/netlify-helpers.js"></script>
+    
+    <!-- Note: Debug scripts removed as requested -->
+    
+    <!-- Firebase Config -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.appspot.com",
+            messagingSenderId: "878979958342",
+            appId: "1:878979958342:web:e6092f7522488d21eaec47",
+            measurementId: "G-ZYZ750JHMB"
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Using Firebase configuration for authentication and order storage');
+            
+            try {
+                // Only initialize Firebase if it's not already initialized
+                if (!firebase.apps || !firebase.apps.length) {
+                    // Initialize Firebase
+                    firebase.initializeApp(firebaseConfig);
+                    console.log('Firebase initialized successfully');
+                } else {
+                    console.log('Firebase already initialized, using existing app');
+                }
+                
+                // Check if user is logged in
+                firebase.auth().onAuthStateChanged(function(user) {
+                    console.log('Auth state changed:', user ? 'Logged in' : 'Not logged in');
+                    // Update UI based on auth state
+                    updateAuthUI(user);
+                });
+            } catch (error) {
+                console.error('Error initializing Firebase:', error);
+            }
+        });
+        
+        function updateAuthUI(user) {
+            // Add login status indicator to the header
+            const header = document.querySelector('.simple-header .container');
+            // Auth status is not shown in the checkout page as per new design
+        }
+    </script>
+</head>
+<body>
+    <!-- Simple Header -->
+    <header class="simple-header py-3 border-bottom">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <a href="index.html" class="btn btn-outline-secondary custom-back-btn" style="color: #603000; border-color: #603000;">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Shopping
+                </a>
+            </div>
+            <div>
+                <!-- Right side is empty now -->
+            </div>
+        </div>
+    </header>
+    <!-- Overlay for menu background -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <div class="container py-5">
+        <header class="mb-5 text-center">
+            <h1 class="display-4">Checkout</h1>
+            <p class="lead">Complete your order in a few simple steps</p>
+        </header>
+
+        <!-- Checkout Steps Progress -->
+        <div class="checkout-progress mb-5">
+            <div class="row text-center">
+                <div class="col-4">
+                    <div class="step-icon active" id="step-icon-1">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="step-title">Order Summary</div>
+                </div>
+                <div class="col-4">
+                    <div class="step-icon" id="step-icon-2">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="step-title">Shipping Address</div>
+                </div>
+                <div class="col-4">
+                    <div class="step-icon" id="step-icon-3">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="step-title">Payment</div>
+                </div>
+            </div>
+            <div class="progress mt-3">
+                <div class="progress-bar" role="progressbar" style="width: 33%" id="checkout-progress-bar"></div>
+            </div>
+        </div>
+
+        <form id="checkoutForm">
+            <!-- Step 1: Order Summary -->
+            <div class="checkout-step active" id="checkout-step-1">
+                <div class="row">
+                  
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="orderSummary">
+                                    <p>No products added yet.</p>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <h5>Total:</h5>
+                                    <h5 id="orderTotal">₹0.00</h5>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                
+                                    <a id="continue-to-address" class="btn continue-shopping-btn custom-continue-btn" style="color: #603000; border-color: #603000;">
+                                        <i class="fas fa-store me-1"></i> Continue Shopping
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Delivery Address -->
+            <div class="checkout-step" id="checkout-step-2">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Shipping Address</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" value="John" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" value="Smith" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" value="9876543210" required>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label for="pinCode" class="form-label">PIN Code</label>
+                                        <input type="text" class="form-control" id="pinCode" name="pinCode" value="400001" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="state" class="form-label">State</label>
+                                        <input type="text" class="form-control" id="state" name="state" value="Maharashtra" required>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <label for="city" class="form-label">City</label>
+                                        <input type="text" class="form-control" id="city" name="city" value="Mumbai" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="houseNumber" class="form-label">House/Building Number</label>
+                                        <input type="text" class="form-control" id="houseNumber" name="houseNumber" value="42A" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="roadName" class="form-label">Road Name/Area/Colony</label>
+                                    <textarea class="form-control" id="roadName" name="roadName" rows="2" required>Marine Drive, Churchgate</textarea>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="notes" class="form-label">Order Notes (Optional)</label>
+                                    <textarea class="form-control" id="notes" name="notes" rows="2">Please deliver in the evening after 6 PM.</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-outline-secondary" id="back-to-summary">Back</button>
+                            <button type="button" class="btn btn-primary" id="continue-to-payment">Continue to Place Order</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="orderSummaryStep2">
+                                    <p>No products added yet.</p>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <h5>Total:</h5>
+                                    <h5 id="orderTotalStep2">₹0.00</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Payment Method -->
+            <div class="checkout-step" id="checkout-step-3">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Payment Method</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="Cash on Delivery" checked>
+                                        <label class="form-check-label" for="cashOnDelivery">
+                                            <i class="fas fa-money-bill-wave me-2"></i> Cash on Delivery
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay" value="Razorpay">
+                                        <label class="form-check-label" for="razorpay">
+                                            <i class="fas fa-credit-card me-2"></i> Pay Online with Razorpay 
+                                            <img src="https://razorpay.com/assets/razorpay-logo.svg" alt="Razorpay" style="height: 20px; margin-left: 5px;">
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="address-summary mt-4">
+                                    <h6 class="mb-3">Shipping Address</h6>
+                                    <div class="card bg-light">
+                                        <div class="card-body" id="address-confirmation">
+                                            <p>Please complete the address section.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Hidden Product List - Used by JavaScript to store products -->
+                                <div id="productList" style="display: none;">
+                                    <!-- Product items will be added here by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-outline-secondary" id="back-to-address">Back</button>
+                            <button type="submit" class="btn btn-primary">Complete Order</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="orderSummaryStep3">
+                                    <p>No products added yet.</p>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <h5>Total:</h5>
+                                    <h5 id="orderTotalStep3">₹0.00</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Required Modal -->
+    <div class="modal fade" id="createAccountModal" tabindex="-1" aria-labelledby="createAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createAccountModalLabel">Authentication Required</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        You need to create an account or sign in to complete your purchase.
+                    </div>
+                    <p>Please create an account or sign in to complete your order. Creating an account allows you to:</p>
+                    <ul>
+                        <li>Track your order status</li>
+                        <li>Save your delivery information for future purchases</li>
+                        <li>View your order history</li>
+                        <li>Receive exclusive offers and discounts</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="login.html" class="btn btn-outline-primary">Sign In</a>
+                    <a href="signup.html" class="btn btn-primary">Create Account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Order Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success" role="alert">
+                        <h4 class="alert-heading">Thank you for your order!</h4>
+                        <p>Your order has been placed successfully. We'll send you a confirmation email shortly.</p>
+                        <hr>
+                        <p class="mb-0">Order Reference: <span id="orderReference"></span></p>
+                        <small class="text-muted mt-2 d-block">Having cart issues? Click the "Cart Troubleshooting" button below to reset your cart flags.</small>
+                        <div id="paymentDetails" class="mt-2" style="display: none;">
+                            <p class="mb-0"><strong>Payment ID:</strong> <span id="paymentId"></span></p>
+                            <p class="mb-0"><strong>Payment Method:</strong> <span id="paymentMethod"></span></p>
+                        </div>
+                    </div>
+                    <div id="orderDetails"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="closeConfirmationBtn">Return to Homepage</button>
+                    <a href="reset-cart-flags.html" class="btn btn-outline-secondary">Cart Troubleshooting</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- New Cart System -->
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    
+    <!-- Wishlist Scripts -->
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    
+    <!-- JavaScripts -->
+    <script>
+        console.log("Loading cart dependencies for improved cart system");
+    </script>
+    <script src="checkout-script-simplified.js"></script>
+
+    <a href="#" class="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <!-- Footer - Modern Redesign -->
+    <footer class="footer-modern" style="margin-top: 0;">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-logo">
+                    <h2>SP Jewellers</h2>
+                    <p>Timeless Elegance, Modern Design</p>
+                </div>
+                
+                <div class="footer-newsletter-container">
+                    <h3>Subscribe For Updates</h3>
+                    <div class="newsletter-box">
+                        <form class="modern-newsletter-form">
+                            <input type="email" placeholder="Your email address">
+                            <button type="submit">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-main">
+            <div class="container">
+                        <div class="footer-widgets">
+                    <div class="footer-widget contact-widget">
+                            <h4>Contact</h4>
+                        <p><i class="fas fa-map-marker-alt"></i> 123 Fashion Street, City, Country</p>
+                        <p><i class="fas fa-phone"></i> 099990 68838</p>
+                        <p><i class="fas fa-envelope"></i> spjewellers@yahoo.co.in</p>
+                        
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-pinterest"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-widget">
+                        <h4>Shop</h4>
+                        <ul>
+                            <li><a href="#">Necklaces</a></li>
+                            <li><a href="#">Bracelets</a></li>
+                            <li><a href="#">Earrings</a></li>
+                            <li><a href="#">Rings</a></li>
+                            <li><a href="#">Anklets</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>Customer Care</h4>
+                        <ul>
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Returns & Exchanges</a></li>
+                            <li><a href="#">FAQs</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>About Us</h4>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            
+                            <li><a href="#">Testimonials</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-info">
+                    <div class="copyright">
+                        <p>&copy; 2025 SP Jewellers. All rights reserved. | Developed by <a href="https://savannaik.netlify.app/" target="_blank" style="color: #9c7c38; text-decoration: none; font-weight: 500;">Savan Naik</a></p>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="reset-cart-flags-simplified.html">Reset Cart</a>
+                        <a href="reset-flags-simplified.html">Reset System</a>
+                        <a href="#">Sitemap</a>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <span><i class="fab fa-cc-amex"></i></span>
+                       <!-- <span><i class="fab fa-apple-pay"></i></span>
+                        <span><i class="fab fa-cc-diners-club"></i></span>-->
+                        <span><i class="fab fa-cc-discover"></i></span>
+                        <span><i class="fab fa-google-pay"></i></span>
+                        <span><i class="fab fa-cc-mastercard"></i></span>
+                        <span><i class="fab fa-cc-paypal"></i></span>
+                        <span class="union-pay">UP</span>
+                        <span><i class="fab fa-cc-visa"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Shop JS for filtering and sorting --
+    <script src="js/shop.js"></script>
+
+    <!-- Core JS Files --
+    <script src="js/navigation.js?v=1.0.4"></script>
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+    <script src="js/error-handler.js"></script>
+    <script src="js/firebase/firebase-auth.js"></script>
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    <script src="js/cart-manager.js?v=1.0.1"></script>
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/main.js"></script>
+-->
+    
+</body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emerald Studs - Auric</title>
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <link rel="stylesheet" href="css/navbar.css?v=1.1.1">
+    <link rel="stylesheet" href="css/cart.css?v=1.0.2">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpLGCJKypKP/lLCgB9MlH/lX+/Pvw2DNA" crossorigin="anonymous">
+    <!-- Fallback font awesome icons if CDN fails -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Config -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.appspot.com",
+            messagingSenderId: "878979958342",
+            appId: "1:878979958342:web:e6092f7522488d21eaec47",
+            measurementId: "G-ZYZ750JHMB"
+        };
+        
+        // Initialize Firebase immediately instead of waiting for DOMContentLoaded
+        console.log('Initializing Firebase...');
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Error initializing Firebase:', error);
+        }
+    </script>
+    
+    <!-- Cart Persistence Script -->
+    <script>
+        // Modified cart check to never clear cart on page load
+        (function() {
+            console.log('Cart persistence enabled: Cart will not be cleared on page reload');
+            
+            // Only check for this flag when explicitly navigating from checkout after order
+            function checkCartShouldBeCleared() {
+                // This will only be true if coming directly from checkout after order completion
+                // and ONLY if the global flag was set by checkout.js
+                return window.FORCE_CART_CLEAR_NEEDED === true;
+            }
+            
+            // This will be false in normal navigation - preserving cart data
+            if (checkCartShouldBeCleared()) {
+                console.log('Cart clearing confirmed from recent order completion');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <header class="header">
+        <!-- Promo Banner -->
+        <div class="promo-banner">
+            <button class="banner-arrow banner-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <p>Save 21% on exclusive selections - <a href="#">Shop Now</a></p>
+            <button class="banner-arrow banner-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <!-- New Responsive Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <!-- Logo -->
+                <a href="index.html" class="brand">Auric</a>
+                
+                
+                <!-- Mobile Toggle Button -->
+                <div class="hamburger" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="nav-menu" id="navMenu">
+                    <!-- Close button for mobile menu in the top right corner -->
+                    <button class="close-menu" id="closeMenu">×</button>
+                    
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="new-arrivals.html" class="nav-link">New Arrivals</a></li>
+                        <li class="nav-item"><a href="shop.html" class="nav-link">Shop</a></li>
+                        <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+                        <li class="nav-item"><a href="index.html#testimonials" class="nav-link">Testimonials</a></li>
+                        <li class="nav-item"><a href="order-track.html" class="nav-link">Order Track</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                    </ul>
+                    
+                    <!-- Mobile account links in separate div after Contact -->
+                    <div class="mobile-account-links mobile-special">
+                        <a href="login.html" class="mobile-account-link">
+                            <i class="fas fa-user"></i> Account
+                        </a>
+                        <a href="#" class="mobile-account-link wishlist-toggle">
+                            <i class="fas fa-heart"></i> Wishlist (<span class="mobile-wishlist-count">0</span>)
+                        </a>
+                        <a href="#" class="mobile-account-link mobile-cart-toggle">
+                            <i class="fas fa-shopping-bag"></i> Shopping Bag (<span class="mobile-cart-count">0</span>)
+                        </a>
+                    
+                    </div>
+                </div>
+                
+            <!-- Navigation Icons - Matching the image -->
+                <div class="nav-icons">
+                    <a href="#" class="icon-link"><i class="fa-solid fa-magnifying-glass"></i></a>
+                    <a href="login.html" class="icon-link" id="user-icon"><i class="fa-solid fa-user"></i></a>
+                    <a href="#" class="icon-link wishlist-icon-container">
+                        <i class="fa-solid fa-heart"></i>
+                        <div class="wishlist-count">0</div>
+                    </a>
+                    <a href="#" class="icon-link cart-icon-container cart-toggle" id="cartToggleButton">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <div class="cart-count">0</div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Overlay for menu background -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+
+    <main>
+        <div class="product-detail-container" data-product-id="EM-ST-2025">
+            <!-- Left side: Image gallery -->
+            <div class="product-detail-left">
+                <div class="main-image-container" style="height: 650px !important; min-height: 450px !important;">
+                    <img src="IMG_20250504_150241.jpg" alt="Emerald Studs" class="main-product-image">
+                </div>
+                <div class="product-detail-images">
+                    <div class="product-thumbnails">
+                        <div class="thumbnail active" data-image="IMG_20250504_150241.jpg">
+                            <img src="IMG_20250504_150241.jpg" alt="Thumbnail 1">
+                        </div>
+                        <div class="thumbnail" data-image="Screenshot_20250504_140727.jpg">
+                            <img src="Screenshot_20250504_140727.jpg" alt="Thumbnail 2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right side: Product info -->
+            <div class="product-detail-right">
+                <div class="product-detail-info">
+                    <h1 class="product-title">Emerald Studs</h1>
+                    <div class="product-price">
+                        <span class="price-value">₹25999.00</span>
+                    </div>
+                    
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Brand:</span>
+                            <span class="meta-value">Auric</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Availability:</span>
+                            <span class="meta-value in-stock">In stock ✓</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">SKU:</span>
+                            <span class="meta-value">EM-ST-2025</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Category:</span>
+                            <span class="meta-value">Earrings</span>
+                        </div>
+                    </div>
+                    
+                    <div class="product-quantity">
+                        <button class="quantity-btn decrement">-</button>
+                        <input type="text" value="1" class="quantity-input" readonly>
+                        <button class="quantity-btn increment">+</button>
+                    </div>
+                    
+                    <div class="product-actions">
+                        <button class="add-to-cart-btn">ADD TO CART</button>
+                        <button class="buy-now-btn">BUY NOW</button>
+                        <button class="add-to-wishlist-btn"><i class="fas fa-heart"></i> ADD TO WISHLIST</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product details in horizontal layout below -->
+        <div class="product-details-horizontal">
+            <div class="product-description">
+                <h3>Product Description</h3>
+                <p>Handcrafted with precision, these exquisite emerald studs feature brilliant-cut natural emeralds set in 18-karat gold. The intense green color of these premium quality emeralds is perfectly complemented by the warm gold setting, creating a timeless accessory suitable for both everyday wear and special occasions.</p>
+            </div>
+            
+            <div class="product-specifications">
+                <h3>Specifications</h3>
+                <ul>
+                    <li><strong>Metal:</strong> 18-karat gold</li>
+                    <li><strong>Stone:</strong> Natural emerald</li>
+                    <li><strong>Stone Weight:</strong> 0.75 carats</li>
+                    <li><strong>Stone Cut:</strong> Brilliant</li>
+                    <li><strong>Stone Color:</strong> Intense green</li>
+                    <li><strong>Stone Clarity:</strong> VS</li>
+                    <li><strong>Dimensions:</strong> 6mm diameter</li>
+                </ul>
+            </div>
+            
+            <div class="product-care">
+                <h3>Care Instructions</h3>
+                <p>Store your emerald studs in a separate pouch to prevent scratches. Clean with a soft, damp cloth and mild soap. Avoid exposure to harsh chemicals and excessive sunlight. We recommend professional cleaning once a year.</p>
+            </div>
+        </div>
+        
+        <!-- You May Also Like Section -->
+        <section class="you-may-also-like full-width-section">
+            <div class="container">
+                <h2 class="section-title">You May Also Like</h2>
+            </div>
+            <div class="product-scroll-container">
+                <!-- Product Item 1 -->
+                <div class="product-item" data-product-id="SPST-07">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_145717.jpg" alt="Sapphire Studs">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        <div class="product-badge">SAVE 22%</div>
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name">Sapphire Studs</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹22499.00</span>
+                            <span class="original-price">₹28999.00</span>
+                            <span class="discount-tag">-22%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 2 -->
+                <div class="product-item" data-product-id="RBPN-08">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_145745.jpg" alt="Ruby Pendant">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        <div class="product-badge">SAVE 25%</div>
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name">Ruby Pendant</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹18999.00</span>
+                            <span class="original-price">₹25499.00</span>
+                            <span class="discount-tag">-25%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 3 -->
+                <div class="product-item" data-product-id="DMDE-09">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150226.jpg" alt="Diamond Earrings">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        <div class="product-badge">SAVE 30%</div>
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name">Diamond Earrings</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹34999.00</span>
+                            <span class="original-price">₹49999.00</span>
+                            <span class="discount-tag">-30%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 4 -->
+                <div class="product-item" data-product-id="PLNK-10">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150254.jpg" alt="Pearl Necklace">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        <div class="product-badge">SAVE 20%</div>
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name">Pearl Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹28999.00</span>
+                            <span class="original-price">₹36249.00</span>
+                            <span class="discount-tag">-20%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 5 -->
+                <div class="product-item" data-product-id="GLBR-11">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150322.jpg" alt="Gold Bracelet">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        <div class="product-badge">SAVE 20%</div>
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name">Gold Bracelet</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹42999.00</span>
+                            <span class="original-price">₹53749.00</span>
+                            <span class="discount-tag">-20%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Item 6 -->
+                <div class="product-item" data-product-id="SLAT-12">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150336.jpg" alt="Silver Anklet">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                        <div class="product-badge">SAVE 18%</div>
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-name">Silver Anklet</h3>
+                        <div class="product-pricing">
+                            <span class="current-price">₹15499.00</span>
+                            <span class="original-price">₹18999.00</span>
+                            <span class="discount-tag">-18%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+
+    <!-- Footer - Modern Redesign -->
+    <footer class="footer-modern">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-logo">
+                    <h2>Auric</h2>
+                    <p>Timeless Elegance, Modern Design</p>
+                </div>
+                
+                <div class="footer-newsletter-container">
+                    <h3>Subscribe For Updates</h3>
+                    <div class="newsletter-box">
+                        <form class="modern-newsletter-form">
+                            <input type="email" placeholder="Your email address">
+                            <button type="submit">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-widgets">
+                    <div class="footer-widget contact-widget">
+                            <h4>Contact</h4>
+                        <p><i class="fas fa-map-marker-alt"></i> 123 Fashion Street, City, Country</p>
+                        <p><i class="fas fa-phone"></i> 090003 95566</p>
+                        <p><i class="fas fa-envelope"></i> auric@gmail.com</p>
+                        
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-pinterest"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-widget">
+                        <h4>Shop</h4>
+                        <ul>
+                            <li><a href="#">Necklaces</a></li>
+                            <li><a href="#">Bracelets</a></li>
+                            <li><a href="#">Earrings</a></li>
+                            <li><a href="#">Rings</a></li>
+                            <li><a href="#">Anklets</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>Customer Care</h4>
+                        <ul>
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Returns & Exchanges</a></li>
+                            <li><a href="#">FAQs</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>About Us</h4>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            
+                            <li><a href="#">Testimonials</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-info">
+                    <div class="copyright">
+                        <p>&copy; 2025 Auric. All rights reserved. | Developed by <a href="https://savannaik.netlify.app/" target="_blank" style="color: #9c7c38; text-decoration: none; font-weight: 500;">Savan Naik</a></p>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Sitemap</a>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <span><i class="fab fa-cc-amex"></i></span>
+                        <!-- <span><i class="fab fa-apple-pay"></i></span>
+                        <span><i class="fab fa-cc-diners-club"></i></span>-->
+                        <span><i class="fab fa-cc-discover"></i></span>
+                        <span><i class="fab fa-google-pay"></i></span>
+                        <span><i class="fab fa-cc-mastercard"></i></span>
+                        <span><i class="fab fa-cc-paypal"></i></span>
+                        <span class="union-pay">UP</span>
+                        <span><i class="fab fa-cc-visa"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple Network Monitoring -->
+    <script>
+      // Network status monitoring
+      let isOnline = navigator.onLine;
+      window.addEventListener('online', () => {
+        console.log('Network connection restored');
+        isOnline = true;
+      });
+      window.addEventListener('offline', () => {
+        console.log('Network connection lost');
+        isOnline = false;
+      });
+    </script>
+
+
+    <script src="js/navigation.js?v=1.0.4"></script>
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+    <script src="js/product-gallery.js?v=1.0.1"></script>
+    
+    <!-- New Cart System -->
+    <script src="js/firebase/firebase-auth.js"></script>
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    <script src="js/cart-manager.js?v=1.0.1"></script>
+    
+    <!-- Wishlist Scripts -->
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Product Detail Page Cart Integration -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure Firebase is initialized before proceeding
+            // Wait a short time to ensure Firebase is properly initialized
+            setTimeout(function() {
+                // Get the product details
+                // Get the main product image
+                const productImageEl = document.querySelector('.main-image-container img');
+                const productImage = productImageEl ? productImageEl.src : '';
+                
+                const productDetails = {
+                    id: 'EM-ST-2025', // SKU as ID
+                    name: document.querySelector('.product-title').textContent,
+                    price: parseFloat(document.querySelector('.price-value').textContent.replace('₹', '').replace(',', '')),
+                    image: productImage,
+                };
+                
+                console.log('Product details loaded:', productDetails);
+                
+                // Check if the product is already in the wishlist 
+                // Keep this function but don't change the button appearance
+                function updateWishlistButtonState() {
+                    // We're keeping the function but not changing button appearance as requested
+                    console.log('Wishlist button will maintain its original appearance');
+                }
+                
+                // Initial update of wishlist button state
+                updateWishlistButtonState();
+                
+                // Get DOM elements
+                const addToCartBtn = document.querySelector('.add-to-cart-btn');
+                const addToWishlistBtn = document.querySelector('.add-to-wishlist-btn');
+                const quantityInput = document.querySelector('.quantity-input');
+                const incrementBtn = document.querySelector('.quantity-btn.increment');
+                const decrementBtn = document.querySelector('.quantity-btn.decrement');
+                // Get Buy Now button
+                const buyNowBtn = document.querySelector('.buy-now-btn');
+                
+                // Quantity controls
+                incrementBtn.addEventListener('click', function() {
+                    let currentQty = parseInt(quantityInput.value);
+                    quantityInput.value = currentQty + 1;
+                });
+                
+                decrementBtn.addEventListener('click', function() {
+                    let currentQty = parseInt(quantityInput.value);
+                    if (currentQty > 1) {
+                        quantityInput.value = currentQty - 1;
+                    }
+                });
+                
+                // Toast notification function
+                function showToast(message, type = 'success') {
+                    // Create toast container if it doesn't exist
+                    let toastContainer = document.querySelector('.toast-container');
+                    if (!toastContainer) {
+                        toastContainer = document.createElement('div');
+                        toastContainer.className = 'toast-container';
+                        document.body.appendChild(toastContainer);
+                        
+                        // Add style for toast container
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            .toast-container {
+                                position: fixed;
+                                bottom: 20px;
+                                right: 20px;
+                                z-index: 9999;
+                            }
+                            .toast {
+                                padding: 12px 20px;
+                                color: white;
+                                border-radius: 4px;
+                                margin-bottom: 10px;
+                                min-width: 250px;
+                                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                                opacity: 0;
+                                animation-fill-mode: forwards;
+                            }
+                            .toast.success {
+                                background-color: #4CAF50;
+                            }
+                            .toast.error {
+                                background-color: #F44336;
+                            }
+                            .toast.info {
+                                background-color: #2196F3;
+                            }
+                            @keyframes fadein {
+                                from {opacity: 0; transform: translateY(20px);}
+                                to {opacity: 1; transform: translateY(0);}
+                            }
+                            @keyframes fadeout {
+                                from {opacity: 1; transform: translateY(0);}
+                                to {opacity: 0; transform: translateY(-20px);}
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                    
+                    // Create toast element
+                    const toast = document.createElement('div');
+                    toast.className = `toast ${type}`;
+                    toast.textContent = message;
+                    
+                    // Add to container
+                    toastContainer.appendChild(toast);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                }
+                
+                // We already have a reference to buy now button from above
+                // No need to declare buyNowBtn again
+                
+                // Add to cart button click handler - fixed to prevent duplicate adds
+                let isAddingToCart = false; // Flag to prevent multiple simultaneous adds
+                addToCartBtn.addEventListener('click', async function() {
+                    // Prevent duplicate adds if a click is already being processed
+                    if (isAddingToCart) {
+                        console.log('Add to cart operation already in progress');
+                        return;
+                    }
+                    
+                    isAddingToCart = true; // Set flag to prevent duplicates
+                    const quantity = parseInt(quantityInput.value);
+                    
+                    try {
+                        // Check if CartManager is available
+                        if (typeof CartManager !== 'undefined' && CartManager.addToCart) {
+                            console.log('Using CartManager to add product to cart');
+                            await CartManager.addToCart(productDetails, quantity);
+                            showToast('Product added to cart successfully!');
+                        } else {
+                            console.error('CartManager not available');
+                            showToast('Error adding product to cart. Please try again.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error adding product to cart:', error);
+                        showToast('Error adding product to cart. Please try again.', 'error');
+                    } finally {
+                        // Always reset the flag when done
+                        isAddingToCart = false;
+                    }
+                });
+                
+                // Buy Now button click handler
+                let isBuyingNow = false; // Flag to prevent multiple simultaneous buys
+                if (buyNowBtn) {
+                    buyNowBtn.addEventListener('click', async function() {
+                    // Prevent duplicate operations if a click is already being processed
+                    if (isBuyingNow || isAddingToCart) {
+                        console.log('Buy now operation already in progress');
+                        return;
+                    }
+                    
+                    isBuyingNow = true; // Set flag to prevent duplicates
+                    const quantity = parseInt(quantityInput.value);
+                    
+                    try {
+                        // Check if CartManager is available
+                        if (typeof CartManager !== 'undefined' && CartManager.addToCart) {
+                            console.log('Using CartManager to add product to cart for buy now');
+                            await CartManager.addToCart(productDetails, quantity);
+                            
+                            // Redirect to checkout page
+                            console.log('Redirecting to checkout page');
+                            window.location.href = 'checkout.html';
+                        } else {
+                            console.error('CartManager not available for buy now');
+                            showToast('Error processing order. Please try again.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error in buy now flow:', error);
+                        showToast('Error processing order. Please try again.', 'error');
+                    } finally {
+                        // Always reset the flag when done
+                        isBuyingNow = false;
+                    }
+                    });
+                }
+                
+                // NOTE: The wishlist button click handler is managed by WishlistManager.js
+                // We're removing the duplicate event listener here to prevent conflicts
+                // The button will still work through the centralized WishlistManager
+            }, 500); // 500ms delay to ensure Firebase is loaded
+        });
+    </script>
+    <!-- Updated layout version -->
+    
+    <!-- Cart Panel -->
+    <div id="auricCartPanel" class="cart-panel" style="position:fixed !important; top:0 !important; right:-400px !important; width:400px !important; max-width:90% !important; height:100% !important; background:#ffffff !important; box-shadow:-2px 0 10px rgba(0,0,0,0.3) !important; z-index:999999 !important; transition:right 0.3s ease-in-out !important; display:flex !important; flex-direction:column !important; overflow:hidden !important; visibility:visible !important; pointer-events:auto !important;">
+      <div class="cart-panel-header">
+        <h3>Your Shopping Bag</h3>
+        <button class="close-cart-btn" onclick="closeCartDirectly(); return false;">×</button>
+      </div>
+      <div class="cart-items">
+        <!-- Cart items will be inserted here by JavaScript -->
+        <div class="empty-cart-message">Your cart is empty</div>
+      </div>
+      <div class="cart-panel-footer">
+        <div class="cart-panel-subtotal">
+          <span>Subtotal:</span>
+          <span class="subtotal-amount">₹0.00</span>
+        </div>
+        <div class="cart-panel-buttons">
+          <button class="view-cart-btn continue-shopping-btn" onclick="closeCartDirectly(); return false;">Continue Shopping</button>
+          <a href="checkout.html" class="checkout-btn">Checkout</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Ultra-direct Cart Overlay with ALL inline styles -->
+    <div id="auricCartOverlay" class="cart-overlay" onclick="closeCartDirectly(); return false;" style="position:fixed !important; top:0 !important; left:0 !important; width:100% !important; height:100% !important; background:rgba(0,0,0,0.5) !important; z-index:999998 !important; display:none !important; visibility:hidden !important;"></div>
+        <!-- Fix for closeCartDirectly error -->
+    <script>
+      // Define the missing closeCartDirectly function
+      window.closeCartDirectly = function() {
+        // Call the regular closeCart function
+        if (window.closeCart) {
+          return window.closeCart();
+        }
+      };
+    </script>
+</body>
+</html>

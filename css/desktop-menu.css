@@ -1,0 +1,160 @@
+/* Desktop Navigation Styles */
+.desktop-nav {
+    display: none; /* Hidden by default on mobile */
+}
+
+/* Desktop navigation for larger screens */
+@media (min-width: 992px) {
+    /* Container for nav */
+    .nav-container {
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        height: 70px;
+        background-color: #fff;
+        position: relative;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    /* Logo positioning */
+    .logo {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 24px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        z-index: 5;
+    }
+    
+    /* Left and right navigation sections */
+    .nav-left, .nav-right {
+        display: flex;
+        align-items: center;
+        z-index: 5;
+    }
+    
+    .nav-left {
+        margin-right: auto;
+    }
+    
+    .nav-right {
+        margin-left: auto;
+    }
+    
+    /* Desktop navigation styling */
+    .desktop-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        width: 100%;
+        border-bottom: 1px solid #f0f0f0;
+        height: 50px;
+        padding: 0;
+        position: relative;
+    }
+    
+    .desktop-nav .container {
+        padding: 0 20px;
+        display: flex;
+        width: 100%;
+    }
+    
+    .desktop-nav ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .desktop-nav li {
+        position: relative;
+        margin: 0 15px;
+        display: inline-flex;
+    }
+    
+    .desktop-nav li:first-child {
+        margin-left: 0;
+        margin-right: 25px;
+    }
+    
+    .desktop-nav a {
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+        padding: 15px 5px;
+        display: inline-block;
+        letter-spacing: 0.5px;
+        transition: color 0.3s ease;
+    }
+    
+    .desktop-nav a.brand-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #5E2900;
+        padding: 10px 15px;
+        margin-right: 20px;
+    }
+    
+    .desktop-nav a:hover {
+        color: #8B4513; /* SaddleBrown */
+    }
+    
+    /* Desktop dropdown menu */
+    .desktop-nav .dropdown {
+        position: relative;
+    }
+    
+    .desktop-nav .dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: #fff;
+        min-width: 200px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        z-index: 20;
+        padding: 10px 0;
+    }
+    
+    .desktop-nav .dropdown:hover .dropdown-content {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    .desktop-nav .dropdown-content a {
+        color: #333;
+        padding: 10px 20px;
+        display: block;
+        white-space: nowrap;
+        text-transform: none;
+        font-size: 14px;
+        font-weight: 400;
+    }
+    
+    .desktop-nav .dropdown-content a:hover {
+        background-color: #f9f9f9;
+    }
+    
+    /* Mobile menu button is hidden on desktop */
+    .nav-icon.menu-icon {
+        display: none;
+    }
+}
+
+/* Extra large screens - spread nav items more */
+@media (min-width: 1200px) {
+    .desktop-nav li {
+        margin: 0 20px;
+    }
+}

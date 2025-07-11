@@ -1,0 +1,291 @@
+/* Hero Video Section Styles */
+.hero-video {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+}
+
+.hero-bg-video {
+    width: 100%;
+    height: 60vh;
+    object-fit: cover;
+    display: block;
+}
+
+.hero-content-container {
+    width: 100%;
+    background-color: #ffeadc; /* Solid soft pink/beige background */
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.hero-content {
+    max-width: 800px;
+   margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: #3a3a3a;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.decorative-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+ /*  margin: 1.5rem 0;*/
+}
+
+.divider-line {
+    height: 1px;
+    width: 60px;
+    background-color: #b3946e; /* Gold color */
+    margin: 0 10px;
+}
+
+.divider-icon {
+    width: 35px;
+    height: 35px;
+    background-image: url('../images/divider-icon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.divider-icon-gold {
+    width: 60px;
+    height: 25px;
+    background-image: url('../images/divider-icon-gold.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  /*  margin: 0 auto;*/
+}
+
+.know-more-btn {
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #b3946e; /* Gold color */
+    border: 1px solid #b3946e;
+    background-color: transparent;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin: 1rem 0;
+}
+
+.know-more-btn:hover {
+    background-color: #b3946e;
+    color: white;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #3a3a3a;
+    color: #3a3a3a;
+    margin: 0 8px;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    background-color: #3a3a3a;
+    color: white;
+}
+
+/* Bride's Jewellery Section */
+.brides-jewellery {
+    padding: 2rem 0 4rem 0;
+    text-align: center;
+    position: relative;
+    background: linear-gradient(135deg, white 65%, #f8e3c8 40%);
+}
+
+.vamangam-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: #3a3a3a;
+  /*  margin-bottom: 0.5rem;*/
+}
+
+.bride-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-style: italic;
+    color: #3a3a3a;
+   margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.poetic-text {
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    color: #666;
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.numbered-products {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 7rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.product-image-container {
+    position: relative;
+    width: 280px;
+    height: 380px;
+    overflow: hidden;
+  /*  border-radius: 5px;*/
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.numbered-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.product-image-container:nth-child(1) {
+        transform: translateY(-15px);
+    }
+    
+    .product-image-container:nth-child(2) {
+        transform: translateY(15px);
+    }
+.product-image-container:hover .numbered-product-image {
+    transform: scale(1.05);
+}
+
+.product-number {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 36px;
+    height: 36px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #3a3a3a;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .numbered-products{
+        gap: 4rem;
+    }
+    .hero-bg-video {
+        height: 50vh;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .brides-jewellery {
+        background: linear-gradient(135deg, white 65%, #f8e3c8 40%);
+        padding: 1.5rem 0 3rem 0;
+    }
+    
+    .vamangam-title {
+        font-size: 2rem;
+    }
+    
+    .bride-subtitle {
+        font-size: 1.5rem;
+    }
+    
+    .poetic-text {
+        font-size: 1rem;
+        padding: 0 20px;
+    }
+    
+
+    
+    .product-image-container {
+        width: 200px;
+        height: 280px;
+    }
+    
+    .product-image-container:nth-child(1) {
+        transform: translateY(-15px);
+    }
+    
+    .product-image-container:nth-child(2) {
+        transform: translateY(15px);
+    }
+}
+
+@media (max-width: 576px) {
+    .numbered-products{
+        gap: 4rem;
+    }
+    .hero-bg-video {
+        height: 27vh;
+    }
+    
+    .hero-title {
+        font-size: 1.5rem;
+    }
+    
+    .divider-line {
+        width: 40px;
+    }
+    
+    .brides-jewellery {
+        background: linear-gradient(135deg, white 65%, #f8e3c8 40%);
+        padding: 1rem 0 3rem 0;
+    }
+    
+    .vamangam-title {
+        font-size: 1.8rem;
+    }
+    
+    .bride-subtitle {
+        font-size: 1.3rem;
+    }
+    
+
+    
+    .product-image-container {
+     /*   width: 150px;
+        height: 210px;*/
+
+        width: 180px;
+        height: 240px;
+    }
+    
+    .product-image-container:nth-child(1) {
+        transform: translateY(-10px);
+    }
+    
+    .product-image-container:nth-child(2) {
+        transform: translateY(10px);
+    }
+}

@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>My Profile - Auric - Timeless & Classic Jewellery</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpLGCJKypKP/lLCgB9MlH/lX+/Pvw2DNA" crossorigin="anonymous">
+    <!-- Fallback font awesome icons if CDN fails -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <link rel="stylesheet" href="css/navbar.css?v=1.1.1">
+    <link rel="stylesheet" href="css/cart.css?v=1.0.2">
+    <link rel="stylesheet" href="css/auth.css">
+    
+    <!-- Simple Initialization Script -->
+    <script>
+        // Simple script with no storage dependencies
+        (function() {
+            console.log('Flag check: No persistence needed');
+        })();
+    </script>
+    <style>
+      .profile-container {
+        max-width: 1000px;
+        margin: 50px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      .profile-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #c8a97e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        color: white;
+        font-size: 36px;
+      }
+      
+      .profile-info h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        margin: 0 0 5px 0;
+      }
+      
+      .profile-info p {
+        color: #777;
+        margin: 0;
+      }
+      
+      .profile-nav {
+        display: flex;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 30px;
+      }
+      
+      .profile-nav-item {
+        padding: 15px 20px;
+        font-family: 'Lato', sans-serif;
+        font-weight: 600;
+        color: #777;
+        cursor: pointer;
+      }
+      
+      .profile-nav-item.active {
+        color: #c8a97e;
+        border-bottom: 2px solid #c8a97e;
+      }
+      
+      .profile-section {
+        display: none;
+      }
+      
+      .profile-section.active {
+        display: block;
+      }
+      
+      .order-card {
+        border: 1px solid #eee;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 10px;
+      }
+      
+      .order-id {
+        font-weight: bold;
+      }
+      
+      .order-date {
+        color: #777;
+      }
+      
+      .order-item {
+        display: flex;
+        padding: 10px 0;
+      }
+      
+      .order-item-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        margin-right: 15px;
+      }
+      
+      .order-item-details h4 {
+        margin: 0 0 5px 0;
+      }
+      
+      .order-item-price {
+        color: #c8a97e;
+        font-weight: bold;
+      }
+      
+      .order-item-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-top: 5px;
+      }
+      
+      .order-item-quantity {
+        color: #777;
+        font-size: 0.9em;
+        background-color: #f5f5f5;
+        padding: 2px 8px;
+        border-radius: 12px;
+      }
+      
+      .order-total {
+        text-align: right;
+        font-weight: bold;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+        margin-top: 10px;
+      }
+      
+      .address-card, .payment-card {
+        border: 1px solid #eee;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      
+      .address-header, .payment-header {
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 10px;
+      }
+      
+      .address-title, .payment-title {
+        font-weight: bold;
+      }
+      
+      .address-actions a, .payment-actions a {
+        color: #c8a97e;
+        text-decoration: none;
+        margin-left: 10px;
+      }
+      
+      .logout-button {
+        background-color: #c8a97e;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-family: 'Lato', sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 20px;
+      }
+      
+      .logout-button:hover {
+        background-color: #b39063;
+      }
+
+      .error-message {
+        background-color: #fdecea;
+        color: #e74c3c;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid #f5c6cb;
+      }
+
+      .empty-section-message {
+        text-align: center;
+        color: #777;
+        margin: 30px 0;
+        font-style: italic;
+      }
+
+      .shop-now-button {
+        display: inline-block;
+        background-color: #c8a97e;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+      }
+
+      .shop-now-button:hover {
+        background-color: #b39063;
+        color: white;
+        text-decoration: none;
+      }
+
+      .avatar-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+        <!-- Promo Banner -->
+        <div class="promo-banner">
+            <button class="banner-arrow banner-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <p>Save 21% on exclusive selections - <a href="#">Shop Now</a></p>
+            <button class="banner-arrow banner-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <!-- New Responsive Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <!-- Logo -->
+                <a href="index.html" class="brand">SP Jewellers</a>
+                
+                
+                <!-- Mobile Toggle Button - Match RIDHI MEHRA design -->
+                <div class="hamburger" id="navToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="nav-menu" id="navMenu">
+                    <!-- Close button for mobile menu in the top right corner -->
+                    <button class="close-menu" id="closeMenu">×</button>
+                    
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="#"class="nav-link">New Arrivals</a></li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Collection <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Necklace</a></li>
+                                <li><a href="#">Bangles</a></li>
+                                <li><a href="#">Earrings</a></li>
+                                <li><a href="#">Ring</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Testimonials</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Order Track</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                    </ul>
+                    
+                    <!-- Mobile account links in separate div after Contact -->
+                    <div class="mobile-account-links mobile-special">
+                        <a href="#" class="mobile-account-link">
+                            <i class="fas fa-user"></i> Account
+                        </a>
+                        <a href="#" class="mobile-account-link wishlist-toggle">
+                            <i class="fas fa-heart"></i> Wishlist (<span class="mobile-wishlist-count">0</span>)
+                        </a>
+                        <a href="#" class="mobile-account-link mobile-cart-toggle">
+                            <i class="fas fa-shopping-bag"></i> Shopping Bag (<span class="mobile-cart-count">0</span>)
+                        </a>
+                    
+                    </div>
+                </div>
+                
+                <!-- Navigation Icons - Exact match to RIDHI MEHRA design -->
+                <div class="nav-icons">
+                    <a href="#" class="icon-link search-icon">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <a href="#" class="icon-link account-icon" id="user-icon">
+                        <i class="far fa-user"></i>
+                    </a>
+                    <a href="#" class="icon-link wishlist-icon-container">
+                        <i class="far fa-heart"></i>
+                        <div class="wishlist-count">0</div>
+                    </a>
+                    <a href="#" class="icon-link cart-icon-container cart-toggle" id="cartToggleButton">
+                        <i class="fas fa-shopping-bag"></i>
+                        <div class="cart-count">0</div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Overlay for menu background -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Hero Section with Slider -->
+    <!-- Profile Section -->
+    <section class="profile-container">
+        <!-- Error message container -->
+        <div id="error-message" class="error-message" style="display: none; margin-bottom: 20px; text-align: center; color: #e74c3c; padding: 10px; border-radius: 4px; background-color: #fdecea;"></div>
+        
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">A</div>
+            <div class="profile-info">
+                <h1 id="profileName">Loading...</h1>
+                <p id="profileEmail">Loading...</p>
+            </div>
+        </div>
+        
+        <div class="profile-nav">
+            <div class="profile-nav-item active" data-target="orders">My Orders</div>
+            <div class="profile-nav-item" data-target="addresses">Addresses</div>
+            <div class="profile-nav-item" data-target="payments">Payment Methods</div>
+            <div class="profile-nav-item" data-target="settings">Account Settings</div>
+        </div>
+        
+        <div class="profile-section active" id="orders">
+            <h2>My Orders</h2>
+            <div class="loading-message" style="text-align: center; color: #777; margin: 30px 0;">
+                Loading your orders...
+            </div>
+        </div>
+        
+        <div class="profile-section" id="addresses">
+            <h2>My Addresses</h2>
+            <div class="address-card">
+                <div class="address-header">
+                    <span class="address-title">Home Address</span>
+                    <div class="address-actions">
+                        <a href="#">Edit</a>
+                        <a href="#">Delete</a>
+                    </div>
+                </div>
+                <p>123 Main Street<br>Apartment 4B<br>Mumbai, 400001<br>India</p>
+            </div>
+            
+            <div class="address-card">
+                <div class="address-header">
+                    <span class="address-title">Office Address</span>
+                    <div class="address-actions">
+                        <a href="#">Edit</a>
+                        <a href="#">Delete</a>
+                    </div>
+                </div>
+                <p>456 Business Park<br>Building C, Floor 5<br>Delhi, 110001<br>India</p>
+            </div>
+        </div>
+        
+        <div class="profile-section" id="payments">
+            <h2>Payment Methods</h2>
+            <div class="payment-card">
+                <div class="payment-header">
+                    <span class="payment-title">Credit Card</span>
+                    <div class="payment-actions">
+                        <a href="#">Edit</a>
+                        <a href="#">Delete</a>
+                    </div>
+                </div>
+                <p>XXXX XXXX XXXX 1234<br>Expiry: 05/28</p>
+            </div>
+            
+            <div class="payment-card">
+                <div class="payment-header">
+                    <span class="payment-title">Debit Card</span>
+                    <div class="payment-actions">
+                        <a href="#">Edit</a>
+                        <a href="#">Delete</a>
+                    </div>
+                </div>
+                <p>XXXX XXXX XXXX 5678<br>Expiry: 09/26</p>
+            </div>
+        </div>
+        
+        <div class="profile-section" id="settings">
+            <h2>Account Settings</h2>
+            <button id="logout-button" class="logout-button">Log Out</button>
+        </div>
+    </section>
+
+    <!-- Footer - Modern Redesign -->
+    <footer class="footer-modern" style="margin-top: 0;">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-logo">
+                    <h2>SP Jewellers</h2>
+                    <p>Timeless Elegance, Modern Design</p>
+                </div>
+                
+                <div class="footer-newsletter-container">
+                    <h3>Subscribe For Updates</h3>
+                    <div class="newsletter-box">
+                        <form class="modern-newsletter-form">
+                            <input type="email" placeholder="Your email address">
+                            <button type="submit">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-main">
+            <div class="container">
+                        <div class="footer-widgets">
+                    <div class="footer-widget contact-widget">
+                            <h4>Contact</h4>
+                        <p><i class="fas fa-map-marker-alt"></i> 123 Fashion Street, City, Country</p>
+                        <p><i class="fas fa-phone"></i> 099990 68838</p>
+                        <p><i class="fas fa-envelope"></i> spjewellers@yahoo.co.in</p>
+                        
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-pinterest"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-widget">
+                        <h4>Shop</h4>
+                        <ul>
+                            <li><a href="#">Necklaces</a></li>
+                            <li><a href="#">Bracelets</a></li>
+                            <li><a href="#">Earrings</a></li>
+                            <li><a href="#">Rings</a></li>
+                            <li><a href="#">Anklets</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>Customer Care</h4>
+                        <ul>
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Returns & Exchanges</a></li>
+                            <li><a href="#">FAQs</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-widget">
+                        <h4>About Us</h4>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            
+                            <li><a href="#">Testimonials</a></li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-info">
+                    <div class="copyright">
+                        <p>&copy; 2025 SP Jewellers. All rights reserved. | Developed by <a href="https://savannaik.netlify.app/" target="_blank" style="color: #9c7c38; text-decoration: none; font-weight: 500;">Savan Naik</a></p>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="reset-cart-flags-simplified.html">Reset Cart</a>
+                        <a href="reset-flags-simplified.html">Reset System</a>
+                        <a href="#">Sitemap</a>
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <span><i class="fab fa-cc-amex"></i></span>
+                       <!-- <span><i class="fab fa-apple-pay"></i></span>
+                        <span><i class="fab fa-cc-diners-club"></i></span>-->
+                        <span><i class="fab fa-cc-discover"></i></span>
+                        <span><i class="fab fa-google-pay"></i></span>
+                        <span><i class="fab fa-cc-mastercard"></i></span>
+                        <span><i class="fab fa-cc-paypal"></i></span>
+                        <span class="union-pay">UP</span>
+                        <span><i class="fab fa-cc-visa"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Navigation script -->
+    <script src="js/navigation.js?v=1.0.4"></script>
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+        authDomain: "auric-a0c92.firebaseapp.com",
+        projectId: "auric-a0c92",
+        storageBucket: "auric-a0c92.appspot.com",
+        messagingSenderId: "878979958342",
+        appId: "1:878979958342:web:e6092f7522488d21eaec47",
+        measurementId: "G-ZYZ750JHMB"
+      };
+    </script>
+    
+    <!-- Firebase Initialization Module -->
+    <script src="js/firebase/firebase-init.js"></script>
+    
+    <!-- Firebase Auth Global Module -->
+    <script src="js/firebase/firebase-auth.js"></script>
+    
+    <!-- Firebase Orders Module -->
+    <script src="js/firebase/firebase-orders.js"></script>
+    
+    <!-- Cart System -->
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    <script src="js/cart-manager.js?v=1.0.1"></script>
+    
+    <!-- Wishlist Scripts -->
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Profile Script -->
+    <script>
+      
+      // DOM elements for profile sections
+      const profileName = document.getElementById('profileName');
+      const profileEmail = document.getElementById('profileEmail');
+      const profileAvatar = document.getElementById('profileAvatar');
+      
+      // Main initialization
+      document.addEventListener('DOMContentLoaded', () => {
+        // Initialize Firebase first
+        setTimeout(() => {
+          initializeProfile();
+        }, 100);
+      });
+
+      function initializeProfile() {
+        // Check if Firebase is properly initialized
+        if (!window.firebase) {
+          console.error('Firebase not loaded');
+          showError('Failed to initialize. Please refresh the page.');
+          return;
+        }
+
+        // Wait for Firebase auth to be ready
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            console.log("Auth state: user is signed in:", user.uid);
+            loadUserProfile(user);
+            setupProfilePage();
+          } else {
+            console.log("Auth state: user is signed out");
+            // Check session as fallback
+            const session = FirebaseAuth && FirebaseAuth.getSession();
+            if (session && session.uid && session.loggedIn) {
+              console.log("Found user in session, attempting to restore auth");
+              // Try to restore auth state or redirect to login
+              setTimeout(() => {
+                if (!firebase.auth().currentUser) {
+                  window.location.href = "login.html";
+                }
+              }, 1000);
+            } else {
+              console.log("No authenticated user found, redirecting to login");
+              window.location.href = "login.html";
+            }
+          }
+        });
+      }
+      
+      // Load user profile data
+      async function loadUserProfile(userOrUserId) {
+        let userId;
+        let currentUser;
+        
+        // Handle both user object and string userId
+        if (typeof userOrUserId === 'string') {
+          userId = userOrUserId;
+          currentUser = firebase.auth().currentUser;
+        } else if (userOrUserId && userOrUserId.uid) {
+          userId = userOrUserId.uid;
+          currentUser = userOrUserId;
+        } else {
+          currentUser = firebase.auth().currentUser;
+          if (currentUser) {
+            userId = currentUser.uid;
+          }
+        }
+        
+        // If we still don't have a user ID, redirect to login
+        if (!userId) {
+          console.error("No valid user ID found");
+          window.location.href = "login.html";
+          return;
+        }
+        
+        console.log("Loading profile for user:", userId);
+        
+        try {
+          // Try to get user profile directly from Firestore
+          const userDoc = await firebase.firestore().collection("users").doc(userId).get();
+          
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            console.log("User profile loaded from Firestore:", userData);
+            
+            // Display user information
+            displayUserInfo(userData);
+            
+            // Load user orders
+            await loadUserOrders(userId);
+            
+            // Display addresses and payment methods
+            displayUserAddresses(userData.addresses || []);
+            displayPaymentMethods(userData.paymentMethods || []);
+          } else {
+            // Profile doesn't exist, create one
+            console.log("Creating new user profile in Firestore...");
+            
+            if (currentUser) {
+              const nameFromEmail = currentUser.email ? currentUser.email.split('@')[0] : '';
+              const userData = {
+                uid: currentUser.uid,
+                email: currentUser.email,
+                displayName: currentUser.displayName || nameFromEmail || 'User',
+                photoURL: currentUser.photoURL,
+                createdAt: firebase.firestore.Timestamp.now(),
+                updatedAt: firebase.firestore.Timestamp.now(),
+                addresses: [],
+                paymentMethods: []
+              };
+              
+              // Create user profile in Firestore
+              await firebase.firestore().collection("users").doc(currentUser.uid).set(userData);
+              
+              console.log("Successfully created user profile");
+              displayUserInfo(userData);
+              displayUserAddresses([]);
+              displayPaymentMethods([]);
+              displayEmptyOrdersSection();
+            } else {
+              console.error("No current user available for profile creation");
+              showError("Session error. Please log in again.");
+              setTimeout(() => window.location.href = "login.html", 2000);
+            }
+          }
+        } catch (error) {
+          console.error("Error loading profile:", error);
+          
+          // Handle permission denied errors specifically
+          if (error.code === 'permission-denied') {
+            console.error("Permission denied - user may not be properly authenticated");
+            showError("Access denied. Please log in again.");
+            // Clear any stale auth data and redirect
+            if (FirebaseAuth && FirebaseAuth.clearSession) {
+              FirebaseAuth.clearSession();
+            }
+            setTimeout(() => window.location.href = "login.html", 2000);
+          } else if (error.code === 'unavailable') {
+            showError("Service temporarily unavailable. Please try again.");
+            addRetryButton();
+          } else {
+            showError("Failed to load profile. Please try again.");
+            addRetryButton();
+          }
+        }
+      }
+
+      function addRetryButton() {
+        const errorMsg = document.getElementById('error-message');
+        if (errorMsg && !errorMsg.querySelector('#retry-profile-load')) {
+          errorMsg.innerHTML += '<br><button id="retry-profile-load" class="auth-button" style="margin-top:10px; width:auto; padding:5px 10px;">Retry</button>';
+          
+          setTimeout(() => {
+            const retryBtn = document.getElementById('retry-profile-load');
+            if (retryBtn) {
+              retryBtn.addEventListener('click', () => {
+                window.location.reload();
+              });
+            }
+          }, 100);
+        }
+      }
+      
+      // Display empty orders section
+      function displayEmptyOrdersSection() {
+        const ordersContainer = document.getElementById('orders');
+        if (ordersContainer) {
+          ordersContainer.innerHTML = `
+            <h2>My Orders</h2>
+            <p class="empty-section-message">You haven't placed any orders yet.</p>
+            <a href="index.html" class="shop-now-button">Start Shopping</a>
+          `;
+        }
+      }
+      
+      // Display user information on the profile page
+      function displayUserInfo(profile) {
+        // Use email as fallback if no display name, and extract name part from email
+        const nameFromEmail = profile.email ? profile.email.split('@')[0] : '';
+        const displayName = profile.displayName || nameFromEmail || 'User';
+        
+        if (profileName) {
+          profileName.textContent = displayName;
+        }
+        
+        if (profileEmail) {
+          profileEmail.textContent = profile.email || '';
+        }
+        
+        if (profileAvatar) {
+          if (profile.photoURL) {
+            // If user has a photo URL, display it
+            profileAvatar.innerHTML = `<img src="${profile.photoURL}" alt="${displayName}" class="avatar-image">`;
+          } else {
+            // Show the first letter of their name or email
+            profileAvatar.textContent = displayName.charAt(0).toUpperCase();
+          }
+        }
+      }
+      
+      // Load and display user orders
+      async function loadUserOrders(userId) {
+        const ordersContainer = document.getElementById('orders');
+        if (!ordersContainer) return;
+        
+        // Clear container and add heading
+        ordersContainer.innerHTML = '<h2>My Orders</h2>';
+        
+        if (!userId) {
+          console.error("No user ID provided for loading orders");
+          displayEmptyOrdersSection();
+          return;
+        }
+        
+        try {
+          // Get orders from Firestore at path: users/{userId}/orders
+          const ordersSnapshot = await firebase.firestore()
+            .collection("users")
+            .doc(userId)
+            .collection("orders")
+            .orderBy("timestamp", "desc")
+            .get();
+          
+          if (ordersSnapshot.empty) {
+            displayEmptyOrdersSection();
+            return;
+          }
+          
+          const orders = ordersSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          
+          console.log(`Loaded ${orders.length} orders for user`);
+          
+          // Display each order
+          orders.forEach(order => {
+            // Format date for display
+            let orderDate;
+            if (order.timestamp && order.timestamp.seconds) {
+              orderDate = new Date(order.timestamp.seconds * 1000);
+            } else if (order.timestamp && typeof order.timestamp === 'string') {
+              orderDate = new Date(order.timestamp);
+            } else if (order.orderDate) {
+              orderDate = new Date(order.orderDate);
+            } else {
+              orderDate = new Date();
+            }
+            
+            const formattedDate = orderDate.toLocaleDateString('en-US', {
+              year: 'numeric', month: 'long', day: 'numeric'
+            });
+            
+            let orderHTML = `
+              <div class="order-card">
+                <div class="order-header">
+                  <span class="order-id">Order #${order.orderId || order.orderReference || order.id}</span>
+                  <span class="order-date">${formattedDate}</span>
+                </div>
+            `;
+            
+            // Add order items
+            const items = order.products || order.items || [];
+            if (items.length > 0) {
+              items.forEach(item => {
+                orderHTML += `
+                  <div class="order-item">
+                    <img src="${item.image || '/images/newarrivals/IMG_20250504_150241.jpg'}" 
+                        alt="${item.name || 'Product'}" 
+                        class="order-item-image"
+                        onerror="this.src='/images/newarrivals/IMG_20250504_150241.jpg';">
+                    <div class="order-item-details">
+                      <h4>${item.name || 'Product'}</h4>
+                      <div class="order-item-info">
+                        <span class="order-item-price">₹${parseFloat(item.price || 0).toFixed(2)}</span>
+                        ${item.quantity ? `<span class="order-item-quantity">Qty: ${item.quantity}</span>` : ''}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              });
+            }
+            
+            // Add order total
+            const orderTotal = parseFloat(order.orderTotal || order.total || 0).toFixed(2);
+            orderHTML += `
+                <div class="order-total">Total: ₹${orderTotal}</div>
+              </div>
+            `;
+            
+            ordersContainer.insertAdjacentHTML('beforeend', orderHTML);
+          });
+          
+        } catch (error) {
+          console.error("Error loading orders:", error);
+          
+          if (error.code === 'permission-denied') {
+            ordersContainer.innerHTML = `
+              <h2>My Orders</h2>
+              <p class="error-message">Unable to access order history. Please log in again.</p>
+            `;
+          } else {
+            ordersContainer.innerHTML = `
+              <h2>My Orders</h2>
+              <p class="error-message">Failed to load orders. Please try again later.</p>
+            `;
+          }
+        }
+      }
+      
+      // Display user addresses
+      function displayUserAddresses(addresses) {
+        const addressesContainer = document.getElementById('addresses');
+        if (!addressesContainer) return;
+        
+        // Preserve the heading
+        const heading = addressesContainer.querySelector('h2');
+        addressesContainer.innerHTML = '';
+        if (heading) addressesContainer.appendChild(heading);
+        
+        if (!addresses || addresses.length === 0) {
+          addressesContainer.insertAdjacentHTML('beforeend', `
+            <p class="empty-section-message">You haven't added any addresses yet.</p>
+          `);
+        } else {
+          // Display each address
+          addresses.forEach(address => {
+            const addressHTML = `
+              <div class="address-card" data-address-id="${address.id}">
+                <div class="address-header">
+                  <span class="address-title">${address.name || 'Address'}</span>
+                  <div class="address-actions">
+                    <a href="#" class="edit-address" data-address-id="${address.id}">Edit</a>
+                    <a href="#" class="delete-address" data-address-id="${address.id}">Delete</a>
+                  </div>
+                </div>
+                <p>${address.street || ''}<br>
+                ${address.city || ''}, ${address.state || ''} ${address.postalCode || ''}<br>
+                ${address.country || ''}</p>
+              </div>
+            `;
+            
+            addressesContainer.insertAdjacentHTML('beforeend', addressHTML);
+          });
+        }
+        
+        // Add new address button
+        addressesContainer.insertAdjacentHTML('beforeend', `
+          <button id="add-address-btn" class="btn-primary">Add New Address</button>
+        `);
+      }
+      
+      // Display payment methods
+      function displayPaymentMethods(paymentMethods) {
+        const paymentsContainer = document.getElementById('payments');
+        if (!paymentsContainer) return;
+        
+        // Preserve the heading
+        const heading = paymentsContainer.querySelector('h2');
+        paymentsContainer.innerHTML = '';
+        if (heading) paymentsContainer.appendChild(heading);
+        
+        if (!paymentMethods || paymentMethods.length === 0) {
+          paymentsContainer.insertAdjacentHTML('beforeend', `
+            <p class="empty-section-message">You haven't added any payment methods yet.</p>
+          `);
+        } else {
+          // Display each payment method
+          paymentMethods.forEach(payment => {
+            const paymentHTML = `
+              <div class="payment-card" data-payment-id="${payment.id}">
+                <div class="payment-header">
+                  <span class="payment-title">${payment.type || 'Card'}</span>
+                  <div class="payment-actions">
+                    <a href="#" class="delete-payment" data-payment-id="${payment.id}">Delete</a>
+                  </div>
+                </div>
+                <p>XXXX XXXX XXXX ${payment.last4 || '****'}<br>
+                Expiry: ${payment.expiryMonth || 'MM'}/${payment.expiryYear || 'YY'}</p>
+              </div>
+            `;
+            
+            paymentsContainer.insertAdjacentHTML('beforeend', paymentHTML);
+          });
+        }
+        
+        // Add new payment method button
+        paymentsContainer.insertAdjacentHTML('beforeend', `
+          <button id="add-payment-btn" class="btn-primary">Add Payment Method</button>
+        `);
+      }
+      
+      // Set up profile page functionality
+      function setupProfilePage() {
+        // Profile navigation tabs
+        const profileNavItems = document.querySelectorAll('.profile-nav-item');
+        const profileSections = document.querySelectorAll('.profile-section');
+        
+        profileNavItems.forEach(item => {
+          item.addEventListener('click', function() {
+            // Remove active class from all items
+            profileNavItems.forEach(navItem => navItem.classList.remove('active'));
+            profileSections.forEach(section => section.classList.remove('active'));
+            
+            // Add active class to clicked item
+            this.classList.add('active');
+            
+            // Show corresponding section
+            const targetSection = document.getElementById(this.dataset.target);
+            if (targetSection) {
+              targetSection.classList.add('active');
+            }
+          });
+        });
+        
+        // Logout functionality
+        const logoutButton = document.getElementById('logout-button');
+        if (logoutButton) {
+          logoutButton.addEventListener('click', logoutUser);
+        }
+      }
+      
+      // Logout function
+      async function logoutUser() {
+        try {
+          // Sign out with Firebase
+          await firebase.auth().signOut();
+          
+          // Clear session data
+          FirebaseAuth.clearSession();
+          
+          // Redirect to login
+          window.location.href = 'login.html';
+        } catch (error) {
+          console.error("Logout error:", error);
+          showError("An error occurred during logout. Please try again.");
+        }
+      }
+      
+      // Show error message
+      function showError(message) {
+        // Try to show error in the UI first
+        const errorElement = document.getElementById('error-message');
+        if (errorElement) {
+          errorElement.innerHTML = message;
+          errorElement.style.display = 'block';
+          
+          // Scroll to the top of the page to make sure error is visible
+          window.scrollTo(0, 0);
+          
+          // Hide error after some time (unless it contains a button)
+          if (!message.includes('button')) {
+            setTimeout(() => {
+              errorElement.style.display = 'none';
+            }, 8000);
+          }
+        } else {
+          // Fallback to alert if no error element is available
+          alert(message);
+        }
+      }
+    </script>
+    
+    <!-- Add spinner and notification styles -->
+    <style>
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #333;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s, transform 0.3s;
+      }
+      
+      .notification.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .notification.success {
+        background-color: #4CAF50;
+      }
+      
+      .notification.error {
+        background-color: #F44336;
+      }
+    </style>
+    
+    <!-- Cart Panel -->
+    <div id="auricCartPanel" class="cart-panel" style="position:fixed !important; top:0 !important; right:-400px !important; width:400px !important; max-width:90% !important; height:100% !important; background:#ffffff !important; box-shadow:-2px 0 10px rgba(0,0,0,0.3) !important; z-index:999999 !important; transition:right 0.3s ease-in-out !important; display:flex !important; flex-direction:column !important; overflow:hidden !important; visibility:visible !important; pointer-events:auto !important;">
+      <div class="cart-panel-header">
+        <h3>Your Shopping Bag</h3>
+        <button class="close-cart-btn" onclick="closeCartDirectly(); return false;">×</button>
+      </div>
+      <div class="cart-items">
+        <!-- Cart items will be inserted here by JavaScript -->
+        <div class="empty-cart-message">Your cart is empty</div>
+      </div>
+      <div class="cart-panel-footer">
+        <div class="cart-panel-subtotal">
+          <span>Subtotal:</span>
+          <span class="subtotal-amount">₹0.00</span>
+        </div>
+        <div class="cart-panel-buttons">
+          <button class="view-cart-btn continue-shopping-btn" onclick="closeCartDirectly(); return false;">Continue Shopping</button>
+          <a href="checkout.html" class="checkout-btn">Checkout</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Ultra-direct Cart Overlay with ALL inline styles -->
+    <div id="auricCartOverlay" class="cart-overlay" onclick="closeCartDirectly(); return false;" style="position:fixed !important; top:0 !important; left:0 !important; width:100% !important; height:100% !important; background:rgba(0,0,0,0.5) !important; z-index:999998 !important; display:none !important; visibility:hidden !important;"></div>
+  </body>
+  <!-- Fix for closeCartDirectly error -->
+  <script>
+    // Define the missing closeCartDirectly function
+    window.closeCartDirectly = function() {
+      // Call the regular closeCart function
+      if (window.closeCart) {
+        return window.closeCart();
+      }
+    };
+  </script>
+</html>

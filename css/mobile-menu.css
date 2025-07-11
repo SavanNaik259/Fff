@@ -1,0 +1,351 @@
+/* Mobile Menu Styles - Exactly Matching Screenshot */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 70%; /* Changed back to 70% width for mobile menu */
+    height: 100vh;
+    background-color: white;
+    z-index: 1000;
+    overflow: hidden; /* Changed from overflow-y: auto to hidden */
+    transform: translateX(-100%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    font-family: 'Lato', sans-serif;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    will-change: transform; /* Performance optimization */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+    box-shadow: 5px 0 25px rgba(0,0,0,0.15);
+}
+
+/* Desktop version of mobile menu */
+@media (min-width: 992px) {
+    .mobile-menu {
+        width: 350px; /* Fixed width for desktop */
+        max-width: 350px;
+    }
+}
+
+/* Submenu View Transition Styles - Exact Match to Screenshot */
+.submenu-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    overflow-y: auto;
+    z-index: 5;
+    will-change: transform, opacity; /* Performance optimization */
+}
+
+.submenu-view.active {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Menu Header with X button - Exact match to screenshot */
+.menu-header {
+    padding: 15px 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    height: 50px; /* Matches screenshot exactly */
+}
+
+.menu-close {
+    background: none;
+    border: none;
+    font-size: 34px; /* Even larger X */
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+    position: absolute;
+    left: 20px; /* Positioned on the left side exactly like screenshot */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+    font-weight: 300; /* Slightly thinner for better aesthetics */
+}
+
+.menu-close:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.menu-header-title {
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0;
+    padding-left: 40px;
+}
+
+.back-link {
+    display: flex;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    font-family: 'Lato', sans-serif;
+}
+
+.back-link i {
+    margin-right: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Main Menu List */
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 100px 0; /* Space for menu footer (2 items) */
+}
+
+.menu-item {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Main Menu Links - Exact Match to Screenshot */
+.menu-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px; /* Exactly as in screenshot */
+    color: #333;
+    text-decoration: none;
+    font-size: 16px; /* Exactly as in screenshot */
+    font-weight: 400;
+    transition: background-color 0.2s ease;
+    word-spacing: 0.5px; /* Improved readability */
+    letter-spacing: 0.2px; /* Subtle spacing between characters */
+}
+
+.menu-link.active {
+    color: #333;
+}
+
+.menu-link span {
+    flex: 1;
+}
+
+.menu-link i {
+    color: #999; /* Lighter color as in screenshot */
+    font-size: 14px; /* Size from screenshot */
+    transition: all 0.3s ease;
+    margin-right: 0; /* No right margin */
+}
+
+.menu-link i.fa-chevron-minus {
+    transform: rotate(180deg);
+}
+
+/* Category Header in Submenu View - Exact match to screenshot */
+.category-header {
+    font-size: 16px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 0;
+    font-weight: normal;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Lato', sans-serif;
+}
+
+.category-header i {
+    font-size: 12px;
+    color: #999;
+    transition: transform 0.3s ease;
+}
+
+.category-header i.fa-chevron-down {
+    transform: rotate(0deg);
+}
+
+.category-header i.fa-chevron-right {
+    transform: rotate(0deg);
+}
+
+/* Submenu styles */
+.submenu {
+    max-height: 0;
+    overflow: hidden;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transition: max-height 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease, padding 0.2s ease;
+    opacity: 0;
+    will-change: max-height, opacity;
+}
+
+.submenu.active {
+    max-height: 500px; /* Large enough to show all content */
+    opacity: 1;
+    transition: max-height 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.4s ease;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.submenu-item {
+    border-bottom: none;
+}
+
+.submenu-item:last-child {
+    border-bottom: none;
+}
+
+.submenu-link {
+    display: block;
+    padding: 12px 20px;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    transition: background-color 0.2s ease;
+    line-height: 1.5;
+    border-bottom: none;
+}
+
+/* Footer items at bottom of the menu - Exact match to screenshot */
+.menu-bottom-items {
+    position: relative;
+    margin-top: auto;
+    width: 100%;
+    background-color: white;
+    border-top: 1px solid #f0f0f0;
+    padding-bottom: 20px; /* Space at bottom of menu */
+}
+
+.login-footer-link {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    color: #333;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.login-footer-link i {
+    margin-right: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.currency-footer-selector {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    color: #333;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.currency-footer-selector i {
+    margin-left: 10px;
+    color: #999;
+    font-size: 12px;
+}
+
+/* Media queries for responsiveness - Mobile First Approach */
+/* Small phones (up to 480px) */
+@media (max-width: 480px) {
+    .mobile-menu {
+        width: 70%;
+    }
+    .menu-footer {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .login-link, .currency-selector {
+        display: flex;
+        padding: 16px 20px;
+        font-size: 14px; /* Slightly larger for better visibility */
+    }
+}
+
+/* Tablets (481px to 991px) */
+@media (min-width: 481px) and (max-width: 991px) {
+    .mobile-menu {
+        width: 70%;
+    }
+    .menu-footer {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .login-link, .currency-selector {
+        display: flex;
+        padding: 16px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Desktop (992px and above) */
+@media (min-width: 992px) {
+    .mobile-menu {
+        width: 350px;
+    }
+    .menu-footer {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .login-link, .currency-selector {
+        display: flex;
+        padding: 16px 20px;
+        font-size: 14px;
+    }
+    
+    /* Desktop specific adjustments */
+    .desktop-nav {
+        display: flex;
+    }
+}
+
+/* Darkened overlay behind the menu */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+.menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}

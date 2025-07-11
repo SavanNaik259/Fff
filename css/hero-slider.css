@@ -1,0 +1,302 @@
+/* Hero Slider Section - Exact match to RIDHI MEHRA design */
+.hero-slider {
+    position: relative;
+    height: 90vh !important;
+    min-height: 90vh !important;
+    overflow: hidden;
+    background-color: #f8f8f5;
+  /*  margin: 20px 40px;
+    max-width: calc(100% - 80px);*/
+    margin: 5px 0px;
+        max-width: calc(100% - 0px);
+}
+
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 90vh;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.slide-content {
+    position: absolute;
+    bottom: 180px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    text-align: center;
+    color: white;
+    max-width: 500px;
+    padding: 0 30px;
+}
+
+.slide-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    margin: 0;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    margin-bottom: -10px;
+}
+
+.slide-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 0.05em;
+    margin: 0 0 15px 0;
+    line-height: 1;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+}
+
+.slide-description {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    margin: 0 0 35px 0;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+}
+
+.shop-now-btn {
+    background-color: rgba(180, 155, 125, 0.85);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+.shop-now-btn:hover {
+    background-color: rgba(139, 119, 101, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Slider Navigation */
+.slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.slider-prev,
+.slider-next {
+    background-color: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(15px);
+    pointer-events: all;
+    opacity: 0.8;
+}
+
+.slider-prev:hover,
+.slider-next:hover {
+    background-color: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.4);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.slider-prev i,
+.slider-next i {
+    font-size: 14px;
+}
+
+/* Slider Dots */
+.slider-dots {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 3;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.dot.active {
+    background-color: white;
+    border-color: white;
+    transform: scale(1.1);
+}
+
+.dot:hover {
+    background-color: rgba(255,255,255,0.8);
+    border-color: rgba(255,255,255,0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .hero-slider {
+        height: 90vh !important;
+        min-height: 90vh !important;
+        /*margin: 15px 30px;
+        max-width: calc(100% - 60px);*/
+        margin: 5px 0px;
+        max-width: calc(100% - 0px);
+    }
+    
+    .slide-title,
+    .slide-subtitle {
+        font-size: 3.8rem;
+    }
+    
+    .slide-content {
+        bottom: 160px;
+        max-width: 450px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-slider {
+        height: 90vh !important;
+        min-height: 90vh !important;
+       /* margin: 10px 20px;
+        max-width: calc(100% - 40px);*/
+        margin: 5px 0px;
+        max-width: calc(100% - 0px);
+    }
+    
+    .slide-content {
+        bottom: 120px;
+        max-width: 350px;
+        padding: 0 20px;
+    }
+    
+    .slide-title,
+    .slide-subtitle {
+        font-size: 2.8rem;
+        letter-spacing: 0.1em;
+    }
+    
+    .slide-description {
+        font-size: 0.7rem;
+        margin-bottom: 25px;
+        letter-spacing: 0.15em;
+    }
+    
+    .shop-now-btn {
+        padding: 12px 28px;
+        font-size: 0.7rem;
+    }
+    
+    .slider-nav {
+        padding: 0 15px;
+    }
+    
+    .slider-prev,
+    .slider-next {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .slider-prev i,
+    .slider-next i {
+        font-size: 11px;
+    }
+    
+    .slider-dots {
+        bottom: 20px;
+    }
+    
+    .dot {
+        width: 7px;
+        height: 7px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-slider {
+        height: 70vh !important;
+        min-height: 70vh !important;
+        margin: 5px 0px;
+        max-width: calc(100% - 0px);
+    }
+    .slide-content {
+        bottom: 300px;
+        max-width: 300px;
+        padding: 0 15px;
+    }
+    
+    .slide-title,
+    .slide-subtitle {
+        font-size: 3.2rem;
+        letter-spacing: 0.08em;
+    }
+    
+    .slide-description {
+        font-size: 0.65rem;
+        margin-bottom: 20px;
+        letter-spacing: 0.12em;
+    }
+    
+    .shop-now-btn {
+        padding: 10px 24px;
+        font-size: 0.65rem;
+    }
+}

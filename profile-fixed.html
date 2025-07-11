@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>My Profile - SP Jewellers</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <link rel="stylesheet" href="css/navbar.css?v=1.1.1">
+    <link rel="stylesheet" href="css/cart.css?v=1.0.2">
+    <link rel="stylesheet" href="css/auth.css">
+    
+    <style>
+      .profile-container {
+        max-width: 1000px;
+        margin: 50px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        min-height: 400px;
+      }
+      
+      .profile-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #c8a97e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        color: white;
+        font-size: 36px;
+        font-weight: bold;
+      }
+      
+      .profile-info h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        margin: 0 0 5px 0;
+        color: #333;
+      }
+      
+      .profile-info p {
+        color: #777;
+        margin: 0;
+        font-size: 16px;
+      }
+      
+      .profile-nav {
+        display: flex;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 30px;
+      }
+      
+      .profile-nav-item {
+        padding: 15px 20px;
+        font-family: 'Lato', sans-serif;
+        font-weight: 600;
+        color: #777;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+      
+      .profile-nav-item:hover {
+        color: #c8a97e;
+      }
+      
+      .profile-nav-item.active {
+        color: #c8a97e;
+        border-bottom-color: #c8a97e;
+      }
+      
+      .profile-section {
+        display: none;
+        min-height: 200px;
+      }
+      
+      .profile-section.active {
+        display: block;
+      }
+      
+      .section-content {
+        padding: 20px 0;
+      }
+      
+      .info-card {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      
+      .info-label {
+        font-weight: 600;
+        color: #555;
+      }
+      
+      .info-value {
+        color: #777;
+      }
+      
+      .logout-button {
+        background-color: #c8a97e;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-family: 'Lato', sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 20px;
+      }
+      
+      .logout-button:hover {
+        background-color: #b39063;
+      }
+
+      .error-message {
+        background-color: #fdecea;
+        color: #e74c3c;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid #f5c6cb;
+      }
+
+      .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        text-align: center;
+        border: 1px solid #c3e6cb;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #c8a97e;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #777;
+      }
+
+      .empty-state i {
+        font-size: 48px;
+        color: #ddd;
+        margin-bottom: 16px;
+      }
+
+      .btn-primary {
+        background-color: #c8a97e;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        background-color: #b39063;
+        color: white;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="promo-banner">
+            <button class="banner-arrow banner-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <p>Save 21% on exclusive selections - <a href="#">Shop Now</a></p>
+            <button class="banner-arrow banner-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="index.html" class="brand">SP Jewellers</a>
+                
+                <div class="hamburger" id="navToggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <div class="nav-menu" id="navMenu">
+                    <button class="close-menu" id="closeMenu">×</button>
+                    
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">New Arrivals</a></li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Collection <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Necklace</a></li>
+                                <li><a href="#">Bangles</a></li>
+                                <li><a href="#">Earrings</a></li>
+                                <li><a href="#">Ring</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-icons">
+                    <a href="#" class="icon-link search-icon">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <a href="profile-fixed.html" class="icon-link account-icon">
+                        <i class="far fa-user"></i>
+                    </a>
+                    <a href="#" class="icon-link wishlist-icon-container">
+                        <i class="far fa-heart"></i>
+                        <div class="wishlist-count">0</div>
+                    </a>
+                    <a href="#" class="icon-link cart-icon-container cart-toggle">
+                        <i class="fas fa-shopping-bag"></i>
+                        <div class="cart-count">0</div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Profile Section -->
+    <section class="profile-container">
+        <div id="loading-state" style="display: block; text-align: center; padding: 40px;">
+            <div class="loading-spinner"></div>
+            <p>Loading your profile...</p>
+        </div>
+
+        <div id="error-message" class="error-message" style="display: none;"></div>
+        <div id="success-message" class="success-message" style="display: none;"></div>
+        
+        <div id="profile-content" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">U</div>
+                <div class="profile-info">
+                    <h1 id="profileName">User</h1>
+                    <p id="profileEmail">user@example.com</p>
+                </div>
+            </div>
+            
+            <div class="profile-nav">
+                <div class="profile-nav-item active" data-target="account">Account Info</div>
+                <div class="profile-nav-item" data-target="orders">My Orders</div>
+                <div class="profile-nav-item" data-target="settings">Settings</div>
+            </div>
+            
+            <div class="profile-section active" id="account">
+                <div class="section-content">
+                    <h2>Account Information</h2>
+                    <div class="info-card">
+                        <div class="info-row">
+                            <span class="info-label">Name:</span>
+                            <span class="info-value" id="accountName">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" id="accountEmail">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Member Since:</span>
+                            <span class="info-value" id="memberSince">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Account Status:</span>
+                            <span class="info-value" style="color: #4CAF50;">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-section" id="orders">
+                <div class="section-content">
+                    <h2>Order History</h2>
+                    <div id="orders-content">
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <h3>No Orders Yet</h3>
+                            <p>You haven't placed any orders with us yet.</p>
+                            <a href="index.html" class="btn-primary">Start Shopping</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-section" id="settings">
+                <div class="section-content">
+                    <h2>Account Settings</h2>
+                    <div class="info-card">
+                        <p>Manage your account preferences and security settings.</p>
+                        <button id="logout-button" class="logout-button">
+                            <i class="fas fa-sign-out-alt"></i> Log Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-modern">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-logo">
+                    <h2>SP Jewellers</h2>
+                    <p>Timeless Elegance, Modern Design</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-widgets">
+                    <div class="footer-widget contact-widget">
+                        <h4>Contact</h4>
+                        <p><i class="fas fa-phone"></i> 099990 68838</p>
+                        <p><i class="fas fa-envelope"></i> spjewellers@yahoo.co.in</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+        authDomain: "auric-a0c92.firebaseapp.com",
+        projectId: "auric-a0c92",
+        storageBucket: "auric-a0c92.appspot.com",
+        messagingSenderId: "878979958342",
+        appId: "1:878979958342:web:e6092f7522488d21eaec47",
+        measurementId: "G-ZYZ750JHMB"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+    
+    <script src="js/navigation.js?v=1.0.4"></script>
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+    
+    <!-- Profile Script -->
+    <script>
+      let currentUser = null;
+
+      // Initialize the profile page
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeProfile();
+      });
+
+      function initializeProfile() {
+        // Wait for Firebase to be ready
+        firebase.auth().onAuthStateChanged((user) => {
+          hideLoading();
+          
+          if (user) {
+            currentUser = user;
+            console.log("User authenticated:", user.uid);
+            loadUserProfile(user);
+          } else {
+            console.log("No user authenticated, redirecting to login");
+            showError("Please log in to view your profile.");
+            setTimeout(() => {
+              window.location.href = "login.html";
+            }, 2000);
+          }
+        });
+      }
+
+      function loadUserProfile(user) {
+        try {
+          // Display basic user information
+          displayUserInfo(user);
+          
+          // Try to load additional profile data
+          loadUserData(user.uid);
+          
+          // Show the profile content
+          showProfileContent();
+          
+          // Set up navigation and logout
+          setupProfileNavigation();
+          setupLogout();
+          
+        } catch (error) {
+          console.error("Error loading profile:", error);
+          showError("Failed to load profile data.");
+        }
+      }
+
+      async function loadUserData(userId) {
+        try {
+          // Try to get user profile from Firestore
+          const userDoc = await firebase.firestore().collection("users").doc(userId).get();
+          
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            console.log("Additional user data loaded:", userData);
+            
+            // Update profile with additional data
+            updateProfileWithUserData(userData);
+            
+            // Try to load orders
+            loadUserOrders(userId);
+          } else {
+            console.log("No additional user data found in Firestore");
+            // Create basic profile document
+            createUserProfile(userId);
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
+          if (error.code === 'permission-denied') {
+            showError("Access denied. Your Firebase security rules may need to be updated.");
+          }
+          // Continue with basic profile even if Firestore fails
+        }
+      }
+
+      async function createUserProfile(userId) {
+        try {
+          const userData = {
+            uid: userId,
+            email: currentUser.email,
+            displayName: currentUser.displayName || currentUser.email.split('@')[0],
+            createdAt: firebase.firestore.Timestamp.now(),
+            updatedAt: firebase.firestore.Timestamp.now()
+          };
+
+          await firebase.firestore().collection("users").doc(userId).set(userData);
+          console.log("User profile created successfully");
+          updateProfileWithUserData(userData);
+        } catch (error) {
+          console.error("Error creating user profile:", error);
+        }
+      }
+
+      async function loadUserOrders(userId) {
+        try {
+          const ordersSnapshot = await firebase.firestore()
+            .collection("users")
+            .doc(userId)
+            .collection("orders")
+            .orderBy("createdAt", "desc")
+            .limit(10)
+            .get();
+
+          if (!ordersSnapshot.empty) {
+            const orders = ordersSnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }));
+            
+            displayOrders(orders);
+          }
+        } catch (error) {
+          console.error("Error loading orders:", error);
+          // Keep the empty orders state
+        }
+      }
+
+      function displayUserInfo(user) {
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const accountName = document.getElementById('accountName');
+        const accountEmail = document.getElementById('accountEmail');
+
+        const displayName = user.displayName || user.email.split('@')[0] || 'User';
+        const email = user.email || '';
+
+        if (profileName) profileName.textContent = displayName;
+        if (profileEmail) profileEmail.textContent = email;
+        if (accountName) accountName.textContent = displayName;
+        if (accountEmail) accountEmail.textContent = email;
+        
+        if (profileAvatar) {
+          profileAvatar.textContent = displayName.charAt(0).toUpperCase();
+        }
+      }
+
+      function updateProfileWithUserData(userData) {
+        const memberSince = document.getElementById('memberSince');
+        if (memberSince && userData.createdAt) {
+          let date;
+          if (userData.createdAt.seconds) {
+            date = new Date(userData.createdAt.seconds * 1000);
+          } else {
+            date = new Date(userData.createdAt);
+          }
+          memberSince.textContent = date.toLocaleDateString();
+        }
+      }
+
+      function displayOrders(orders) {
+        const ordersContent = document.getElementById('orders-content');
+        if (!ordersContent || !orders.length) return;
+
+        let ordersHTML = '';
+        orders.forEach(order => {
+          const orderDate = order.createdAt ? 
+            (order.createdAt.seconds ? 
+              new Date(order.createdAt.seconds * 1000) : 
+              new Date(order.createdAt)
+            ).toLocaleDateString() : 'Unknown';
+
+          ordersHTML += `
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Order #${order.orderId || order.id}</span>
+                <span class="info-value">${orderDate}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Total:</span>
+                <span class="info-value">₹${parseFloat(order.orderTotal || order.total || 0).toFixed(2)}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        ordersContent.innerHTML = ordersHTML;
+      }
+
+      function setupProfileNavigation() {
+        const navItems = document.querySelectorAll('.profile-nav-item');
+        const sections = document.querySelectorAll('.profile-section');
+
+        navItems.forEach(item => {
+          item.addEventListener('click', () => {
+            // Remove active classes
+            navItems.forEach(nav => nav.classList.remove('active'));
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Add active class to clicked item
+            item.classList.add('active');
+            
+            // Show corresponding section
+            const targetSection = document.getElementById(item.dataset.target);
+            if (targetSection) {
+              targetSection.classList.add('active');
+            }
+          });
+        });
+      }
+
+      function setupLogout() {
+        const logoutButton = document.getElementById('logout-button');
+        if (logoutButton) {
+          logoutButton.addEventListener('click', async () => {
+            try {
+              await firebase.auth().signOut();
+              showSuccess("Logged out successfully");
+              setTimeout(() => {
+                window.location.href = "login.html";
+              }, 1000);
+            } catch (error) {
+              console.error("Logout error:", error);
+              showError("Failed to log out. Please try again.");
+            }
+          });
+        }
+      }
+
+      function showProfileContent() {
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('profile-content').style.display = 'block';
+      }
+
+      function hideLoading() {
+        document.getElementById('loading-state').style.display = 'none';
+      }
+
+      function showError(message) {
+        const errorElement = document.getElementById('error-message');
+        if (errorElement) {
+          errorElement.textContent = message;
+          errorElement.style.display = 'block';
+          setTimeout(() => {
+            errorElement.style.display = 'none';
+          }, 5000);
+        }
+      }
+
+      function showSuccess(message) {
+        const successElement = document.getElementById('success-message');
+        if (successElement) {
+          successElement.textContent = message;
+          successElement.style.display = 'block';
+          setTimeout(() => {
+            successElement.style.display = 'none';
+          }, 3000);
+        }
+      }
+    </script>
+  </body>
+</html>

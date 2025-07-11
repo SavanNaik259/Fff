@@ -1,0 +1,2655 @@
+<!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>E-Commerce Website Proposal - SP Jewellers Pvt. Ltd.</title>
+                            <meta name="description" content="Professional e-commerce website proposal for SP Jewellers featuring custom design, payment integration, admin panel, and comprehensive business solutions.">
+
+                            <!-- Google Fonts -->
+                            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                            <!-- Font Awesome -->
+                            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+                            <link rel="stylesheet" href="styles.css">
+                        </head>
+                            <style>
+
+                                /* Reset and Base Styles */
+                                * {
+                                    margin: 0;
+                                    padding: 0;
+                                    box-sizing: border-box;
+                                }
+
+                                :root {
+                                    --primary-blue: #2563EB;
+                                    --accent-teal: #0891B2;
+                                    --elegant-black: #1a1a1a;
+                                    --sophisticated-gray: #6B7280;
+                                    --rich-navy: #1E3A8A;
+                                    --light-gray: #F9FAFB;
+                                    --border-color: #E5E7EB;
+                                    --white: #FFFFFF;
+                                    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+                                    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                                }
+
+                                body {
+                                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                    line-height: 1.6;
+                                    color: var(--elegant-black);
+                                    background-color: var(--white);
+                                }
+
+                                html {
+                                    scroll-behavior: smooth;
+                                }
+
+                                /* Container */
+                                .container {
+                                    max-width: 1200px;
+                                    margin: 0 auto;
+                                    padding: 0 1rem;
+                                }
+
+                                /* Navigation */
+                                .navbar {
+                                    position: fixed;
+                                    top: 0;
+                                    left: 0;
+                                    right: 0;
+                                    background: rgba(255, 255, 255, 0.95);
+                                    backdrop-filter: blur(10px);
+                                    border-bottom: 1px solid var(--border-color);
+                                    z-index: 1000;
+                                    transition: all 0.3s ease;
+                                }
+
+                                .nav-container {
+                                    max-width: 1200px;
+                                    margin: 0 auto;
+                                    padding: 0 1rem;
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    height: 70px;
+                                }
+
+                                .nav-brand {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.75rem;
+                                    font-size: 1.25rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                }
+
+                                .nav-brand i {
+                                    font-size: 1.5rem;
+                                    color: #FFD700;
+                                }
+
+                                .nav-menu {
+                                    display: flex;
+                                    gap: 2rem;
+                                }
+
+                                .nav-link {
+                                    text-decoration: none;
+                                    color: var(--sophisticated-gray);
+                                    font-weight: 500;
+                                    transition: color 0.3s ease;
+                                    position: relative;
+                                }
+
+                                .nav-link:hover,
+                                .nav-link.active {
+                                    color: var(--primary-blue);
+                                }
+
+                                .nav-link::after {
+                                    content: '';
+                                    position: absolute;
+                                    bottom: -5px;
+                                    left: 0;
+                                    width: 0;
+                                    height: 2px;
+                                    background-color: var(--primary-blue);
+                                    transition: width 0.3s ease;
+                                }
+
+                                .nav-link:hover::after,
+                                .nav-link.active::after {
+                                    width: 100%;
+                                }
+
+                                .hamburger {
+                                    display: none;
+                                    flex-direction: column;
+                                    cursor: pointer;
+                                    gap: 4px;
+                                }
+
+                                .hamburger span {
+                                    width: 25px;
+                                    height: 3px;
+                                    background-color: var(--elegant-black);
+                                    transition: all 0.3s ease;
+                                    transform-origin: center;
+                                }
+
+                                .hamburger.active span:nth-child(1) {
+                                    transform: rotate(45deg) translate(5px, 5px);
+                                }
+
+                                .hamburger.active span:nth-child(2) {
+                                    opacity: 0;
+                                    transform: translateX(-20px);
+                                }
+
+                                .hamburger.active span:nth-child(3) {
+                                    transform: rotate(-45deg) translate(7px, -6px);
+                                }
+
+                                /* Hero Section */
+                                .hero {
+                                    padding: 120px 0 80px;
+                                    background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+                                    text-align: center;
+                                }
+
+                                .hero-content {
+                                    max-width: 900px;
+                                    margin: 0 auto;
+                                }
+
+                                .hero-title {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 1rem;
+                                    margin-bottom: 1.5rem;
+                                    flex-wrap: wrap;
+                                }
+
+                                .star-emoji {
+                                    font-size: 3rem;
+                                }
+
+                                .hero-title h1 {
+                                    font-size: clamp(2rem, 5vw, 3.5rem);
+                                    font-weight: 700;
+                                    color: var(--elegant-black);
+                                    line-height: 1.2;
+                                }
+
+                                .hero-subtitle {
+                                    font-size: clamp(1.5rem, 4vw, 2.5rem);
+                                    font-weight: 600;
+                                    color: var(--primary-blue);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .hero-description {
+                                    font-size: clamp(1.25rem, 3vw, 2rem);
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .hero-tagline {
+                                    font-size: 1.125rem;
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 2rem;
+                                }
+
+                                .demo-card {
+                                    background: var(--white);
+                                    border: 2px solid rgba(37, 99, 235, 0.2);
+                                    border-radius: 12px;
+                                    padding: 2rem;
+                                    margin: 2rem auto;
+                                    max-width: 600px;
+                                    box-shadow: var(--shadow-lg);
+                                }
+
+                                .demo-card p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1.5rem;
+                                }
+
+                                .demo-btn {
+                                    display: inline-flex;
+                                    align-items: center;
+                                    gap: 0.5rem;
+                                    background-color: var(--primary-blue);
+                                    color: var(--white);
+                                    padding: 12px 24px;
+                                    border-radius: 8px;
+                                    text-decoration: none;
+                                    font-weight: 600;
+                                    transition: all 0.3s ease;
+                                    box-shadow: var(--shadow);
+                                }
+
+                                .demo-btn:hover {
+                                    transform: translateY(-2px);
+                                    box-shadow: var(--shadow-lg);
+                                    opacity: 0.9;
+                                }
+
+                                /* Main Content */
+                                .main-content {
+                                    padding: 3rem 0;
+                                }
+
+                                .section {
+                                    margin-bottom: 4rem;
+                                }
+
+                                .card {
+                                    background: var(--white);
+                                    border-radius: 12px;
+                                    padding: 3rem;
+                                    box-shadow: var(--shadow);
+                                    border: 1px solid var(--border-color);
+                                }
+
+                                .section-title {
+                                    font-size: 2.25rem;
+                                    font-weight: 700;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 2rem;
+                                    padding-bottom: 1rem;
+                                    border-bottom: 2px solid rgba(37, 99, 235, 0.2);
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 1rem;
+                                }
+
+                                .section-title i {
+                                    color: var(--primary-blue);
+                                }
+
+                                .section-description {
+                                    font-size: 1.125rem;
+                                    color: var(--sophisticated-gray);
+                                    line-height: 1.7;
+                                    margin-bottom: 2rem;
+                                }
+
+                                /* Features Grid */
+                                .features-grid {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                                    gap: 2rem;
+                                    margin-top: 2rem;
+                                }
+
+                                .feature-card {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                    text-align: center;
+                                    transition: transform 0.3s ease;
+                                }
+
+                                .feature-card:hover {
+                                    transform: translateY(-5px);
+                                }
+
+                                .feature-card i {
+                                    font-size: 2rem;
+                                    color: var(--accent-teal);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .feature-card h4 {
+                                    font-size: 1.25rem;
+                                    font-weight: 600;
+                                    margin-bottom: 1rem;
+                                    color: var(--elegant-black);
+                                }
+
+                                .feature-card p {
+                                    color: var(--sophisticated-gray);
+                                    font-size: 0.9rem;
+                                }
+
+                                /* Customer Features */
+                                .customer-features-grid {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                                    gap: 2rem;
+                                    margin-bottom: 2rem;
+                                }
+
+                                .feature-list {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 1rem;
+                                }
+
+                                .feature-item {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 1rem;
+                                    padding: 0.75rem;
+                                    background: var(--light-gray);
+                                    border-radius: 6px;
+                                    transition: background-color 0.3s ease;
+                                }
+
+                                .feature-item:hover {
+                                    background: rgba(37, 99, 235, 0.1);
+                                }
+
+                                .feature-item i {
+                                    font-size: 1.125rem;
+                                    min-width: 20px;
+                                }
+
+                                .feature-item span {
+                                    color: var(--elegant-black);
+                                    font-weight: 500;
+                                }
+
+                                .review-system-details {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                    margin-top: 2rem;
+                                }
+
+                                .review-system-details h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    margin-bottom: 1rem;
+                                    color: var(--elegant-black);
+                                }
+
+                                .review-system-details p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                }
+
+                                /* Cart Checkout Sub Items */
+                                .cart-checkout-sub-items {
+                                    margin-left: 2rem;
+                                    margin-top: 0.5rem;
+                                    border-left: 3px solid rgba(76, 175, 80, 0.3);
+                                    padding-left: 1rem;
+                                }
+
+                                .sub-feature-item {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 1rem;
+                                    padding: 0.5rem;
+                                    background: rgba(76, 175, 80, 0.05);
+                                    border-radius: 4px;
+                                    margin-bottom: 0.5rem;
+                                    transition: background-color 0.3s ease;
+                                }
+
+                                .sub-feature-item:hover {
+                                    background: rgba(76, 175, 80, 0.1);
+                                }
+
+                                .sub-feature-item i {
+                                    font-size: 1rem;
+                                    min-width: 16px;
+                                }
+
+                                .sub-feature-item span {
+                                    color: var(--elegant-black);
+                                    font-weight: 500;
+                                    font-size: 0.9rem;
+                                }
+
+                                /* Know More Button */
+                                .know-more-btn {
+                                    background: var(--primary-blue);
+                                    color: var(--white);
+                                    border: none;
+                                    padding: 0.5rem 1rem;
+                                    border-radius: 6px;
+                                    font-size: 0.8rem;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                    margin-left: auto;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.5rem;
+                                }
+
+                                .know-more-btn:hover {
+                                    background: var(--rich-navy);
+                                    transform: translateY(-1px);
+                                }
+
+                                .know-more-btn i {
+                                    transition: transform 0.3s ease;
+                                }
+
+                                .know-more-btn.active i {
+                                    transform: rotate(180deg);
+                                }
+
+                                .order-tracking-main {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                }
+
+                                /* Order Tracking Details */
+                                .order-tracking-details {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                    margin-top: 1rem;
+                                    margin-left: 0;
+                                    border-left: 4px solid var(--primary-blue);
+                                    animation: slideDown 0.3s ease-out;
+                                }
+
+                                @keyframes slideDown {
+                                    from {
+                                        opacity: 0;
+                                        transform: translateY(-10px);
+                                    }
+                                    to {
+                                        opacity: 1;
+                                        transform: translateY(0);
+                                    }
+                                }
+
+                                .order-tracking-details h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1.5rem;
+                                    border-bottom: 2px solid var(--primary-blue);
+                                    padding-bottom: 0.5rem;
+                                }
+
+                                .order-tracking-details h4 {
+                                    font-size: 1.25rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .order-tracking-details h5 {
+                                    font-size: 1.125rem;
+                                    font-weight: 600;
+                                    color: var(--accent-teal);
+                                    margin-bottom: 0.75rem;
+                                }
+
+                                /* View More Button for Razorpay */
+                                .view-more-btn {
+                                    background: var(--primary-blue);
+                                    color: var(--white);
+                                    border: none;
+                                    padding: 0.75rem 1.5rem;
+                                    border-radius: 6px;
+                                    font-size: 0.9rem;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                    margin: 1rem 0;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.5rem;
+                                }
+
+                                .view-more-btn:hover {
+                                    background: var(--rich-navy);
+                                    transform: translateY(-1px);
+                                }
+
+                                .view-more-btn i {
+                                    transition: transform 0.3s ease;
+                                }
+
+                                .view-more-btn.active i {
+                                    transform: rotate(180deg);
+                                }
+
+                                /* Razorpay GST Details */
+                                .razorpay-gst-details {
+                                    background: rgba(37, 99, 235, 0.05);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                    margin-top: 1rem;
+                                    border-left: 4px solid var(--primary-blue);
+                                    animation: slideDown 0.3s ease-out;
+                                }
+
+                                .razorpay-gst-details h4 {
+                                    font-size: 1.25rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                    margin-top: 2rem;
+                                }
+
+                                .razorpay-gst-details h4:first-of-type {
+                                    margin-top: 0;
+                                }
+
+                                /* Order Tracking */
+                                .tracking-step {
+                                    margin-bottom: 3rem;
+                                }
+
+                                .tracking-step h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .tracking-step p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                    line-height: 1.6;
+                                }
+
+                                .order-details-grid {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                                    gap: 1rem;
+                                    margin-top: 1rem;
+                                }
+
+                                .order-detail {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 1.5rem;
+                                    text-align: center;
+                                }
+
+                                .order-detail i {
+                                    color: var(--accent-teal);
+                                    font-size: 1.5rem;
+                                    margin-bottom: 0.5rem;
+                                    display: block;
+                                }
+
+                                .order-detail span {
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                }
+
+                                .shipping-options {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                                    gap: 2rem;
+                                    margin-top: 1rem;
+                                }
+
+                                .shipping-option {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                }
+
+                                .shipping-option h4 {
+                                    font-size: 1.25rem;
+                                    font-weight: 600;
+                                    color: var(--primary-blue);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .shipping-option p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                    font-size: 0.9rem;
+                                }
+
+                                .status-list {
+                                    list-style: none;
+                                    padding-left: 1rem;
+                                }
+
+                                .status-list li {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.5rem;
+                                    margin-bottom: 0.5rem;
+                                    font-size: 0.9rem;
+                                    color: var(--elegant-black);
+                                }
+
+                                .status-list i {
+                                    color: var(--accent-teal);
+                                    font-size: 0.5rem;
+                                }
+
+                                .tracking-features {
+                                    margin-top: 2rem;
+                                    display: grid;
+                                    gap: 1.5rem;
+                                }
+
+                                .tracking-feature {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 1.5rem;
+                                }
+
+                                .tracking-feature h4 {
+                                    font-size: 1.125rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 0.75rem;
+                                }
+
+                                .tracking-feature p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 0.75rem;
+                                }
+
+                                .tracking-feature ul {
+                                    padding-left: 1.5rem;
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                .tracking-feature li {
+                                    margin-bottom: 0.5rem;
+                                }
+
+                                /* Inventory Features */
+                                .inventory-features {
+                                    display: grid;
+                                    gap: 2rem;
+                                }
+
+                                .inventory-feature {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                }
+
+                                .inventory-feature h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .inventory-feature p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                }
+
+                                /* Admin Features */
+                                .admin-features {
+                                    display: grid;
+                                    gap: 2rem;
+                                }
+
+                                .admin-feature {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                }
+
+                                .admin-feature h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.75rem;
+                                }
+
+                                .admin-feature h3 i {
+                                    color: var(--primary-blue);
+                                }
+
+                                .admin-sub-features p {
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 0.75rem;
+                                }
+
+                                .admin-sub-features ul {
+                                    padding-left: 1.5rem;
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                .admin-sub-features li {
+                                    margin-bottom: 0.5rem;
+                                }
+
+                                /* Payment Section */
+                                .payment-section {
+                                    margin-bottom: 3rem;
+                                }
+
+                                .payment-section h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .payment-section h4 {
+                                    font-size: 1.25rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .payment-section p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                    line-height: 1.6;
+                                }
+
+                                .payment-table {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    overflow: hidden;
+                                    margin: 1.5rem 0;
+                                }
+
+                                .table-header {
+                                    display: grid;
+                                    grid-template-columns: 1fr 1fr;
+                                    background: var(--primary-blue);
+                                    color: var(--white);
+                                    font-weight: 600;
+                                    padding: 1rem;
+                                }
+
+                                .table-row {
+                                    display: grid;
+                                    grid-template-columns: 1fr 1fr;
+                                    padding: 1rem;
+                                    border-bottom: 1px solid var(--border-color);
+                                }
+
+                                .table-row:last-child {
+                                    border-bottom: none;
+                                }
+
+                                .payment-example {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                    margin: 1.5rem 0;
+                                }
+
+                                .payment-example ul {
+                                    padding-left: 1.5rem;
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                .payment-example li {
+                                    margin-bottom: 0.5rem;
+                                }
+
+                                .gst-example {
+                                    background: rgba(37, 99, 235, 0.1);
+                                    border-radius: 8px;
+                                    padding: 1.5rem;
+                                    margin-top: 1rem;
+                                }
+
+                                .gst-example ul {
+                                    padding-left: 1.5rem;
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                .gst-example li {
+                                    margin-bottom: 0.75rem;
+                                }
+
+                                .payment-modes {
+                                    margin-top: 1.5rem;
+                                }
+
+                                .payment-modes h4 {
+                                    font-size: 1.125rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 0.75rem;
+                                }
+
+                                .payment-modes ul {
+                                    padding-left: 1.5rem;
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                .payment-modes li {
+                                    margin-bottom: 0.5rem;
+                                }
+
+                                /* Hosting Features */
+                                .hosting-features {
+                                    display: grid;
+                                    gap: 2rem;
+                                }
+
+                                .hosting-feature {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                }
+
+                                .hosting-feature h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.75rem;
+                                }
+
+                                .hosting-feature h3 i {
+                                    color: var(--primary-blue);
+                                }
+
+                                .hosting-feature p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .hosting-feature ul {
+                                    padding-left: 1.5rem;
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                .hosting-feature li {
+                                    margin-bottom: 0.5rem;
+                                }
+
+                                .hosting-includes {
+                                    margin-top: 1rem;
+                                    background: rgba(37, 99, 235, 0.1);
+                                    border-radius: 6px;
+                                    padding: 1rem;
+                                }
+
+                                .hosting-includes h4 {
+                                    font-size: 1.125rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 0.75rem;
+                                }
+
+                                .database-tiers {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                                    gap: 1rem;
+                                    margin-top: 1rem;
+                                }
+
+                                .tier {
+                                    background: rgba(37, 99, 235, 0.1);
+                                    border-radius: 6px;
+                                    padding: 1rem;
+                                }
+
+                                .tier h4 {
+                                    font-size: 1.125rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 0.75rem;
+                                }
+
+                                /* Timeline */
+                                .timeline-content {
+                                    text-align: center;
+                                }
+
+                                .timeline-item h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--primary-blue);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .timeline-item p {
+                                    color: var(--sophisticated-gray);
+                                    font-size: 1.125rem;
+                                }
+
+                                /* Benefits */
+                                .benefits {
+                                    display: grid;
+                                    gap: 3rem;
+                                }
+
+                                .benefit {
+                                    background: var(--light-gray);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                }
+
+                                .benefit h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.75rem;
+                                }
+
+                                .benefit h3 i {
+                                    color: var(--primary-blue);
+                                }
+
+                                .benefit p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                    line-height: 1.6;
+                                }
+
+                                .benefit ul {
+                                    padding-left: 1.5rem;
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                .benefit li {
+                                    margin-bottom: 0.75rem;
+                                    line-height: 1.5;
+                                }
+
+                                .reports-section {
+                                    background: rgba(37, 99, 235, 0.1);
+                                    border-radius: 8px;
+                                    padding: 1.5rem;
+                                    margin-top: 1rem;
+                                }
+
+                                .global-features {
+                                    display: grid;
+                                    gap: 1.5rem;
+                                    margin-top: 1rem;
+                                }
+
+                                .global-feature {
+                                    background: rgba(37, 99, 235, 0.1);
+                                    border-radius: 8px;
+                                    padding: 1.5rem;
+                                }
+
+                                .global-feature h4 {
+                                    font-size: 1.25rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .global-feature p {
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .note {
+                                    font-style: italic;
+                                    color: var(--sophisticated-gray);
+                                    font-size: 0.9rem;
+                                }
+
+                                .business-benefits {
+                                    background: rgba(37, 99, 235, 0.1);
+                                    border-radius: 8px;
+                                    padding: 2rem;
+                                    margin-top: 1rem;
+                                }
+
+                                .business-benefits h3 {
+                                    font-size: 1.5rem;
+                                    font-weight: 600;
+                                    color: var(--elegant-black);
+                                    margin-bottom: 1rem;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.75rem;
+                                }
+
+                                .business-benefits h3 i {
+                                    color: var(--primary-blue);
+                                }
+
+                                .business-benefits ul {
+                                    padding-left: 1.5rem;
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                .business-benefits li {
+                                    margin-bottom: 0.75rem;
+                                    line-height: 1.5;
+                                }
+
+                                /* Closing Card */
+                                .closing-card {
+                                    text-align: center;
+                                    background: linear-gradient(135deg, var(--light-gray) 0%, rgba(37, 99, 235, 0.1) 100%);
+                                    border: 2px solid rgba(37, 99, 235, 0.2);
+                                }
+
+                                .closing-content p {
+                                    font-size: 1.125rem;
+                                    color: var(--sophisticated-gray);
+                                    margin-bottom: 1rem;
+                                    line-height: 1.6;
+                                }
+
+                                /* Footer */
+                                .footer {
+                                    background: var(--elegant-black);
+                                    color: var(--white);
+                                    padding: 2rem 0;
+                                    margin-top: 4rem;
+                                }
+
+                                .footer-content {
+                                    text-align: center;
+                                }
+
+                                .footer-brand {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 0.75rem;
+                                    font-size: 1.25rem;
+                                    font-weight: 600;
+                                    margin-bottom: 1rem;
+                                }
+
+                                .footer-brand i {
+                                    color: #FFD700;
+                                    font-size: 1.5rem;
+                                }
+
+                                .footer p {
+                                    color: var(--sophisticated-gray);
+                                }
+
+                                /* Responsive Design */
+                                @media (max-width: 768px) {
+                                    .hamburger {
+                                        display: flex;
+                                    }
+
+                                    .nav-menu {
+                                        position: absolute;
+                                        top: 100%;
+                                        left: 0;
+                                        right: 0;
+                                        background: var(--white);
+                                        flex-direction: column;
+                                        padding: 1rem;
+                                        box-shadow: var(--shadow-lg);
+                                        border-top: 1px solid var(--border-color);
+                                        opacity: 0;
+                                        visibility: hidden;
+                                        transform: translateY(-20px);
+                                        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                                        max-height: 0;
+                                        overflow: hidden;
+                                    }
+
+                                    .nav-menu.active {
+                                        display: flex;
+                                        opacity: 1;
+                                        visibility: visible;
+                                        transform: translateY(0);
+                                        max-height: 400px;
+                                    }
+
+                                    .nav-link {
+                                        padding: 0.75rem 0;
+                                        border-bottom: 1px solid var(--border-color);
+                                        opacity: 0;
+                                        transform: translateX(-20px);
+                                        transition: all 0.3s ease;
+                                        transition-delay: 0.1s;
+                                    }
+
+                                    .nav-menu.active .nav-link {
+                                        opacity: 1;
+                                        transform: translateX(0);
+                                    }
+
+                                    .nav-menu.active .nav-link:nth-child(1) { transition-delay: 0.1s; }
+                                    .nav-menu.active .nav-link:nth-child(2) { transition-delay: 0.15s; }
+                                    .nav-menu.active .nav-link:nth-child(3) { transition-delay: 0.2s; }
+                                    .nav-menu.active .nav-link:nth-child(4) { transition-delay: 0.25s; }
+                                    .nav-menu.active .nav-link:nth-child(5) { transition-delay: 0.3s; }
+                                    .nav-menu.active .nav-link:nth-child(6) { transition-delay: 0.35s; }
+
+                                    .nav-link:last-child {
+                                        border-bottom: none;
+                                    }
+
+                                    .hero-title {
+                                        flex-direction: column;
+                                        gap: 0.5rem;
+                                    }
+
+                                    .star-emoji {
+                                        font-size: 2rem;
+                                    }
+
+                                    .card {
+                                        padding: 2rem 1.5rem;
+                                    }
+
+                                    .section-title {
+                                        font-size: 1.75rem;
+                                        flex-direction: row;
+                                        align-items: center;
+                                        gap: 0.75rem;
+                                        flex-wrap: nowrap;
+                                        justify-content: flex-start;
+                                    }
+
+                                    .section-title i {
+                                        flex-shrink: 0;
+                                    }
+
+                                    .features-grid {
+                                        grid-template-columns: 1fr;
+                                    }
+
+                                    .customer-features-grid {
+                                        grid-template-columns: 1fr;
+                                    }
+
+                                    .shipping-options {
+                                        grid-template-columns: 1fr;
+                                    }
+
+                                    .order-details-grid {
+                                        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                                    }
+
+                                    .database-tiers {
+                                        grid-template-columns: 1fr;
+                                    }
+
+                                    .table-header,
+                                    .table-row {
+                                        grid-template-columns: 1fr;
+                                        text-align: center;
+                                    }
+
+                                    .table-row {
+                                        padding: 0.75rem;
+                                    }
+
+                                    .demo-card {
+                                        padding: 1.5rem;
+                                        margin: 1.5rem auto;
+                                    }
+                                }
+
+                                @media (max-width: 480px) {
+                                    .container {
+                                        padding: 0 0.75rem;
+                                    }
+
+                                    .nav-container {
+                                        padding: 0 0.75rem;
+                                    }
+
+                                    .card {
+                                        padding: 1.5rem 1rem;
+                                    }
+
+                                    .hero {
+                                        padding: 100px 0 60px;
+                                    }
+
+                                    .demo-btn {
+                                        padding: 10px 20px;
+                                        font-size: 0.9rem;
+                                    }
+
+                                    .section-title {
+                                        font-size: 1.5rem;
+                                    }
+
+                                    .feature-card {
+                                        padding: 1.5rem;
+                                    }
+
+                                    .shipping-option {
+                                        padding: 1.5rem;
+                                    }
+
+                                    .admin-feature {
+                                        padding: 1.5rem;
+                                    }
+
+                                    .benefit {
+                                        padding: 1.5rem;
+                                    }
+
+                                    .order-tracking-details {
+                                        margin-left: 0;
+                                        padding: 1.5rem;
+                                        margin-top: 0.75rem;
+                                    }
+                                }
+
+                                /* Utility Classes */
+                                .text-center {
+                                    text-align: center;
+                                }
+
+                                .mb-1 { margin-bottom: 0.25rem; }
+                                .mb-2 { margin-bottom: 0.5rem; }
+                                .mb-3 { margin-bottom: 0.75rem; }
+                                .mb-4 { margin-bottom: 1rem; }
+
+                                .mt-1 { margin-top: 0.25rem; }
+                                .mt-2 { margin-top: 0.5rem; }
+                                .mt-3 { margin-top: 0.75rem; }
+                                .mt-4 { margin-top: 1rem; }
+
+                                .font-bold { font-weight: 700; }
+                                .font-semibold { font-weight: 600; }
+                                .font-medium { font-weight: 500; }
+
+                                /* Smooth animations */
+                                * {
+                                    transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+                                }
+
+                                /* Focus states for accessibility */
+                                .nav-link:focus,
+                                .demo-btn:focus {
+                                    outline: 2px solid var(--primary-blue);
+                                    outline-offset: 2px;
+                                }
+
+                                /* Print styles */
+                                @media print {
+                                    .navbar,
+                                    .footer {
+                                        display: none;
+                                    }
+
+                                    .hero {
+                                        padding-top: 2rem;
+                                    }
+
+                                    .card {
+                                        box-shadow: none;
+                                        border: 1px solid var(--border-color);
+                                    }
+                                }
+
+                                /* Contact Simple */
+                                .contact-simple {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 1rem;
+                                }
+
+                                .contact-item-simple {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.75rem;
+                                    padding: 1rem;
+                                    background: var(--light-gray);
+                                    border-radius: 6px;
+                                }
+
+                                .contact-item-simple i {
+                                    font-size: 1.125rem;
+                                    min-width: 20px;
+                                }
+
+                                .contact-item-simple span {
+                                    font-weight: 500;
+                                    color: var(--elegant-black);
+                                }
+
+                                .contact-item-simple a {
+                                    color: var(--sophisticated-gray);
+                                    text-decoration: none;
+                                    transition: color 0.3s ease;
+                                }
+
+                                .contact-item-simple a:hover {
+                                    color: var(--luxury-gold);
+                                    text-decoration: underline;
+                                }
+                            </style>
+                        <body>
+                            <!-- Navigation -->
+                            <nav class="navbar">
+                                <div class="nav-container">
+                                    <div class="nav-brand">
+                                        <i class="fas fa-gem"></i>
+                                        <span>SP Jewellers Proposal</span>
+                                    </div>
+                                    <div class="nav-menu" id="nav-menu">
+                                        <a href="#overview" class="nav-link">Overview</a>
+                                        <a href="#features" class="nav-link">Features</a>
+                                        <a href="#features" class="nav-link">Order Tracking</a>
+                                        <a href="#admin" class="nav-link">Admin Panel</a>
+                                        <a href="#payment" class="nav-link">Payment</a>
+                                        <a href="#benefits" class="nav-link">Benefits</a>
+                                    </div>
+                                    <div class="hamburger" id="hamburger">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </nav>
+
+                            <!-- Hero Section -->
+                            <header class="hero">
+                                <div class="container">
+                                    <div class="hero-content">
+                                        <div class="hero-title">
+                                            <span class="star-emoji">🌟</span>
+                                            <h1>E-COMMERCE WEBSITE PROPOSAL FOR</h1>
+                                        </div>
+                                        <h2 class="hero-subtitle"> SP Jewellers Pvt. Ltd.</h2>
+                                        <h3 class="hero-description">Custom E-Commerce Website Solution</h3>
+                                        <p class="hero-tagline">Tailored to Enhance Your Legacy, Serve Your Clients, and Elevate Your Brand</p>
+
+                                        <!-- Demo Link -->
+                                        <div class="demo-card">
+                                            <p>Here's the demo of your jewellery brand that I have made, since the design and finishing is not yet done but you can just checkout the designs</p>
+                                            <a href="https://spjewellers.netlify.app/" target="_blank" rel="noopener noreferrer" class="demo-btn">
+                                                <i class="fas fa-external-link-alt"></i>
+                                                View Live Demo
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </header>
+
+                            <!-- Main Content -->
+                            <main class="main-content">
+
+                                <!-- Professional E-Commerce Website Section -->
+                                <section id="overview" class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-store"></i>
+                                                PROFESSIONAL E-COMMERCE WEBSITE
+                                            </h2>
+                                            <p class="section-description">
+                                                A custom e-commerce website for SP Jewellers designed to showcase your luxury Polki and diamond collections, streamline daily operations, and enhance customer experience. From order tracking to admin controls and global accessibility, the platform is built to grow your brand online and support high-volume sales with ease
+                                            </p>
+                                            <div class="features-grid">
+                                                <div class="feature-card">
+                                                    <i class="fas fa-palette" style="color: #E91E63;"></i>
+                                                    <h4>Custom Design</h4>
+                                                    <p>Completely tailored on which design or on which reference of the website you want to make</p>
+                                                </div>
+                                                <div class="feature-card">
+                                                    <i class="fas fa-mobile-alt" style="color: #2196F3;"></i>
+                                                    <h4>Fully Responsive</h4>
+                                                    <p>Fully responsive on types of devices (mobile, tablet, desktop)</p>
+                                                </div>
+                                                <div class="feature-card">
+                                                    <i class="fas fa-brush" style="color: #FF5722;"></i>
+                                                    <h4>Branded Design</h4>
+                                                    <p>Branded design using your logo, colors, and theme</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Customer Features Section -->
+                                <section id="features" class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-users"></i>
+                                                CUSTOMER FEATURES
+                                            </h2>
+                                            <div class="customer-features-grid">
+                                                <div class="feature-list">
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-user-plus" style="color: #4285F4;"></i>
+                                                        <span>User Login / Signup</span>
+                                                    </div>
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-search" style="color: #34A853;"></i>
+                                                        <span>Smart Search functionality</span>
+                                                    </div>
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-heart" style="color: #E91E63;"></i>
+                                                        <span>Wishlist feature</span>
+                                                    </div>
+                                                    <div class="feature-item cart-checkout-main">
+                                                        <i class="fas fa-shopping-cart" style="color: #4CAF50;"></i>
+                                                        <span>Add to Cart & Checkout System, including:</span>
+                                                    </div>
+                                                    <div class="cart-checkout-sub-items">
+                                                        <div class="sub-feature-item">
+                                                            <i class="fas fa-ticket-alt" style="color: #FF5722;"></i>
+                                                            <span>Coupons & Promo Codes</span>
+                                                        </div>
+                                                        <div class="sub-feature-item">
+                                                            <i class="fas fa-truck" style="color: #607D8B;"></i>
+                                                            <span>Delivery Charge Setup</span>
+                                                        </div>
+                                                        <div class="sub-feature-item">
+                                                            <i class="fas fa-clipboard-list" style="color: #795548;"></i>
+                                                            <span>Order placement</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="feature-list">
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-undo" style="color: #F44336;"></i>
+                                                        <span>Return / Cancellation option (if allowed)</span>
+                                                    </div>
+                                                    <div class="feature-item order-tracking-main">
+                                                        <i class="fas fa-map-marker-alt" style="color: #2196F3;"></i>
+                                                        <span>Order tracking</span>
+                                                        <button class="know-more-btn" onclick="toggleOrderTracking()" id="order-tracking-btn">
+                                                            <i class="fas fa-chevron-down"></i> Know More
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- Hidden Order Tracking Details - Moved to appear right below order tracking -->
+                                                    <div id="order-tracking-details" class="order-tracking-details" style="display: none;">
+                                                        <h3>Order Tracking Example Flow</h3>
+
+                                                        <!-- Order Placement -->
+                                                        <div class="tracking-step">
+                                                            <h4>Order Placement</h4>
+                                                            <p>When a customer places an order, they receive a confirmation email from the website with order details like:</p>
+                                                            <div class="order-details-grid">
+                                                                <div class="order-detail">
+                                                                    <i class="fas fa-hashtag" style="color: #4CAF50;"></i>
+                                                                    <span>Order ID</span>
+                                                                </div>
+                                                                <div class="order-detail">
+                                                                    <i class="fas fa-list" style="color: #2196F3;"></i>
+                                                                    <span>Items and quantity</span>
+                                                                </div>
+                                                                <div class="order-detail">
+                                                                    <i class="fas fa-map-marker-alt" style="color: #FF5722;"></i>
+                                                                    <span>Delivery address</span>
+                                                                </div>
+                                                                <div class="order-detail">
+                                                                    <i class="fas fa-credit-card" style="color: #9C27B0;"></i>
+                                                                    <span>Payment status, etc.</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Order Processing -->
+                                                        <div class="tracking-step">
+                                                            <h4>Order Processing (Warehouse or Seller Side)</h4>
+                                                            <p>
+                                                                The order is sent to the seller or warehouse, where they receive the same order details.
+                                                                In the admin panel, the order needs to be manually confirmed to update the status from "Processing" to "Confirmed".
+                                                            </p>
+                                                        </div>
+
+                                                        <!-- Shipping Integration -->
+                                                        <div class="tracking-step">
+                                                            <h4>Shipping Partner Integration – Two Ways to Handle Tracking:</h4>
+
+                                                            <div class="shipping-options">
+                                                                <!-- Option 1 -->
+                                                                <div class="shipping-option">
+                                                                    <h5>Option 1: Manual Status Update</h5>
+                                                                    <p>Once the order is packed, the admin panel is updated to mark it as "Packed" after "confirm"</p>
+                                                                    <p>The package is then handed over to the delivery team.</p>
+                                                                    <p>The delivery team updates the order status in the admin panel as it moves:</p>
+                                                                    <ul class="status-list">
+                                                                        <li><i class="fas fa-circle" style="color: #4CAF50;"></i> Shipped</li>
+                                                                        <li><i class="fas fa-circle" style="color: #FF9800;"></i> In Transit / At Specific Location</li>
+                                                                        <li><i class="fas fa-circle" style="color: #2196F3;"></i> Out for Delivery</li>
+                                                                        <li><i class="fas fa-circle" style="color: #4CAF50;"></i> Delivered</li>
+                                                                    </ul>
+                                                                </div>
+
+                                                                <!-- Option 2 -->
+                                                                <div class="shipping-option">
+                                                                    <h5>Option 2: Barcode Scanning</h5>
+                                                                    <p>Once packed, the system generates a barcode based on the customer's Order ID.</p>
+                                                                    <p>The delivery team or warehouse staff sticks this barcode label on the package.</p>
+                                                                    <p>As the delivery team scans the barcode at each step, the system automatically updates the order status:</p>
+                                                                    <ul class="status-list">
+                                                                        <li><i class="fas fa-circle" style="color: #607D8B;"></i> Packed</li>
+                                                                        <li><i class="fas fa-circle" style="color: #4CAF50;"></i> Shipped</li>
+                                                                        <li><i class="fas fa-circle" style="color: #FF9800;"></i> In Transit</li>
+                                                                        <li><i class="fas fa-circle" style="color: #2196F3;"></i> Out for Delivery</li>
+                                                                        <li><i class="fas fa-circle" style="color: #4CAF50;"></i> Delivered</li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="tracking-features">
+                                                                <div class="tracking-feature">
+                                                                    <h5>Optional Security Feature (if needed):</h5>
+                                                                    <p>An OTP-based delivery confirmation can be added to prevent fraud or delivery mismatches.</p>
+                                                                </div>
+                                                                <div class="tracking-feature">
+                                                                    <h5>Real-Time Tracking:</h5>
+                                                                    <p>The website will display the live delivery status to the customer on their dashboard, pulled in real-time from the delivery team.</p>
+                                                                </div>
+                                                                <div class="tracking-feature">
+                                                                    <h5>Courier Flexibility:</h5>
+                                                                    <p>This tracking system can work with:</p>
+                                                                    <ul>
+                                                                        <li>Your own in-house delivery team, or</li>
+                                                                        <li>Can be integrated with Third-party courier services like Delhivery, Ecom Express, XpressBees, Blue Dart, or platforms like Shiprocket.</li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-calendar-alt" style="color: #673AB7;"></i>
+                                                        <span>Appointment booking</span>
+                                                    </div>
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-globe" style="color: #009688;"></i>
+                                                        <span>Currency & language converter for global customers</span>
+                                                    </div>
+                                                </div>
+                                                <div class="feature-list">
+                                                    <div class="feature-item">
+                                                        <i class="fas fa-star" style="color: #FFC107;"></i>
+                                                        <span>Product Review & Feedback System</span>
+                                                    </div>
+                                                </div>
+
+                                            <!-- Product Review System Details -->
+                                            <div class="review-system-details">
+                                                <h3>Product Review & Feedback System</h3>
+                                                <p>
+                                                    A review and rating system similar to Flipkart or Amazon, allowing verified customers to write detailed reviews and upload product images to share their experiences with the product
+                                                </p>
+                                                <p>
+                                                    So future buyers can trust the product, feel the real experiences, and purchase it with confidence.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+
+
+                                <!-- Coupons & Discounts Section -->
+                                <section class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-tags"></i>
+                                                COUPONS & DISCOUNTS
+                                            </h2>
+                                            <div class="feature-list">
+                                                <div class="feature-item">
+                                                    <i class="fas fa-ticket-alt" style="color: #FF5722;"></i>
+                                                    <span>Promo codes</span>
+                                                </div>
+                                                <div class="feature-item">
+                                                    <i class="fas fa-clock" style="color: #607D8B;"></i>
+                                                    <span>Expiry-based deals</span>
+                                                </div>
+                                                <div class="feature-item">
+                                                    <i class="fas fa-bullhorn" style="color: #FF5722;"></i>
+                                                    <span>"Latest Offers" banner integration</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Inventory Location Management Section -->
+                                <section class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-warehouse"></i>
+                                                INVENTORY LOCATION MANAGEMENT
+                                            </h2>
+
+                                            <div class="inventory-features">
+                                                <div class="inventory-feature">
+                                                    <h3>Multiple Warehouse Support</h3>
+                                                    <p>Manage stock efficiently across multiple locations (e.g., Mumbai, Delhi, Bangalore) with centralized inventory control.</p>
+                                                    <p>Easily track stock limits or about to sell out jewelleries, helping you restock in time and avoid shortages.</p>
+                                                </div>
+
+                                                <div class="inventory-feature">
+                                                    <h3>Auto-Assignment from Nearest Warehouse</h3>
+                                                    <p>The system automatically selects and assigns orders from the nearest available warehouse based on customer location.</p>
+                                                    <p>Staff will not need to manually check which location to ship from, reducing time.</p>
+                                                </div>
+
+                                                <div class="inventory-feature">
+                                                    <h3>Optimized Delivery Time & Cost</h3>
+                                                    <p>Reduces shipping time and logistics expenses by dispatching from the closest location.</p>
+                                                    <p>While the benefit is moderate for domestic deliveries, this feature becomes highly effective if you expand to international manufacturing or fulfillment in the future.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Admin Panel Section -->
+                                <section id="admin" class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-cogs"></i>
+                                                ADMIN PANEL (only admins can access)
+                                            </h2>
+
+                                            <div class="admin-features">
+                                                <div class="admin-feature">
+                                                    <h3><i class="fas fa-chart-line"></i> Dashboard</h3>
+                                                    <div class="admin-sub-features">
+                                                        <p><strong>Orders & Revenue tracking</strong></p>
+                                                        <ul>
+                                                            <li>Today, weekly, and monthly sales</li>
+                                                            <li>Stock alerts for low/out-of-stock items, etc</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class="admin-feature">
+                                                    <h3><i class="fas fa-chart-bar"></i> Reports</h3>
+                                                    <div class="admin-sub-features">
+                                                        <ul>
+                                                            <li>Sales & tax insights</li>
+                                                            <li>Best-selling products</li>
+                                                            <li>Traffic sources & profit margins, etc</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class="admin-feature">
+                                                    <h3><i class="fas fa-box"></i> Product Management</h3>
+                                                    <div class="admin-sub-features">
+                                                        <ul>
+                                                            <li>Add/Edit/Delete product card items</li>
+                                                            <li>Set pricing, categories, stock limit etc</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class="admin-feature">
+                                                    <h3><i class="fas fa-users-cog"></i> Customer Management</h3>
+                                                    <div class="admin-sub-features">
+                                                        <ul>
+                                                            <li>View users & order history</li>
+                                                            <li>Search by order ID</li>
+                                                            <li>Customer contact/address details</li>
+                                                            <li>View payment mode</li>
+                                                            <li>Track order / check status like order delivered</li>
+                                                            <li>Helps avoid order fraud/scams</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Razorpay Payment Integration Section -->
+                                <section id="payment" class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-credit-card"></i>
+                                                RAZORPAY PAYMENT INTEGRATION
+                                            </h2>
+
+                                            <p class="section-description">
+                                                Accept UPI, credit/debit card, net banking, paypal and other modes of payment
+                                            </p>
+
+                                            <div class="payment-section">
+                                                <h3>Razorpay Transaction Fee</h3>
+                                                <p>Whenever a customer makes a successful payment, Razorpay deducts a small processing fee. Below is a breakdown:</p>
+
+                                                <div class="payment-table">
+                                                    <div class="table-header">
+                                                        <span>Payment Method</span>
+                                                        <span>Razorpay Charges</span>
+                                                    </div>
+                                                    <div class="table-row">
+                                                        <span>UPI</span>
+                                                        <span>2%</span>
+                                                    </div>
+                                                    <div class="table-row">
+                                                        <span>Credit/Debit Card</span>
+                                                        <span>2%</span>
+                                                    </div>
+                                                    <div class="table-row">
+                                                        <span>Net Banking</span>
+                                                        <span>2%</span>
+                                                    </div>
+                                                    <div class="table-row">
+                                                        <span>Wallets / EMI etc.</span>
+                                                        <span>2% to 3%</span>
+                                                    </div>
+                                                </div>
+
+                                                <button class="view-more-btn" onclick="toggleRazorpayDetails()" id="razorpay-details-btn">
+                                                    <i class="fas fa-chevron-down"></i> View More About Razorpay GST Fee
+                                                </button>
+
+                                                <!-- Hidden Razorpay Details -->
+                                                <div id="razorpay-gst-details" class="razorpay-gst-details" style="display: none;">
+                                                    <p><strong>Note:</strong> Razorpay also charges 18% GST on their fee (not on your sale amount).</p>
+
+                                                    <div class="payment-example">
+                                                        <h4>Example:</h4>
+                                                        <p>If you sell jewellery worth ₹50,000 and the customer pays via credit card:</p>
+                                                        <ul>
+                                                            <li>Razorpay Fee = 2% of ₹50,000 = ₹1,000</li>
+                                                            <li>GST on Fee = 18% of ₹1,000 = ₹180</li>
+                                                            <li>Total deduction = ₹1,180</li>
+                                                            <li>Amount credited to your account = ₹50,000 – ₹1,180 = ₹48,820</li>
+                                                        </ul>
+                                                        <p>If you are a GST-registered business, you can claim the ₹180 GST paid to Razorpay as Input Tax Credit (ITC) in your GST returns.</p>
+                                                    </div>
+
+                                                    <h4>Razorpay Invoice</h4>
+                                                    <p>Every month, Razorpay gives you a PDF bill (called invoice) that shows:</p>
+                                                    <ul>
+                                                        <li>How much fee they took from your payments</li>
+                                                        <li>How much GST (18%) they charged on that fee</li>
+                                                    </ul>
+                                                    <p>Example: product price = 50,000×2%= ₹1,000 transaction fee + ₹180 GST = ₹1,180 total Razorpay deduction</p>
+
+                                                    <h4>What is GST Input Credit?</h4>
+                                                    <p>When you pay GST to someone (like Razorpay, courier companies, software services, etc.), you can inform the government through your GST return:</p>
+                                                    <p>"I have already paid ₹180 GST to Razorpay, so reduce ₹180 from the GST I need to pay on my sales."</p>
+                                                    <p>This is called Input Tax Credit (ITC).</p>
+
+                                                    <div class="gst-example">
+                                                        <h4>Simple Example</h4>
+                                                        <ul>
+                                                            <li>You sell jewellery worth ₹1,00,000 this month.</li>
+                                                            <li>You collect 3% GST from customers = ₹3,000</li>
+                                                            <li>You need to pay this ₹3,000 to the government</li>
+                                                            <li>But during the month, Razorpay deducted:
+                                                                <ul>
+                                                                    <li>₹1,000 as fees</li>
+                                                                    <li>₹180 as GST on those fees</li>
+                                                                </ul>
+                                                            </li>
+                                                            <li>So while filing your GST return, you say: "Since I already paid ₹180 GST to Razorpay, I will reduce that from my payment and now pay only ₹2,820 to the government."</li>
+                                                            <li>This is how GST Input Credit helps reduce your tax liability.</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="payment-section">
+                                                <h3>Razorpay is Safe and Trusted for Jewellery Transactions</h3>
+                                                <p>Razorpay is the most popular and trusted payment integration for websites in india and it's supports both Indian and foreign payment methods</p>
+                                                <p>Razorpay uses OTP verification and fraud detection systems to protect both you and your customers</p>
+
+                                                <div class="payment-modes">
+                                                    <h4>Payment Modes:</h4>
+                                                    <ul>
+                                                        <li>Full online payment</li>
+                                                        <li>EMI options are available for high-ticket jewellery purchases (optional)</li>
+                                                        <li>Half Advance / Half COD</li>
+                                                        <li>Full COD support</li>
+                                                    </ul>
+                                                </div>
+
+                                                <p><strong>(Note):</strong> If you don't need Razorpay integration, we can integrateother payment gateways based on your needs and preferences.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Contact Integration Section -->
+                                <section class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-phone"></i>
+                                                CONTACT INTEGRATION
+                                            </h2>
+                                            <div class="feature-list">
+                                                <div class="feature-item">
+                                                    <i class="fab fa-whatsapp" style="color: #25D366;"></i>
+                                                    <span>Floating WhatsApp button</span>
+                                                </div>
+                                                <div class="feature-item">
+                                                    <i class="fas fa-share-alt" style="color: #3F51B5;"></i>
+                                                    <span>Social media button / links</span>
+                                                </div>
+                                                <div class="feature-item">
+                                                    <i class="fas fa-map-marked-alt" style="color: #FF5722;"></i>
+                                                    <span>Store location & directions</span>
+                                                </div>
+                                                <div class="feature-item">
+                                                    <i class="fas fa-envelope" style="color: #607D8B;"></i>
+                                                    <span>Contact page with email form</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Domain & Hosting Setup Section -->
+                                <section class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-server"></i>
+                                                DOMAIN & HOSTING SETUP
+                                            </h2>
+
+                                            <div class="hosting-features">
+                                                <div class="hosting-feature">
+                                                    <h3><i class="fas fa-globe"></i> Domain name</h3>
+                                                    <p>Your website's address on the internet.</p>
+                                                    <ul>
+                                                        <li><strong>Free Domain:</strong> yourbrand.netlify.app</li>
+                                                        <li><strong>Paid Domain (recommended):</strong> ₹700–₹1,200/year (e.g., .com, .in)</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="hosting-feature">
+                                                    <h3><i class="fas fa-cloud"></i> Hosting</h3>
+                                                    <p>A service that stores your website files, images, videos etc and makes it accessible to everyone.</p>
+                                                    <ul>
+                                                        <li><strong>Platform:</strong> Netlify (or Firebase Hosting)</li>
+                                                        <li><strong>Plan:</strong> Free tier</li>
+                                                    </ul>
+                                                    <div class="hosting-includes">
+                                                        <h4>Includes:</h4>
+                                                        <ul>
+                                                            <li>Global CDN (Fast loading)</li>
+                                                            <li>100 GB bandwidth/month (Netlify)</li>
+                                                            <li>125,000 function calls/month</li>
+                                                            <li>Suitable for: Up to 20,000–30,000 monthly users</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class="hosting-feature">
+                                                    <h3><i class="fas fa-database"></i> Database</h3>
+                                                    <p>A place where your website stores and organizes data like user info, orders, product details, etc.</p>
+                                                    <ul>
+                                                        <li><strong>Platform:</strong> Firebase Firestore</li>
+                                                    </ul>
+                                                    <div class="database-tiers">
+                                                        <div class="tier">
+                                                            <h4>Free Tier:</h4>
+                                                            <ul>
+                                                                <li>1 GB storage</li>
+                                                                <li>50,000 reads/day</li>
+                                                                <li>20,000 writes/day</li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="tier">
+                                                            <h4>Paid Tier (after 1–2 years):</h4>
+                                                            <ul>
+                                                                <li>₹15-₹30/month per GB ($0.18)</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Additional Features Section -->
+                                <section class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-plus-circle"></i>
+                                                ADDITIONAL FEATURES
+                                            </h2>
+                                            <div class="feature-list">
+                                                <div class="feature-item">
+                                                    <i class="fab fa-instagram" style="color: #E4405F;"></i>
+                                                    <span>Instagram Reels integration</span>
+                                                </div>
+                                                <div class="feature-item">
+                                                    <i class="fas fa-search-plus" style="color: #4285F4;"></i>
+                                                    <span>SEO optimized (meta tags, Google indexing, fast loading)</span>
+                                                </div>
+                                                <div class="feature-item">
+                                                    <i class="fas fa-boxes" style="color: #795548;"></i>
+                                                    <span>Inventory and stock management</span>
+                                                </div>
+                                                <div class="feature-item">
+                                                    <i class="fas fa-language" style="color: #00BCD4;"></i>
+                                                    <span>Currency and language Converter</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Timeline Section -->
+                                <section class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-calendar-check"></i>
+                                                TIMELINE
+                                            </h2>
+                                            <div class="timeline-content">
+                                                <div class="timeline-item">
+                                                    <h3>Delivery: 1-1.5 months (maximum)</h3>
+                                                    <p><strong>Note:</strong> The timeline may extend to 2–3 months if there are delays in providing necessary details such as product images etc.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Benefits Section -->
+                                <section id="benefits" class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-lightbulb"></i>
+                                                IN WHAT WAYS THIS WEBSITE WILL HELP YOU?
+                                            </h2>
+
+                                            <div class="benefits">
+                                                <div class="benefit">
+                                                    <h3><i class="fas fa-clock"></i> Saves Time, increases efficiency & Enhance customer support</h3>
+                                                    <p>Your website will automate many of these tasks:</p>
+                                                    <ul>
+                                                        <li>Customers can browse collections, place orders, request returns/cancellations, and track deliveries</li>
+                                                        <li>Orders are automatically assigned to the nearest warehouse based on the customer's location, and delivery charges are calculated accordingly.</li>
+                                                        <li>Stock alerts will notify your team when products are low.</li>
+                                                        <li>Customers can View your privacy policies, return policies, terms and conditions frequently asked questions (FAQs) etc, and get answers even when you're on the off</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="benefit">
+                                                    <h3><i class="fas fa-smile"></i> Improves Customer Experience and Satisfaction</h3>
+                                                    <ul>
+                                                        <li>Advanced search filters, wishlist, and category sorting make it easy for customers to find what they want.</li>
+                                                        <li>Fast-loading and responsive design ensures a smooth browsing experience across mobile, tablet, and desktop</li>
+                                                        <li>Instant WhatsApp and contact options for any special inquiries or custom requests.</li>
+                                                        <li>Built-in returns and cancellation options provide a sense of trust and control.</li>
+                                                        <li>Verified product reviews with real images help them make confident purchase decisions.</li>
+                                                        <li>Coupons and Promo Offers can be applied during checkout, making customers feel rewarded and encouraging repeat purchases.</li>
+                                                        <li>Personalized deals like first‑order discounts, festive offers, and free shipping help build loyalty and increase conversions.</li>
+                                                        <li>Customers can select their nearest store and book an appointment for in-store or virtual consultations seamlessly integrated with Calendly or WhatsApp for a smooth booking experience.</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="benefit">
+                                                    <h3><i class="fas fa-chart-line"></i> Boosts Sales and Grows Your Online Presence Organically</h3>
+                                                    <p>SEO-friendly setup designed to bring organic views and sales from Google.</p>
+                                                    <p>Since you're already getting good reach on Instagram, having an e-commerce website for your jewellery brand customers can easily see your products, designs, and prices no back-and-forth needed. Most customers want things easy and simple; when they have to contact you to ask about prices or details, it takes time and many lose interest. With your own website, you close that gap fast and effectively.</p>
+
+                                                    <div class="reports-section">
+                                                        <p>The website will automatically generate and send you detailed reports such as:</p>
+                                                        <ul>
+                                                            <li>Total orders placed today</li>
+                                                            <li>Monthly revenue and profit overview</li>
+                                                            <li>New customer sign-ups</li>
+                                                            <li>Tax collected and payable</li>
+                                                            <li>Top-selling products and most-viewed designs</li>
+                                                            <li>Traffic sources (e.g., Instagram, Google, direct, etc.)</li>
+                                                        </ul>
+                                                        <p>These insights will help you understand what's working, which products are performing best, and where your customers are coming from so you can make smarter decisions, plan better marketing, and grow your jewellery business faster and more efficiently</p>
+                                                        <p>This can be integrated with your physical stores to keep everything centralized and organized, allowing you to monitor the performance of both online and in‑store sales in real‑time</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="benefit">
+                                                    <h3><i class="fas fa-globe-americas"></i> Supports Global Business Growth</h3>
+                                                    <p>Even if you're currently focused on selling within India, your website is built to scale with your business as you grow internationally:</p>
+
+                                                    <div class="global-features">
+                                                        <div class="global-feature">
+                                                            <h4>Currency & Language Converter</h4>
+                                                            <p>International visitors will automatically see your website in their local language and prices in their local currency.</p>
+                                                            <p>For example:</p>
+                                                            <p>A customer browsing from the U.S. will see prices in USD, while someone in Dubai will view the site in Arabic language with prices in AED.</p>
+                                                        </div>
+
+                                                        <div class="global-feature">
+                                                            <h4>Multiple Global Warehouse Support</h4>
+                                                            <p>Efficiently manage inventory across cities and countries with centralized control.</p>
+                                                            <p>The system automatically assigns orders to the nearest available warehouse, optimizing stock usage, reducing shipping time, and supporting global scalability.</p>
+                                                        </div>
+
+                                                        <div class="global-feature">
+                                                            <h4>Secure International Payments</h4>
+                                                            <p>Razorpay integration supports both domestic and international payment modes enabling smooth, secure transactions for global customers using credit/debit cards, UPI, net banking, PayPal, and more</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="benefit">
+                                                    <h3><i class="fas fa-shield-alt"></i> Building customer trust</h3>
+                                                    <p>Having an official website of your brand builds trust against the customers especially for your jewelry brand</p>
+                                                    <p>Customer reviews and shared jewellery images help build trust, making it easier for new customers to buy with confidence.</p>
+                                                </div>
+
+                                                <div class="benefit">
+                                                    <h3><i class="fas fa-user-shield"></i> Prevents Fraud and Scams</h3>
+                                                    <p>This website keeps complete order and customer data in the backend including payment status (paid or pending), delivery address, and contact details, etc.</p>
+                                                    <p>On the admin panel, you can see which product is ordered, where it's being delivered, and who placed the order helping you detect suspicious activity, verify genuine customers, and avoid fraud or delivery mistakes.</p>
+                                                </div>
+
+                                                <div class="benefit">
+                                                    <h3><i class="fas fa-bell"></i> Notification Marketing & Retargeting</h3>
+                                                    <p class="note">(This feature is not included by default but can be integrated if required.)</p>
+                                                    <p>Enhance customer engagement, increase return visits, and boost conversions with smart notification and retargeting tools:</p>
+                                                    <ul>
+                                                        <li><strong>Promotional Notifications:</strong> Share special offers, discount codes, and new product launches through push notifications, email campaigns, or WhatsApp messages driving repeat visits and more sales.</li>
+                                                        <li><strong>Abandoned Cart Reminders:</strong>Automatically remind customers who added items to their cart but didn't complete the purchase, encouraging them to return and buy.</li>
+                                                        <li><strong>Back-in-Stock & Price Drop Alerts:</strong> Let customers know when their favorite jewellery pieces are available again or when there's a price reduction.</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="business-benefits">
+                                                    <h3><i class="fas fa-briefcase"></i> Business Benefits:</h3>
+                                                    <ul>
+                                                        <li>Centralizes all sales, customer, and order data in one place</li>
+                                                        <li>Reduces manual work with automation features</li>
+                                                        <li>Helps build customer trust through transparency and reviews</li>
+                                                        <li>Makes your jewellery collections easily accessible across India and internationally</li>
+                                                        <li>Converts Instagram engagement into direct sales</li>
+                                                        <li>Fully scalable as your business grows</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Closing Section -->
+                                <section class="section">
+                                    <div class="container">
+                                        <div class="card closing-card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-handshake"></i>
+                                                Excited to Work With SP Jewellers
+                                            </h2>
+                                            <div class="closing-content">
+                                                <p>It would truly be a pleasure to work with a brand like SP Jewellers — a name that has defined timeless elegance and craftsmanship since 1989. Your Polki and diamond jewellery is not only admired in Delhi but also across India and internationally.</p>
+                                                <p>I’m confident that a high-end e-commerce website tailored specifically for SP Jewellers will elevate your digital presence, streamline your operations, and save your team countless hours — all while delivering a premium shopping experience and customer satisfaction through advanced features that platforms like Instagram can't do.</p>
+                                                <p>I look forward to the opportunity to contribute to your continued growth and help you scale globally even better with a website that works as seamlessly and efficiently as your team.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <!-- Contact Information Section -->
+                                <section class="section">
+                                    <div class="container">
+                                        <div class="card">
+                                            <h2 class="section-title">
+                                                <i class="fas fa-address-card"></i>
+                                                CONTACT INFO
+                                            </h2>
+                                            <div class="contact-simple">
+                                                <div class="contact-item-simple">
+                                                    <i class="fab fa-linkedin" style="color: #0077B5;"></i>
+                                                    <span>LinkedIn: </span>
+                                                    <a href="https://www.linkedin.com/in/savan-naik-6b729628a" target="_blank">https://www.linkedin.com/in/savan-naik-6b729628a</a>
+                                                </div>
+                                                <div class="contact-item-simple">
+                                                    <i class="fas fa-globe" style="color: #4CAF50;"></i>
+                                                    <span>Portfolio: </span>
+                                                    <a href="https://savannaik.netlify.app/" target="_blank">https://savannaik.netlify.app/</a>
+                                                </div>
+                                                <div class="contact-item-simple">
+                                                    <i class="fas fa-envelope" style="color: #EA4335;"></i>
+                                                    <span>Email: </span>
+                                                    <a href="mailto:sss.naik2007@gmail.com">sss.naik2007@gmail.com</a>
+                                                </div>
+                                                <div class="contact-item-simple">
+                                                    <i class="fas fa-phone" style="color: #34A853;"></i>
+                                                    <span>Phone: </span>
+                                                    <a href="tel:+919901954610">+91 9901954610</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                            </main>
+
+                            <!-- Footer -->
+                            <footer class="footer">
+                                <div class="container">
+                                    <div class="footer-content">
+                                        <div class="footer-brand">
+                                            <i class="fas fa-gem"></i>
+                                            <span>SP Jewellers E-Commerce Proposal</span>
+                                        </div>
+                                        <p>&copy; 2025 Website Proposal. All rights reserved.</p>
+                                    </div>
+                                </div>
+                            </footer>
+                            <script>
+                                // Mobile Navigation Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Toggle mobile menu
+    hamburger.addEventListener('click', function() {
+        navMenu.classList.toggle('active');
+        hamburger.classList.toggle('active');
+    });
+
+    // Close mobile menu when clicking on a link
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+        });
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+            navMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+        }
+    });
+});
+
+// Smooth Scrolling for Navigation Links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        let targetElement = document.getElementById(targetId);
+
+        // Special handling for order tracking navigation
+        if (targetId === 'features' && this.textContent.includes('Order Tracking')) {
+            // Scroll to features section and then expand order tracking details
+            targetElement = document.getElementById('features');
+            if (targetElement) {
+                const offsetTop = targetElement.offsetTop - 80;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+
+                // Auto-expand order tracking details after scrolling
+                setTimeout(() => {
+                    const orderTrackingDetails = document.getElementById('order-tracking-details');
+                    const orderTrackingBtn = document.getElementById('order-tracking-btn');
+                    if (orderTrackingDetails && orderTrackingDetails.style.display === 'none') {
+                        toggleOrderTracking();
+                    }
+                }, 800);
+            }
+        } else if (targetElement) {
+            const offsetTop = targetElement.offsetTop - 80; // Account for fixed navbar
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// Active Navigation Highlighting
+function updateActiveNav() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    let current = '';
+
+    sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        const sectionHeight = section.offsetHeight;
+
+        if (sectionTop <= 200 && sectionTop + sectionHeight > 200) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Update active nav on scroll
+window.addEventListener('scroll', updateActiveNav);
+
+// Navbar Background on Scroll
+window.addEventListener('scroll', function() {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 100) {
+        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+    } else {
+        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+        navbar.style.boxShadow = 'none';
+    }
+});
+
+// Scroll to Top Button (Optional)
+function createScrollToTopButton() {
+    const scrollButton = document.createElement('button');
+    scrollButton.innerHTML = '<i class="fas fa-chevron-up"></i>';
+    scrollButton.className = 'scroll-to-top';
+    scrollButton.style.cssText = `
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #FFD700;
+        color: #1a1a1a;
+        border: 2px solid #1a1a1a;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    `;
+
+    document.body.appendChild(scrollButton);
+
+    // Show/hide scroll button
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 500) {
+            scrollButton.style.opacity = '1';
+            scrollButton.style.visibility = 'visible';
+        } else {
+            scrollButton.style.opacity = '0';
+            scrollButton.style.visibility = 'hidden';
+        }
+    });
+
+    // Scroll to top on click
+    scrollButton.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+// Initialize scroll to top button
+createScrollToTopButton();
+
+// Scroll animations disabled - content loads immediately
+function initScrollAnimations() {
+    // Animation disabled - all content visible immediately
+    const animatedElements = document.querySelectorAll('.card, .feature-card, .feature-item');
+    animatedElements.forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+    });
+}
+
+// Initialize immediate content display when page loads
+window.addEventListener('load', initScrollAnimations);
+
+// Loading Animation
+function showLoadingAnimation() {
+    const loader = document.createElement('div');
+    loader.className = 'page-loader';
+    loader.innerHTML = `
+        <div class="loader-content">
+            <i class="fas fa-gem loader-icon"></i>
+            <p>Loading SP Jewellers Proposal...</p>
+        </div>
+    `;
+    loader.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+    `;
+
+    const loaderContent = loader.querySelector('.loader-content');
+    loaderContent.style.cssText = `
+        text-align: center;
+        color: var(--elegant-black);
+    `;
+
+    const loaderIcon = loader.querySelector('.loader-icon');
+    loaderIcon.style.cssText = `
+        font-size: 3rem;
+        color: var(--luxury-gold);
+        margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+        display: block;
+    `;
+
+    // Add pulse animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    document.body.appendChild(loader);
+
+    // Hide loader after page loads
+    window.addEventListener('load', function() {
+        setTimeout(() => {
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                if (loader.parentNode) {
+                    loader.parentNode.removeChild(loader);
+                }
+            }, 500);
+        }, 1000);
+    });
+}
+
+// Show loading animation
+showLoadingAnimation();
+
+// Enhanced hover effects
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effect to feature cards
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+            this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.1)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.style.boxShadow = 'none';
+        });
+    });
+
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll('.demo-btn');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+            `;
+
+            // Add ripple animation if not exists
+            if (!document.querySelector('#ripple-style')) {
+                const rippleStyle = document.createElement('style');
+                rippleStyle.id = 'ripple-style';
+                rippleStyle.textContent = `
+                    @keyframes ripple {
+                        to {
+                            transform: scale(2);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(rippleStyle);
+            }
+
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+                if (ripple.parentNode) {
+                    ripple.parentNode.removeChild(ripple);
+                }
+            }, 600);
+        });
+    });
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    // Press 'T' to go to top
+    if (e.key === 't' || e.key === 'T') {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    // Press 'B' to go to bottom
+    if (e.key === 'b' || e.key === 'B') {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+});
+
+// Print functionality removed as requested
+
+// Lazy loading disabled - all content loads immediately
+function initLazyLoading() {
+    // Lazy loading disabled - all content visible immediately
+    const lazyElements = document.querySelectorAll('.card');
+    lazyElements.forEach(el => {
+        el.classList.add('loaded');
+    });
+}
+
+// Initialize immediate content loading
+initLazyLoading();
+
+// Search functionality (simple text search)
+function addSearchFunctionality() {
+    const searchContainer = document.createElement('div');
+    searchContainer.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 1rem;
+        z-index: 998;
+        display: none;
+    `;
+
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Search proposal...';
+    searchInput.style.cssText = `
+        padding: 0.5rem;
+        border: 2px solid var(--luxury-gold);
+        border-radius: 6px;
+        background: white;
+        color: var(--elegant-black);
+        font-size: 0.9rem;
+        width: 200px;
+    `;
+
+    searchContainer.appendChild(searchInput);
+    document.body.appendChild(searchContainer);
+
+    // Toggle search with Ctrl+F or Cmd+F
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+            e.preventDefault();
+            searchContainer.style.display = searchContainer.style.display === 'none' ? 'block' : 'none';
+            if (searchContainer.style.display === 'block') {
+                searchInput.focus();
+            }
+        }
+
+        if (e.key === 'Escape') {
+            searchContainer.style.display = 'none';
+            clearHighlights();
+        }
+    });
+
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        clearHighlights();
+
+        if (query.length > 2) {
+            highlightText(query);
+        }
+    });
+
+    function highlightText(query) {
+        const walker = document.createTreeWalker(
+            document.body,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+
+        const textNodes = [];
+        let node;
+
+        while (node = walker.nextNode()) {
+            if (node.parentElement.tagName !== 'SCRIPT' && 
+                node.parentElement.tagName !== 'STYLE' &&
+                node.textContent.toLowerCase().includes(query)) {
+                textNodes.push(node);
+            }
+        }
+
+        textNodes.forEach(textNode => {
+            const parent = textNode.parentElement;
+            const text = textNode.textContent;
+            const regex = new RegExp(`(${query})`, 'gi');
+            const highlightedText = text.replace(regex, '<mark style="background: yellow; color: black;">$1</mark>');
+
+            if (highlightedText !== text) {
+                const span = document.createElement('span');
+                span.innerHTML = highlightedText;
+                span.className = 'search-highlight';
+                parent.replaceChild(span, textNode);
+            }
+        });
+    }
+
+    function clearHighlights() {
+        const highlights = document.querySelectorAll('.search-highlight');
+        highlights.forEach(highlight => {
+            const parent = highlight.parentElement;
+            parent.replaceChild(document.createTextNode(highlight.textContent), highlight);
+        });
+    }
+}
+
+// Initialize search functionality
+addSearchFunctionality();
+
+// Toggle Order Tracking Details
+function toggleOrderTracking() {
+    const details = document.getElementById('order-tracking-details');
+    const button = document.getElementById('order-tracking-btn');
+    const icon = button.querySelector('i');
+
+    if (details.style.display === 'none' || details.style.display === '') {
+        details.style.display = 'block';
+        button.classList.add('active');
+        button.innerHTML = '<i class="fas fa-chevron-up"></i> Show Less';
+    } else {
+        details.style.display = 'none';
+        button.classList.remove('active');
+        button.innerHTML = '<i class="fas fa-chevron-down"></i> Know More';
+    }
+}
+
+// Toggle Razorpay GST Details
+function toggleRazorpayDetails() {
+    const details = document.getElementById('razorpay-gst-details');
+    const button = document.getElementById('razorpay-details-btn');
+    const icon = button.querySelector('i');
+
+    if (details.style.display === 'none' || details.style.display === '') {
+        details.style.display = 'block';
+        button.classList.add('active');
+        button.innerHTML = '<i class="fas fa-chevron-up"></i> Show Less About Razorpay GST Fee';
+    } else {
+        details.style.display = 'none';
+        button.classList.remove('active');
+        button.innerHTML = '<i class="fas fa-chevron-down"></i> View More About Razorpay GST Fee';
+    }
+}
+
+// Console log for developers
+console.log(`
+🌟 SP Jewellers E-Commerce Proposal Website
+💎 Professional website proposal display
+🔧 Built with HTML, CSS, and JavaScript
+
+📱 Features:
+- Responsive design
+- Smooth scrolling navigation
+- Interactive animations
+- Print functionality
+- Search capability (Ctrl/Cmd + F)
+- Keyboard shortcuts (T for top, B for bottom)
+
+✨ Developed with attention to detail and luxury branding
+`);
+                            </script>
+    <script>
+        // WhatsApp Chat Function
+        function openWhatsAppChat() {
+            const phoneNumber = "+919999068838"; // SP Jewellers WhatsApp business number
+            const message = "Hi! I'm interested in creating custom bridal jewelry. Can you help me?";
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+    
+                            <script src="script.js"></script>
+                        </body>
+                        </html>

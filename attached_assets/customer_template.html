@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #777;
+        }
+        .order-info {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin: 1rem 0;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .order-reference {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 0.5rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total-row {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Thank You for Your Order!</h2>
+    </div>
+    <div class="content">
+        <p>Dear {{from_name}},</p>
+        
+        <p>Thank you for placing your order with us. We're delighted to confirm that your order has been received and is being processed.</p>
+        
+        <div class="order-info">
+            <p><strong>Order Reference:</strong> <span class="order-reference">{{order_reference}}</span></p>
+            <p><strong>Order Date:</strong> {{order_date}}</p>
+            <p><strong>Payment Method:</strong> {{payment_method}}</p>
+            <p><strong>Delivery Address:</strong><br>{{address}}</p>
+        </div>
+        
+        <h3>Order Summary</h3>
+        
+        {{{order_summary}}}
+        
+        <p><strong>Total:</strong> {{order_total}}</p>
+        
+        <p>If you have any questions about your order, please contact us with your order reference.</p>
+        
+        <p>Thank you for shopping with us!</p>
+        
+        <p>Best regards,<br>The Shop Team</p>
+    </div>
+    <div class="footer">
+        <p>This is an automated email, please do not reply directly to this message.</p>
+    </div>
+</body>
+</html>

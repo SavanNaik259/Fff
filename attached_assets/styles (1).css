@@ -1,0 +1,95 @@
+/* Custom CSS for Checkout Page */
+
+/* Product item styling */
+.product-item {
+    transition: all 0.3s ease;
+}
+
+.product-item:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Order summary table styling */
+.summary-table {
+    width: 100%;
+}
+
+.summary-table th,
+.summary-table td {
+    padding: 0.5rem;
+}
+
+.summary-table tr:not(:last-child) {
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* Toast container styling */
+.toast-container {
+    z-index: 1050;
+}
+
+/* Error message styling */
+.error-message {
+    color: var(--bs-danger);
+}
+
+/* Custom icons */
+.icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+}
+
+/* Animation for form submission */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 0.5s ease-in-out;
+}
+
+.success-animation {
+    color: var(--bs-success);
+}
+
+/* EmailJS config section */
+#emailConfig {
+    transition: max-height 0.3s ease;
+}
+
+/* Order confirmation styles */
+.order-confirm-header {
+    background-color: var(--bs-success);
+    color: #fff;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.order-reference {
+    font-family: monospace;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}

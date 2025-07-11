@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Shop - Auric - Timeless & Classic Jewellery</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpLGCJKypKP/lX+/Pvw2DNA" crossorigin="anonymous">
+    <!-- Fallback font awesome icons if CDN fails -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
+    <link rel="stylesheet" href="css/navbar.css?v=1.1.1">
+    <link rel="stylesheet" href="css/cart.css?v=1.0.2">
+    <link rel="stylesheet" href="css/shop.css?v=1.0.2">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script>
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+        authDomain: "auric-a0c92.firebaseapp.com",
+        projectId: "auric-a0c92",
+        storageBucket: "auric-a0c92.appspot.com",
+        messagingSenderId: "878979958342",
+        appId: "1:878979958342:web:e6092f7522488d21eaec47",
+        measurementId: "G-ZYZ750JHMB"
+      };
+
+      // Initialize Firebase directly (like in login.html)
+      firebase.initializeApp(firebaseConfig);
+
+      // Enable session persistence
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .catch(error => {
+          console.error("Auth persistence error:", error);
+        });
+    </script>
+  </head>
+  <body>
+
+    <!-- Header -->
+    <header class="header">
+        <!-- Promo Banner -->
+        <div class="promo-banner">
+            <button class="banner-arrow banner-prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <p>Save 21% on exclusive selections - <a href="#">Shop Now</a></p>
+            <button class="banner-arrow banner-next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- New Responsive Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <!-- Logo -->
+                <a href="index.html" class="brand">Auric</a>
+
+                <!-- Mobile Toggle Button -->
+                <div class="hamburger" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="nav-menu" id="navMenu">
+                    <!-- Close button for mobile menu in the top right corner -->
+                    <button class="close-menu" id="closeMenu">×</button>
+
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="new-arrivals.html" class="nav-link">New Arrivals</a></li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle">Collection <i class="fas fa-chevron-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="shop.html?category=necklace">Necklace</a></li>
+                                <li><a href="shop.html?category=bangles">Bangles</a></li>
+                                <li><a href="shop.html?category=earrings">Earrings</a></li>
+                                <li><a href="shop.html?category=ring">Ring</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+                        <li class="nav-item"><a href="index.html#testimonials" class="nav-link">Testimonials</a></li>
+                        <li class="nav-item"><a href="order-track.html" class="nav-link">Order Track</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                    </ul>
+
+                    <!-- Mobile account links in separate div after Contact -->
+                    <div class="mobile-account-links mobile-special">
+                        <a href="login.html" class="mobile-account-link">
+                            <i class="fas fa-user"></i> Account
+                        </a>
+                        <a href="#" class="mobile-account-link wishlist-toggle">
+                            <i class="fas fa-heart"></i> Wishlist (<span class="mobile-wishlist-count">0</span>)
+                        </a>
+                        <a href="#" class="mobile-account-link mobile-cart-toggle">
+                            <i class="fas fa-shopping-bag"></i> Shopping Bag (<span class="mobile-cart-count">0</span>)
+                        </a>
+
+                    </div>
+                </div>
+
+                <!-- Navigation Icons - Matching the image -->
+                <div class="nav-icons">
+                    <a href="#" class="icon-link"><i class="fa-solid fa-magnifying-glass"></i></a>
+                    <a href="login.html" class="icon-link" id="user-icon"><i class="fa-solid fa-user"></i></a>
+                    <a href="#" class="icon-link wishlist-icon-container">
+                        <i class="fa-solid fa-heart"></i>
+                        <div class="wishlist-count">0</div>
+                    </a>
+                    <a href="#" class="icon-link cart-icon-container cart-toggle" id="cartToggleButton">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <div class="cart-count">0</div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Overlay for menu background -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Shop Filter Header -->
+    <div class="shop-filter-header">
+        <div class="filter-option">FILTER</div>
+        <div class="sort-option" id="sortOption">
+            <span>SORT BY</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <!-- Sort Dropdown Menu -->
+        <div class="sort-dropdown" id="sortDropdown">
+            <div class="sort-dropdown-option" data-sort="featured">Featured</div>
+            <div class="sort-dropdown-option" data-sort="price-low-high">Price: Low to High</div>
+            <div class="sort-dropdown-option" data-sort="price-high-low">Price: High to Low</div>
+            <div class="sort-dropdown-option" data-sort="newest">Newest</div>
+        </div>
+    </div>
+
+    <!-- Product Grid Section -->
+    <section class="shop-products container">
+        <div class="products-grid" id="products-grid">
+            <!-- Gold Necklaces -->
+            <div class="product-item" style="background: none"data-product-id="GN-01" data-category="gold" data-price="80155" data-date="2025-03-15">
+                <a href="product-detail.html" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150241.jpg" alt="Indrani Gutta Necklace">
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Indrani Gutta Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price" style="color: #d4af37;">₹80,155.00</span>
+
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" style="background: none;" data-product-id="GN-02" data-category="gold" data-price="37796" data-date="2025-02-20">
+                <a href="product-detail.html" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150418.jpg" alt="Chandrika Kundan Necklace">
+
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Chandrika Kundan Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price" style="color: #d4af37;">₹37,796.00</span>
+
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" style="background: none;" data-product-id="GN-03" data-category="gold" data-price="89680" data-date="2025-04-10">
+                <a href="product-detail.html" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150523.jpg" alt="Rajnavi Kundan Necklace">
+
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Rajnavi Kundan Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price" style="color: #d4af37;">₹89,680.00</span>
+
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" style="background: none;" data-product-id="DN-01" data-category="diamond" data-price="12062" data-date="2025-04-05">
+                <a href="product-detail.html" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150655.jpg" alt="Peacock Devotion Antique Necklace">
+
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Peacock Devotion Antique Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price" style="color: #d4af37;">₹12,062.00</span>
+
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" style="background: none;" data-product-id="DN-02" data-category="diamond" data-price="67520" data-date="2025-03-22">
+                <a href="product-detail.html" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_145717.jpg" alt="Maha Lakshmi Temple Necklace">
+
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Maha Lakshmi Temple Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price" style="color: #d4af37;">₹67,520.00</span>
+
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" style="background: none;" data-product-id="DN-03" data-category="diamond" data-price="45890" data-date="2025-01-15">
+                <a href="product-detail.html" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_145745.jpg" alt="Devi Emerald Kundan Necklace">
+
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Devi Emerald Kundan Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price" style="color: #d4af37;">₹45,890.00</span>
+
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" style="background: none;" data-product-id="PN-01" data-category="polki" data-price="72340" data-date="2025-02-10">
+                <a href="product-detail.html" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150226.jpg" alt="Pradhvi Polki Necklace">
+
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Pradhvi Polki Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price" style="color: #d4af37;">₹72,340.00</span>
+
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="product-item" style="background: none;" data-product-id="PN-02" data-category="polki" data-price="58700" data-date="2025-03-05">
+                <a href="product-detail.html" style="text-decoration: none; color: inherit;">
+                    <div class="product-image">
+                        <img src="images/product-category/IMG_20250504_150254.jpg" alt="Vihana Antique Necklace">
+
+                        <button class="add-to-wishlist"><i class="far fa-heart"></i></button>
+                    </div>
+                    <div class="product-details" style="text-align: center;">
+                        <h3 class="product-name">Vihana Antique Necklace</h3>
+                        <div class="product-pricing">
+                            <span class="current-price" style="color: #d4af37;">₹58,700.00</span>
+
+
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sort Options Dropdown (Hidden Initially) -->
+    <div class="sort-dropdown" id="sortDropdown">
+        <div class="sort-dropdown-option" data-sort="featured">Featured</div>
+        <div class="sort-dropdown-option" data-sort="price-low-high">Price: Low to High</div>
+        <div class="sort-dropdown-option" data-sort="price-high-low">Price: High to Low</div>
+        <div class="sort-dropdown-option" data-sort="newest">Newest</div>
+    </div>
+
+    <!-- Filter Modal (Hidden Initially) -->
+    <div class="filter-modal">
+        <div class="filter-modal-content">
+            <div class="filter-modal-header">
+                <h2>Filter Products</h2>
+                <button class="close-filter-modal" id="closeFilterModal">×</button>
+            </div>
+            <div class="filter-modal-body">
+                <div class="filter-section">
+                    <h3>Category</h3>
+                    <div class="filter-options">
+                        <label class="filter-option-label">
+                            <input type="radio" name="category" value="all" checked> All Necklaces
+                        </label>
+                        <label class="filter-option-label">
+                            <input type="radio" name="category" value="gold"> Gold
+                        </label>
+                        <label class="filter-option-label">
+                            <input type="radio" name="category" value="diamond"> Diamond
+                        </label>
+                        <label class="filter-option-label">
+                            <input type="radio" name="category" value="polki"> Polki
+                        </label>
+                        <label class="filter-option-label">
+                            <input type="radio" name="category" value="pearl"> Pearl
+                        </label>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h3>Availability</h3>
+                    <div class="filter-options">
+                        <label class="filter-option-label">
+                            <input type="checkbox" name="availability" value="ready-to-ship"> Ready to Ship
+                        </label>
+                        <label class="filter-option-label">
+                            <input type="checkbox" name="availability" value="made-to-order"> Made to Order
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-modal-footer">
+                <button class="apply-filter-btn" id="applyFilterBtn">Apply Filters</button>
+                <button class="clear-filter-btn" id="clearFilterBtn">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+      <div class="whatsapp-btn">
+          <i class="fab fa-whatsapp"></i>
+      </div>
+      <!-- Footer - Modern Redesign -->
+      <footer class="footer-modern">
+          <div class="footer-top">
+              <div class="container">
+                  <div class="footer-logo">
+                      <h2>Auric</h2>
+                      <p>Timeless Elegance, Modern Design</p>
+                  </div>
+
+                  <div class="footer-newsletter-container">
+                      <h3>Subscribe For Updates</h3>
+                      <div class="newsletter-box">
+                          <form class="modern-newsletter-form">
+                              <input type="email" placeholder="Your email address">
+                              <button type="submit">Subscribe</button>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="footer-main">
+              <div class="container">
+                  <div class="footer-widgets">
+                      <div class="footer-widget contact-widget">
+                              <h4>Contact</h4>
+<p><i class="fas fa-map-marker-alt"></i> 123 Fashion Street, City, Country</p>
+                        <p><i class="fas fa-phone"></i> 090003 95566</p>
+                        <p><i class="fas fa-envelope"></i> auric@gmail.com</p>
+
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-pinterest"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-widget">
+                        <h4>Shop</h4>
+                        <ul>
+                            <li><a href="#">Necklaces</a></li>
+                            <li><a href="#">Bracelets</a></li>
+                            <li><a href="#">Earrings</a></li>
+                            <li><a href="#">Rings</a></li>
+                            <li><a href="#">Anklets</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-widget">
+                        <h4>Customer Care</h4>
+                        <ul>
+                            <li><a href="#">My Account</a></li>
+                            <li><a href="#">Track Order</a></li>
+                            <li><a href="#">Shipping Policy</a></li>
+                            <li><a href="#">Returns & Exchanges</a></li>
+                            <li><a href="#">FAQs</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-widget">
+                        <h4>About Us</h4>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+
+                            <li><a href="#">Testimonials</a></li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-info">
+                    <div class="copyright">
+                        <p>&copy; 2025 Auric. All rights reserved. | Developed by <a href="https://savannaik.netlify.app/" target="_blank" style="color: #9c7c38; text-decoration: none; font-weight: 500;">Savan Naik</a></p>
+                    </div>
+
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Sitemap</a>
+                        </div>
+
+                    <div class="payment-methods">
+                        <span><i class="fab fa-cc-amex"></i></span>
+                        <!-- <span><i class="fab fa-apple-pay"></i></span>
+                        <span><i class="fab fa-cc-diners-club"></i></span>-->
+                        <span><i class="fab fa-cc-discover"></i></span>
+                        <span><i class="fab fa-google-pay"></i></span>
+                        <span><i class="fab fa-cc-mastercard"></i></span>
+                        <span><i class="fab fa-cc-paypal"></i></span>
+                        <span class="union-pay">UP</span>
+                        <span><i class="fab fa-cc-visa"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </footer>
+    <!-- Shop JS for filtering and sorting -->
+    <script src="js/shop.js"></script>
+
+    <!-- Core JS Files -->
+    <script src="js/navigation.js?v=1.0.4"></script>
+    <script src="js/banner-rotator.js?v=1.0.1"></script>
+    <script src="js/error-handler.js"></script>
+    <script src="js/firebase/firebase-auth.js"></script>
+    <script src="js/cart-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-cart-manager.js?v=1.0.0"></script>
+    <script src="js/cart-manager.js?v=1.0.1"></script>
+    <script src="js/wishlist-local-storage.js?v=1.0.0"></script>
+    <script src="js/firebase/firebase-wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/wishlist-manager.js?v=1.0.0"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Firebase Authentication Check -->
+    <script>
+      // Use the already loaded firebase-auth.js
+      const FirebaseAuth = window.FirebaseAuth;
+
+      // Handle user authentication state
+      document.addEventListener('DOMContentLoaded', () => {
+        const userIcon = document.getElementById('user-icon');
+
+        if (userIcon) {
+          // First check current Firebase user
+          const currentUser = firebase.auth().currentUser;
+
+          if (currentUser) {
+            // Firebase user is logged in
+            console.log("Firebase user is logged in:", currentUser.uid);
+            userIcon.href = "profile.html";
+            userIcon.classList.add('logged-in');
+          } else {
+            // No current Firebase user, check session
+            if (FirebaseAuth.isLoggedIn()) {
+              // User is logged in according to session
+              console.log("User is logged in from session");
+              userIcon.href = "profile.html";
+              userIcon.classList.add('logged-in');
+            } else {
+              // No session found
+              console.log("No user session found");
+              userIcon.href = "login.html";
+              userIcon.classList.remove('logged-in');
+            }
+          }
+        }
+      });
+
+
+      // Also set up auth state observer for real-time updates
+      FirebaseAuth.observeAuthState((user) => {
+        // Get the reference to the user icon again, since this may run at a different time
+        const userIcon = document.getElementById('user-icon');
+
+        // Only proceed if userIcon exists
+        if (userIcon) {
+          if (user) {
+            // User is signed in, update icon to go to profile
+            console.log("Auth state: User is signed in:", user.uid);
+
+            // Save session data in case it was missing
+            FirebaseAuth.saveSession({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName || 'User',
+              photoURL: user.photoURL,
+              loggedIn: true
+            });
+
+            userIcon.href = "profile.html";
+            userIcon.classList.add('logged-in');
+          } else {
+            // User is not signed in, keep login link
+            console.log("Auth state: User is signed out");
+            FirebaseAuth.clearSession();
+            userIcon.href = "login.html";
+            userIcon.classList.remove('logged-in');
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
