@@ -42,8 +42,42 @@ app.use((req, res, next) => {
   next();
 });
 
+// Import products API
+const productsAPI = require('./server/products-api');
+
 // API Endpoints
 // =============
+
+/**
+ * Products API: Get bridal products
+ */
+app.get('/api/products/bridal', async (req, res) => {
+  try {
+    const result = await productsAPI.getBridalProducts();
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Products API: Clear cache
+ */
+app.post('/api/cache/clear', (req, res) => {
+  const result = productsAPI.clearCache();
+  res.json(result);
+});
+
+/**
+ * Products API: Get cache stats
+ */
+app.get('/api/cache/stats', (req, res) => {
+  const stats = productsAPI.getCacheStats();
+  res.json(stats);
+});
 
 /**
  * Send order confirmation emails
@@ -53,7 +87,7 @@ app.post('/api/send-order-email', async (req, res) => {
   try {
     // Get order data from request body
     const orderData = req.body;
-    
+
     // Validate required data
     if (!orderData || !orderData.customer || !orderData.products) {
       return res.status(400).json({
@@ -61,12 +95,12 @@ app.post('/api/send-order-email', async (req, res) => {
         message: 'Missing required order data'
       });
     }
-    
+
     console.log('Received order email request for:', orderData.orderReference);
-    
+
     // Send emails
     const result = await emailService.sendOrderEmails(orderData);
-    
+
     if (result.success) {
       return res.status(200).json({
         success: true,
@@ -97,16 +131,16 @@ app.post('/api/create-razorpay-order', async (req, res) => {
   try {
     // Import Razorpay
     const Razorpay = require('razorpay');
-    
+
     // Create a Razorpay instance
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET
     });
-    
+
     // Get order details from request body
     const { amount, currency = 'INR', receipt, notes } = req.body;
-    
+
     // Validate required data
     if (!amount) {
       return res.status(400).json({
@@ -114,12 +148,12 @@ app.post('/api/create-razorpay-order', async (req, res) => {
         message: 'Missing required order data (amount)'
       });
     }
-    
+
     console.log('Creating Razorpay order for amount:', amount);
-    
+
     // Convert amount to paise (Razorpay uses smallest currency unit)
     const amountInPaise = Math.round(amount * 100);
-    
+
     // Create order
     const order = await razorpay.orders.create({
       amount: amountInPaise,
@@ -127,7 +161,7 @@ app.post('/api/create-razorpay-order', async (req, res) => {
       receipt,
       notes
     });
-    
+
     // Return order details
     return res.status(200).json({
       success: true,
@@ -151,7 +185,7 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
   try {
     // Get payment details from request body
     const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-    
+
     // Validate required data
     if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
       return res.status(400).json({
@@ -159,9 +193,9 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
         message: 'Missing required payment verification data'
       });
     }
-    
+
     console.log('Verifying Razorpay payment:', razorpay_payment_id);
-    
+
     // Create the signature verification data
     const crypto = require('crypto');
     const secret = process.env.RAZORPAY_KEY_SECRET;
@@ -169,7 +203,7 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
       .createHmac('sha256', secret)
       .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest('hex');
-    
+
     // Verify the signature
     if (generated_signature === razorpay_signature) {
       return res.status(200).json({
@@ -245,7 +279,7 @@ app.use((req, res) => {
   if (req.path === '/') {
     return res.sendFile(path.join(__dirname, 'index.html'));
   }
-  
+
   // For API requests that don't match a route, return 404 JSON
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({
@@ -253,7 +287,7 @@ app.use((req, res) => {
       message: 'API endpoint not found'
     });
   }
-  
+
   // For all other requests, try the exact file or fall back to index.html
   const filePath = path.join(__dirname, req.path);
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
@@ -283,6 +317,9 @@ Available Routes:
 - POST /api/create-razorpay-order : Create a new Razorpay payment order
 - POST /api/verify-razorpay-payment : Verify a Razorpay payment signature
 - GET  /api/health : Health check endpoint
+- GET  /api/products/bridal : Get bridal products
+- POST /api/cache/clear : Clear products cache
+- GET  /api/cache/stats : Get products cache stats
 
 Press Ctrl+C to stop the server
 `);
