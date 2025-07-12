@@ -124,10 +124,12 @@ Auric is a premium jewelry e-commerce platform built with a modern web stack fea
   - Firebase Storage: Product data stored as JSON in `productData/bridal-products.json` 
   - Firebase Firestore: Individual products stored for reliable querying and data integrity
   - Fixed multiple product storage issue using dual storage approach
-- July 12, 2025: Updated product loading to use Cloud Storage as primary source
-  - Modified `js/bridal-products-loader.js` to load from Firebase Cloud Storage first, Firestore as fallback
-  - Added Firebase Storage SDK to `index.html` for Cloud Storage functionality
-  - Products now load from `productData/bridal-products.json` in Cloud Storage for better performance
+- July 12, 2025: Updated product loading to use Cloud Storage exclusively
+  - Modified `js/bridal-products-loader.js` to load ONLY from Firebase Cloud Storage
+  - Removed all Firestore fallbacks as per user requirement
+  - Created `upload-to-storage.html` for uploading product data to Cloud Storage
+  - Added `FIREBASE_STORAGE_RULES.md` with proper Storage rules for public read access
+  - Products load exclusively from `productData/bridal-products.json` in Cloud Storage
 
 ## User Preferences
 

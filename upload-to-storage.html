@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Products to Cloud Storage</title>
+</head>
+<body>
+    <h1>Upload Products to Firebase Cloud Storage</h1>
+    <button id="uploadBtn">Upload Bridal Products to Cloud Storage</button>
+    <div id="status"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJXLdKYEa9Zxka9Z9k9NeJGn1pIBpfYKo",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.firebasestorage.app",
+            messagingSenderId: "926354985737",
+            appId: "1:926354985737:web:ddc8c19872a6a4ef4faf21"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        // Product data to upload
+        const bridalProducts = [
+            {
+                "id": "bridal-001",
+                "name": "Radiant Bridal Necklace Set",
+                "price": 125000,
+                "image": "6Y4A6490.jpg",
+                "description": "Exquisite gold necklace set with intricate designs perfect for your special day",
+                "stock": 3,
+                "category": "bridal"
+            },
+            {
+                "id": "bridal-002", 
+                "name": "Royal Wedding Collection",
+                "price": 98500,
+                "image": "6Y4A6534.jpg",
+                "description": "Traditional bridal jewelry set featuring elegant craftsmanship",
+                "stock": 2,
+                "category": "bridal"
+            },
+            {
+                "id": "bridal-003",
+                "name": "Classic Bridal Ensemble",
+                "price": 145000,
+                "image": "6Y4A6225.jpg", 
+                "description": "Timeless bridal jewelry collection with premium finish",
+                "stock": 4,
+                "category": "bridal"
+            },
+            {
+                "id": "bridal-004",
+                "name": "Premium Bridal Set",
+                "price": 167500,
+                "image": "490A9712.jpg",
+                "description": "Luxurious bridal jewelry featuring detailed workmanship",
+                "stock": 1,
+                "category": "bridal"
+            },
+            {
+                "id": "bridal-005",
+                "name": "Elegant Wedding Collection",
+                "price": 89000,
+                "image": "490A9757.jpg",
+                "description": "Beautiful bridal set with traditional and modern elements",
+                "stock": 5,
+                "category": "bridal"
+            },
+            {
+                "id": "bridal-006",
+                "name": "Grand Bridal Heritage",
+                "price": 198000,
+                "image": "490A9973.jpg",
+                "description": "Heritage-inspired bridal jewelry with premium gold work",
+                "stock": 2,
+                "category": "bridal"
+            }
+        ];
+
+        async function uploadProductsToStorage() {
+            const statusDiv = document.getElementById('status');
+            const btn = document.getElementById('uploadBtn');
+            
+            try {
+                btn.disabled = true;
+                statusDiv.innerHTML = '<p>Uploading products to Cloud Storage...</p>';
+                
+                // Convert product data to JSON
+                const jsonData = JSON.stringify(bridalProducts, null, 2);
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                
+                // Upload to Firebase Storage
+                const storageRef = storage.ref('productData/bridal-products.json');
+                const uploadTask = await storageRef.put(blob);
+                
+                // Get download URL
+                const downloadURL = await uploadTask.ref.getDownloadURL();
+                
+                statusDiv.innerHTML = `
+                    <p style="color: green;">✅ Successfully uploaded products to Cloud Storage!</p>
+                    <p><strong>File path:</strong> productData/bridal-products.json</p>
+                    <p><strong>Download URL:</strong> <a href="${downloadURL}" target="_blank">${downloadURL}</a></p>
+                    <p><strong>Products uploaded:</strong> ${bridalProducts.length}</p>
+                `;
+                
+                console.log('Upload successful:', downloadURL);
+                
+            } catch (error) {
+                console.error('Upload failed:', error);
+                statusDiv.innerHTML = `
+                    <p style="color: red;">❌ Upload failed: ${error.message}</p>
+                    <p><strong>Error code:</strong> ${error.code || 'N/A'}</p>
+                `;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById('uploadBtn').addEventListener('click', uploadProductsToStorage);
+    </script>
+</body>
+</html>

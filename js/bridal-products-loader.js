@@ -83,143 +83,32 @@ const BridalProductsLoader = (function() {
         let products = [];
 
         try {
-            // PRIMARY: Try local JSON file first
-            console.log('Loading bridal products from local data file...');
-            try {
-                const response = await fetch('data/bridal-products.json');
-                if (response.ok) {
-                    products = await response.json();
-                    console.log('Successfully loaded products from local data:', products.length);
-                    
-                    // Validate and filter products
-                    products = products.filter(product => {
-                        const isValid = product.name && product.price && product.image;
-                        if (!isValid) {
-                            console.warn('Skipping invalid product from local data:', product);
-                        }
-                        return isValid;
-                    });
-                    
-                    // Limit products if needed
-                    if (products.length > MAX_PRODUCTS_TO_FETCH) {
-                        products = products.slice(0, MAX_PRODUCTS_TO_FETCH);
-                    }
-                } else {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            // Load products EXCLUSIVELY from Firebase Cloud Storage
+            console.log('Loading bridal products from Firebase Cloud Storage...');
+            
+            const storageRef = storage.ref('productData/bridal-products.json');
+            const downloadURL = await storageRef.getDownloadURL();
+            
+            const response = await fetch(downloadURL);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            products = await response.json();
+            console.log('Successfully loaded products from Cloud Storage:', products.length);
+            
+            // Validate and filter products
+            products = products.filter(product => {
+                const isValid = product.name && product.price && product.image;
+                if (!isValid) {
+                    console.warn('Skipping invalid product from Storage:', product);
                 }
-            } catch (localError) {
-                console.log('Local data failed, trying Cloud Storage fallback:', localError.message);
-                
-                // SECONDARY: Try Firebase Cloud Storage
-                try {
-                    console.log('Loading bridal products from Cloud Storage...');
-                    const storageRef = storage.ref('productData/bridal-products.json');
-                    const downloadURL = await storageRef.getDownloadURL();
-                    
-                    const response = await fetch(downloadURL);
-                    if (response.ok) {
-                        products = await response.json();
-                        console.log('Successfully loaded products from Cloud Storage:', products.length);
-                        
-                        // Validate and filter products
-                        products = products.filter(product => {
-                            const isValid = product.name && product.price && product.image;
-                            if (!isValid) {
-                                console.warn('Skipping invalid product from Storage:', product);
-                            }
-                            return isValid;
-                        });
-                        
-                        // Limit products if needed
-                        if (products.length > MAX_PRODUCTS_TO_FETCH) {
-                            products = products.slice(0, MAX_PRODUCTS_TO_FETCH);
-                        }
-                    } else {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                } catch (storageError) {
-                    console.log('Cloud Storage also failed, trying Firestore fallback:', storageError.message);
-                    
-                    // TERTIARY: Load from Firestore
-                    console.log('Loading bridal products from Firestore...');
-                    
-                    // Try different category variations
-                    const categoryVariations = ['bridal', 'bridal-edit', 'Bridal', 'BRIDAL'];
-                
-                for (const category of categoryVariations) {
-                    try {
-                        console.log(`Trying Firestore category: "${category}"`);
-                        const querySnapshot = await db.collection('products')
-                            .where('category', '==', category)
-                            .orderBy('createdAt', 'desc')
-                            .limit(MAX_PRODUCTS_TO_FETCH)
-                            .get();
-
-                        console.log(`Found ${querySnapshot.size} products for category "${category}"`);
-
-                        if (querySnapshot.size > 0) {
-                            querySnapshot.forEach((doc) => {
-                                const data = doc.data();
-                                
-                                // Validate required fields
-                                if (data.name && data.price && data.image) {
-                                    products.push({
-                                        id: data.id || doc.id,
-                                        name: data.name,
-                                        price: data.price,
-                                        image: data.image,
-                                        description: data.description || '',
-                                        stock: data.stock || 0,
-                                        category: data.category || category
-                                    });
-                                } else {
-                                    console.warn('Skipping invalid product from Firestore:', {
-                                        id: doc.id,
-                                        hasName: !!data.name,
-                                        hasPrice: !!data.price,
-                                        hasImage: !!data.image
-                                    });
-                                }
-                            });
-                            break; // Stop trying other categories if we found products
-                        }
-                    } catch (categoryError) {
-                        console.error(`Error querying Firestore category "${category}":`, categoryError);
-                    }
-                }
-
-                // If no products found with category filter, try without filter
-                if (products.length === 0) {
-                    try {
-                        console.log('No products found with category filter, trying all Firestore products...');
-                        const allQuery = await db.collection('products')
-                            .orderBy('createdAt', 'desc')
-                            .limit(MAX_PRODUCTS_TO_FETCH)
-                            .get();
-
-                        allQuery.forEach((doc) => {
-                            const data = doc.data();
-                            if (data.name && data.price && data.image) {
-                                products.push({
-                                    id: data.id || doc.id,
-                                    name: data.name,
-                                    price: data.price,
-                                    image: data.image,
-                                    description: data.description || '',
-                                    stock: data.stock || 0,
-                                    category: data.category || 'uncategorized'
-                                });
-                            }
-                        });
-
-                        console.log('Found', products.length, 'products from Firestore without category filter');
-                    } catch (allError) {
-                        console.error('Error loading all Firestore products:', allError);
-                    }
-                }
-                
-                    console.log('Firestore fallback completed, total products:', products.length);
-                }
+                return isValid;
+            });
+            
+            // Limit products if needed
+            if (products.length > MAX_PRODUCTS_TO_FETCH) {
+                products = products.slice(0, MAX_PRODUCTS_TO_FETCH);
             }
 
             // Cache the results in memory and localStorage
