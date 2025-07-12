@@ -1,11 +1,12 @@
 
 /**
  * Bridal Products Loader
- * Dynamically loads products from Firebase for the Bridal Edit section
+ * Dynamically loads products from Firebase Cloud Storage with Firestore fallback
  */
 
 const BridalProductsLoader = (function() {
     let db;
+    let storage;
     let isInitialized = false;
     let cachedProducts = null;
     let lastFetchTime = 0;
@@ -25,7 +26,9 @@ const BridalProductsLoader = (function() {
                 console.log('Firebase apps:', firebase.apps);
 
                 db = firebase.firestore();
+                storage = firebase.storage();
                 console.log('Firestore instance:', db);
+                console.log('Storage instance:', storage);
 
                 isInitialized = true;
                 console.log('Bridal Products Loader initialized successfully');
@@ -46,7 +49,7 @@ const BridalProductsLoader = (function() {
     }
 
     /**
-     * Load bridal products from Firestore
+     * Load bridal products from Cloud Storage with Firestore fallback
      */
     async function loadBridalProducts(forceRefresh = false) {
         if (!isInitialized) {
@@ -77,55 +80,98 @@ const BridalProductsLoader = (function() {
             }
         }
 
+        let products = [];
+
         try {
-            console.log('Loading bridal products from Firestore...');
-            console.log('Firebase DB instance:', db);
-
-            // First, let's see what products exist in general
+            // PRIMARY: Try Firebase Cloud Storage first
+            console.log('Loading bridal products from Cloud Storage...');
             try {
-                console.log('Checking all products in Firestore...');
-                const allProductsQuery = await db.collection('products').limit(10).get();
-                console.log('Total products found:', allProductsQuery.size);
+                const storageRef = storage.ref('productData/bridal-products.json');
+                const downloadURL = await storageRef.getDownloadURL();
+                
+                const response = await fetch(downloadURL);
+                if (response.ok) {
+                    products = await response.json();
+                    console.log('Successfully loaded products from Cloud Storage:', products.length);
+                    
+                    // Validate and filter products
+                    products = products.filter(product => {
+                        const isValid = product.name && product.price && product.image;
+                        if (!isValid) {
+                            console.warn('Skipping invalid product from Storage:', product);
+                        }
+                        return isValid;
+                    });
+                    
+                    // Limit products if needed
+                    if (products.length > MAX_PRODUCTS_TO_FETCH) {
+                        products = products.slice(0, MAX_PRODUCTS_TO_FETCH);
+                    }
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (storageError) {
+                console.log('Cloud Storage failed, trying Firestore fallback:', storageError.message);
+                
+                // FALLBACK: Load from Firestore
+                console.log('Loading bridal products from Firestore...');
+                
+                // Try different category variations
+                const categoryVariations = ['bridal', 'bridal-edit', 'Bridal', 'BRIDAL'];
+                
+                for (const category of categoryVariations) {
+                    try {
+                        console.log(`Trying Firestore category: "${category}"`);
+                        const querySnapshot = await db.collection('products')
+                            .where('category', '==', category)
+                            .orderBy('createdAt', 'desc')
+                            .limit(MAX_PRODUCTS_TO_FETCH)
+                            .get();
 
-                if (allProductsQuery.size === 0) {
-                    console.warn('No products found in Firestore at all!');
-                    return [];
+                        console.log(`Found ${querySnapshot.size} products for category "${category}"`);
+
+                        if (querySnapshot.size > 0) {
+                            querySnapshot.forEach((doc) => {
+                                const data = doc.data();
+                                
+                                // Validate required fields
+                                if (data.name && data.price && data.image) {
+                                    products.push({
+                                        id: data.id || doc.id,
+                                        name: data.name,
+                                        price: data.price,
+                                        image: data.image,
+                                        description: data.description || '',
+                                        stock: data.stock || 0,
+                                        category: data.category || category
+                                    });
+                                } else {
+                                    console.warn('Skipping invalid product from Firestore:', {
+                                        id: doc.id,
+                                        hasName: !!data.name,
+                                        hasPrice: !!data.price,
+                                        hasImage: !!data.image
+                                    });
+                                }
+                            });
+                            break; // Stop trying other categories if we found products
+                        }
+                    } catch (categoryError) {
+                        console.error(`Error querying Firestore category "${category}":`, categoryError);
+                    }
                 }
 
-                console.log('Sample products in Firestore:');
-                allProductsQuery.forEach((doc) => {
-                    const data = doc.data();
-                    console.log('Product ID:', doc.id);
-                    console.log('Product data:', data);
-                    console.log('Category:', data.category);
-                    console.log('---');
-                });
-            } catch (error) {
-                console.error('Error getting sample products:', error);
-                throw error; // Re-throw to see the full error
-            }
+                // If no products found with category filter, try without filter
+                if (products.length === 0) {
+                    try {
+                        console.log('No products found with category filter, trying all Firestore products...');
+                        const allQuery = await db.collection('products')
+                            .orderBy('createdAt', 'desc')
+                            .limit(MAX_PRODUCTS_TO_FETCH)
+                            .get();
 
-            // Try different category variations
-            const categoryVariations = ['bridal', 'bridal-edit', 'Bridal', 'BRIDAL'];
-            let products = [];
-
-            for (const category of categoryVariations) {
-                try {
-                    console.log(`Trying category: "${category}"`);
-                    const querySnapshot = await db.collection('products')
-                        .where('category', '==', category)
-                        .orderBy('createdAt', 'desc')
-                        .limit(MAX_PRODUCTS_TO_FETCH)
-                        .get();
-
-                    console.log(`Found ${querySnapshot.size} products for category "${category}"`);
-
-                    if (querySnapshot.size > 0) {
-                        querySnapshot.forEach((doc) => {
+                        allQuery.forEach((doc) => {
                             const data = doc.data();
-                            console.log('Found product:', doc.id, data);
-
-                            // More flexible validation
                             if (data.name && data.price && data.image) {
                                 products.push({
                                     id: data.id || doc.id,
@@ -133,52 +179,19 @@ const BridalProductsLoader = (function() {
                                     price: data.price,
                                     image: data.image,
                                     description: data.description || '',
-                                    stock: data.stock || 0
-                                });
-                            } else {
-                                console.warn('Product missing required fields:', {
-                                    id: doc.id,
-                                    hasName: !!data.name,
-                                    hasPrice: !!data.price,
-                                    hasImage: !!data.image
+                                    stock: data.stock || 0,
+                                    category: data.category || 'uncategorized'
                                 });
                             }
                         });
-                        break; // Stop trying other categories if we found products
+
+                        console.log('Found', products.length, 'products from Firestore without category filter');
+                    } catch (allError) {
+                        console.error('Error loading all Firestore products:', allError);
                     }
-                } catch (categoryError) {
-                    console.error(`Error querying category "${category}":`, categoryError);
                 }
-            }
-
-            // If no products found with category filter, try without filter
-            if (products.length === 0) {
-                try {
-                    console.log('No products found with category filter, trying all products...');
-                    const allQuery = await db.collection('products')
-                        .orderBy('createdAt', 'desc')
-                        .limit(MAX_PRODUCTS_TO_FETCH)
-                        .get();
-
-                    allQuery.forEach((doc) => {
-                        const data = doc.data();
-                        if (data.name && data.price && data.image) {
-                            products.push({
-                                id: data.id || doc.id,
-                                name: data.name,
-                                price: data.price,
-                                image: data.image,
-                                description: data.description || '',
-                                stock: data.stock || 0,
-                                category: data.category || 'uncategorized'
-                            });
-                        }
-                    });
-
-                    console.log('Found', products.length, 'products without category filter');
-                } catch (allError) {
-                    console.error('Error loading all products:', allError);
-                }
+                
+                console.log('Firestore fallback completed, total products:', products.length);
             }
 
             // Cache the results in memory and localStorage
@@ -192,7 +205,9 @@ const BridalProductsLoader = (function() {
                 console.warn('Error saving to localStorage cache:', e);
             }
 
+            console.log('Final product count loaded:', products.length);
             return products;
+            
         } catch (error) {
             console.error('Error loading bridal products:', error);
             console.error('Error details:', {
