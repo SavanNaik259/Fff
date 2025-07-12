@@ -9,16 +9,14 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow public read access to product data
+    // Allow public read/write access to product data (for admin operations)
     match /productData/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      allow read, write: if true;
     }
     
-    // Allow public read access to product images
+    // Allow public read/write access to product images (for admin operations)
     match /productImages/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      allow read, write: if true;
     }
     
     // User-specific data requires authentication
@@ -26,9 +24,9 @@ service firebase.storage {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Default rule for other paths
+    // Default rule for other paths (public access for testing)
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true;
     }
   }
 }
