@@ -1,0 +1,56 @@
+[
+  {
+    "id": "bridal-001",
+    "name": "Radiant Bridal Necklace Set",
+    "price": 125000,
+    "image": "6Y4A6490.jpg",
+    "description": "Exquisite gold necklace set with intricate designs perfect for your special day",
+    "stock": 3,
+    "category": "bridal"
+  },
+  {
+    "id": "bridal-002", 
+    "name": "Royal Wedding Collection",
+    "price": 98500,
+    "image": "6Y4A6534.jpg",
+    "description": "Traditional bridal jewelry set featuring elegant craftsmanship",
+    "stock": 2,
+    "category": "bridal"
+  },
+  {
+    "id": "bridal-003",
+    "name": "Classic Bridal Ensemble",
+    "price": 145000,
+    "image": "6Y4A6225.jpg", 
+    "description": "Timeless bridal jewelry collection with premium finish",
+    "stock": 4,
+    "category": "bridal"
+  },
+  {
+    "id": "bridal-004",
+    "name": "Premium Bridal Set",
+    "price": 167500,
+    "image": "490A9712.jpg",
+    "description": "Luxurious bridal jewelry featuring detailed workmanship",
+    "stock": 1,
+    "category": "bridal"
+  },
+  {
+    "id": "bridal-005",
+    "name": "Elegant Wedding Collection",
+    "price": 89000,
+    "image": "490A9757.jpg",
+    "description": "Beautiful bridal set with traditional and modern elements",
+    "stock": 5,
+    "category": "bridal"
+  },
+  {
+    "id": "bridal-006",
+    "name": "Grand Bridal Heritage",
+    "price": 198000,
+    "image": "490A9973.jpg",
+    "description": "Heritage-inspired bridal jewelry with premium gold work",
+    "stock": 2,
+    "category": "bridal"
+  }
+]
