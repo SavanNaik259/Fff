@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cloud Storage</title>
+</head>
+<body>
+    <h1>Testing Cloud Storage Access</h1>
+    <div id="status">Testing...</div>
+    <div id="results"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.firebasestorage.app",
+            messagingSenderId: "878979958342",
+            appId: "1:878979958342:web:e6092f7522488d21eaec47",
+            measurementId: "G-ZYZ750JHMB"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        async function testStorage() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                statusDiv.innerHTML = 'Testing Cloud Storage connection...';
+                
+                // Try to access the bridal products file
+                const storageRef = storage.ref('productData/bridal-products.json');
+                const downloadURL = await storageRef.getDownloadURL();
+                
+                statusDiv.innerHTML = 'File found! Downloading...';
+                
+                const response = await fetch(downloadURL);
+                if (response.ok) {
+                    const products = await response.json();
+                    statusDiv.innerHTML = 'Success! Products loaded from Cloud Storage.';
+                    resultsDiv.innerHTML = `
+                        <h3>Products found: ${products.length}</h3>
+                        <pre>${JSON.stringify(products, null, 2)}</pre>
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = 'Error accessing Cloud Storage';
+                resultsDiv.innerHTML = `
+                    <h3>Error details:</h3>
+                    <p><strong>Message:</strong> ${error.message}</p>
+                    <p><strong>Code:</strong> ${error.code || 'N/A'}</p>
+                    <pre>${error.stack || error.toString()}</pre>
+                `;
+                
+                // Try to create a test file
+                try {
+                    statusDiv.innerHTML += '<br>Trying to create test data...';
+                    
+                    const testData = [
+                        {
+                            id: "test-1",
+                            name: "Test Bridal Set",
+                            price: 50000,
+                            image: "test-image.jpg",
+                            description: "Test bridal jewelry set",
+                            stock: 5,
+                            category: "bridal"
+                        }
+                    ];
+                    
+                    const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
+                    const uploadRef = storage.ref('productData/bridal-products.json');
+                    
+                    await uploadRef.put(blob);
+                    statusDiv.innerHTML += '<br>Test data created successfully!';
+                    
+                    // Try to read it back
+                    const newURL = await uploadRef.getDownloadURL();
+                    const newResponse = await fetch(newURL);
+                    const newData = await newResponse.json();
+                    
+                    resultsDiv.innerHTML = `
+                        <h3>Test data created and verified:</h3>
+                        <pre>${JSON.stringify(newData, null, 2)}</pre>
+                    `;
+                    
+                } catch (createError) {
+                    resultsDiv.innerHTML += `
+                        <h3>Could not create test data:</h3>
+                        <p>${createError.message}</p>
+                    `;
+                }
+            }
+        }
+
+        // Run test when page loads
+        window.addEventListener('load', testStorage);
+    </script>
+</body>
+</html>
