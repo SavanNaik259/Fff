@@ -81,6 +81,20 @@
             font-family: 'Courier New', monospace;
             font-size: 12px;
         }
+        .error-message {
+            color: #f44336;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success-message {
+            color: #4CAF50;
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -114,8 +128,6 @@
             <h3>🧪 Test Caching Effectiveness</h3>
             <button onclick="testSingleRequest()">Single Request Test</button>
             <button onclick="testMultipleRequests()">5 Consecutive Requests</button>
-            <button onclick="enhancedTestSingleRequest()">Enhanced Single Test</button>
-            <button onclick="enhancedTestMultipleRequests()">Enhanced Multiple Test</button>
             <button onclick="testFirebaseDirectly()">Test Firebase Storage Direct</button>
             <button onclick="simulateNewUser()">Simulate New User</button>
             <button onclick="clearAllCaches()">Clear All Caches</button>
@@ -197,11 +209,11 @@
                 cacheHitCount++;
             }
             if (!cached && status !== 304) {
-                totalBandwidthUsed += size;
+                totalBandwidthUsed += size || 0;
             }
 
             const timestamp = new Date().toLocaleTimeString();
-            const logEntry = `[${timestamp}] ${type}: ${status} - ${size} bytes - ${responseTime}ms ${cached ? '(CACHED)' : '(FRESH)'}`;
+            const logEntry = `[${timestamp}] ${type}: ${status} - ${size || 0} bytes - ${responseTime}ms ${cached ? '(CACHED)' : '(FRESH)'}`;
             requestLog.push(logEntry);
 
             updateMetrics();
@@ -233,6 +245,16 @@
             logDiv.scrollTop = 0;
         }
 
+        function showError(message) {
+            const results = document.getElementById('testResults');
+            results.innerHTML = `<div class="error-message">❌ Error: ${message}</div>`;
+        }
+
+        function showSuccess(message) {
+            const results = document.getElementById('testResults');
+            results.innerHTML = `<div class="success-message">✅ ${message}</div>`;
+        }
+
         async function testSingleRequest() {
             const results = document.getElementById('testResults');
             results.innerHTML = '🔄 Testing single request...';
@@ -245,14 +267,23 @@
                 const endTime = performance.now();
                 const responseTime = Math.round(endTime - startTime);
 
-                const etag = response.headers.get('ETag');
-                const cacheControl = response.headers.get('Cache-Control');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const etag = response.headers.get('ETag') || 'Not set';
+                const cacheControl = response.headers.get('Cache-Control') || 'Not set';
                 const cached = response.status === 304 || responseTime < 10;
                 
                 let size = 0;
                 if (response.status !== 304) {
-                    const data = await response.json();
-                    size = JSON.stringify(data).length;
+                    try {
+                        const data = await response.json();
+                        size = JSON.stringify(data).length;
+                    } catch (e) {
+                        console.warn('Could not parse response as JSON');
+                        size = 0;
+                    }
                 }
 
                 logRequest('API', '/api/load-products/bridal', response.status, size, cached, responseTime);
@@ -268,7 +299,8 @@
                     </div>
                 `;
             } catch (error) {
-                results.innerHTML = `❌ Error: ${error.message}`;
+                console.error('Single request test failed:', error);
+                showError(error.message);
             }
         }
 
@@ -286,11 +318,19 @@
                     const endTime = performance.now();
                     const responseTime = Math.round(endTime - startTime);
                     
+                    if (!response.ok) {
+                        throw new Error(`Request ${i} failed: HTTP ${response.status}`);
+                    }
+
                     const cached = response.status === 304 || responseTime < 10;
                     let size = 0;
                     if (response.status !== 304) {
-                        const data = await response.json();
-                        size = JSON.stringify(data).length;
+                        try {
+                            const data = await response.json();
+                            size = JSON.stringify(data).length;
+                        } catch (e) {
+                            console.warn(`Request ${i}: Could not parse response as JSON`);
+                        }
                     }
 
                     logRequest(`REQ${i}`, '/api/load-products/bridal', response.status, size, cached, responseTime);
@@ -300,10 +340,12 @@
                     await new Promise(resolve => setTimeout(resolve, 100));
                 } catch (error) {
                     console.error(`Request ${i} failed:`, error);
+                    times.push({i, time: 0, status: 'ERROR', cached: false});
                 }
             }
 
-            const avgTime = Math.round(times.reduce((sum, t) => sum + t.time, 0) / times.length);
+            const validTimes = times.filter(t => t.time > 0);
+            const avgTime = validTimes.length > 0 ? Math.round(validTimes.reduce((sum, t) => sum + t.time, 0) / validTimes.length) : 0;
             const cacheHits = times.filter(t => t.cached).length;
 
             results.innerHTML = `
@@ -311,7 +353,7 @@
                     ✅ Completed 5 requests<br>
                     Average time: ${avgTime}ms<br>
                     Cache hits: ${cacheHits}/5 (${Math.round(cacheHits/5*100)}%)<br>
-                    ${times.map(t => `Request ${t.i}: ${t.time}ms ${t.cached ? '(CACHED)' : '(FRESH)'}`).join('<br>')}
+                    ${times.map(t => `Request ${t.i}: ${t.time > 0 ? t.time + 'ms' : 'FAILED'} ${t.cached ? '(CACHED)' : '(FRESH)'}`).join('<br>')}
                 </div>
             `;
         }
@@ -328,11 +370,17 @@
                 const endTime = performance.now();
                 const responseTime = Math.round(endTime - startTime);
 
+                if (!response.ok) {
+                    throw new Error(`Firebase Storage returned: ${response.status} ${response.statusText}`);
+                }
+
                 const cached = responseTime < 50; // Firebase CDN is very fast when cached
                 let size = 0;
-                if (response.ok) {
+                try {
                     const data = await response.json();
                     size = JSON.stringify(data).length;
+                } catch (e) {
+                    console.warn('Could not parse Firebase response as JSON');
                 }
 
                 logRequest('FIREBASE', 'Firebase Storage Direct', response.status, size, cached, responseTime);
@@ -343,51 +391,69 @@
                         Status: ${response.status}<br>
                         Size: ${size} bytes<br>
                         CDN Cached: ${cached ? 'YES' : 'NO'}<br>
-                        Cache-Control: ${response.headers.get('Cache-Control')}
+                        Cache-Control: ${response.headers.get('Cache-Control') || 'Not set'}
                     </div>
                 `;
             } catch (error) {
-                results.innerHTML = `❌ Error: ${error.message}`;
+                console.error('Firebase direct test failed:', error);
+                showError(`Firebase test failed: ${error.message}`);
             }
         }
 
         async function simulateNewUser() {
-            // Clear browser cache and test
-            if ('caches' in window) {
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            try {
+                // Clear browser cache
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                }
+                
+                // Clear localStorage
+                localStorage.removeItem('bridalProducts');
+                localStorage.removeItem('bridalProductsTime');
+                
+                const results = document.getElementById('testResults');
+                results.innerHTML = '🔄 Simulating new user (cleared all caches)...';
+                
+                // Wait a moment then test
+                setTimeout(testSingleRequest, 1000);
+            } catch (error) {
+                console.error('Simulate new user failed:', error);
+                showError(`Failed to simulate new user: ${error.message}`);
             }
-            
-            // Clear localStorage
-            localStorage.removeItem('bridalProducts');
-            localStorage.removeItem('bridalProductsTime');
-            
-            const results = document.getElementById('testResults');
-            results.innerHTML = '🔄 Simulating new user (cleared all caches)...';
-            
-            // Wait a moment then test
-            setTimeout(testSingleRequest, 1000);
         }
 
         async function clearAllCaches() {
-            if ('caches' in window) {
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                }
+                
+                localStorage.removeItem('bridalProducts');
+                localStorage.removeItem('bridalProductsTime');
+                
+                // Reset metrics
+                requestCount = 0;
+                cacheHitCount = 0;
+                totalBandwidthUsed = 0;
+                requestLog = [];
+                firebaseMetrics = {
+                    downloads: 0,
+                    bandwidth: 0,
+                    requests: 0,
+                    cacheHits: 0
+                };
+                
+                updateMetrics();
+                updateFirebaseMetrics();
+                updateLog();
+                
+                showSuccess('All caches cleared and metrics reset.');
+            } catch (error) {
+                console.error('Clear caches failed:', error);
+                showError(`Failed to clear caches: ${error.message}`);
             }
-            
-            localStorage.removeItem('bridalProducts');
-            localStorage.removeItem('bridalProductsTime');
-            
-            // Reset metrics
-            requestCount = 0;
-            cacheHitCount = 0;
-            totalBandwidthUsed = 0;
-            requestLog = [];
-            
-            updateMetrics();
-            updateLog();
-            
-            document.getElementById('testResults').innerHTML = '✅ All caches cleared and metrics reset.';
         }
 
         // Firebase metrics functions
@@ -406,25 +472,27 @@
                 // Update Firebase metrics
                 firebaseMetrics.requests++;
                 
-                if (response.status === 200) {
-                    firebaseMetrics.downloads++;
-                    // Try to get actual content length
-                    const contentLength = response.headers.get('content-length');
-                    if (contentLength) {
-                        firebaseMetrics.bandwidth += parseInt(contentLength);
-                    } else {
-                        // For JSON responses, estimate size
-                        try {
-                            const clonedResponse = response.clone();
-                            const text = await clonedResponse.text();
-                            firebaseMetrics.bandwidth += text.length;
-                        } catch (e) {
-                            // Fallback estimate
-                            firebaseMetrics.bandwidth += 10000; // ~10KB estimate
+                if (response.ok) {
+                    if (response.status === 200) {
+                        firebaseMetrics.downloads++;
+                        // Try to get actual content length
+                        const contentLength = response.headers.get('content-length');
+                        if (contentLength) {
+                            firebaseMetrics.bandwidth += parseInt(contentLength);
+                        } else {
+                            // For JSON responses, estimate size
+                            try {
+                                const clonedResponse = response.clone();
+                                const text = await clonedResponse.text();
+                                firebaseMetrics.bandwidth += text.length;
+                            } catch (e) {
+                                // Fallback estimate
+                                firebaseMetrics.bandwidth += 10000; // ~10KB estimate
+                            }
                         }
+                    } else if (response.status === 304) {
+                        firebaseMetrics.cacheHits++;
                     }
-                } else if (response.status === 304) {
-                    firebaseMetrics.cacheHits++;
                 }
                 
                 updateFirebaseMetrics();
@@ -473,23 +541,15 @@
             isMonitoring = true;
             document.getElementById('monitoringStatus').textContent = 'Monitoring Active';
             
-            // Monitor every 5 seconds
-            monitoringInterval = setInterval(() => {
-                (async () => {
-                    try {
-                        // Alternate between direct Firebase and server endpoint
-                        const useFirebaseDirect = Math.random() > 0.5;
-                        
-                        if (useFirebaseDirect) {
-                            await trackFirebaseRequest('https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2Fbridal-products.json?alt=media');
-                        } else {
-                            await trackFirebaseRequest('/api/load-products/bridal');
-                        }
-                    } catch (error) {
-                        console.error('Monitoring request failed:', error);
-                    }
-                })();
-            }, 5000);
+            // Monitor every 10 seconds (reduced frequency to avoid errors)
+            monitoringInterval = setInterval(async () => {
+                try {
+                    // Only test server endpoint to avoid CORS issues
+                    await trackFirebaseRequest('/api/load-products/bridal');
+                } catch (error) {
+                    console.error('Monitoring request failed:', error);
+                }
+            }, 10000);
         }
         
         function stopRealTimeMonitoring() {
@@ -504,23 +564,14 @@
             }
         }
         
-        // Enhanced test functions that also track Firebase metrics
-        async function enhancedTestSingleRequest() {
-            await trackFirebaseRequest('/api/load-products/bridal');
-            return await testSingleRequest();
-        }
-        
-        async function enhancedTestMultipleRequests() {
-            for (let i = 0; i < 5; i++) {
-                await trackFirebaseRequest('/api/load-products/bridal');
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-            return await testMultipleRequests();
-        }
-        
         // Initialize
         updateMetrics();
         updateFirebaseMetrics();
+        
+        // Auto-start monitoring when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Bandwidth monitor initialized');
+        });
     </script>
 </body>
 </html>
