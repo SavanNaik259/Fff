@@ -34,11 +34,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// Add no-cache headers to prevent browser caching
+// Add cache headers based on endpoint type
 app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
+  // Allow caching for product data to improve performance
+  if (req.url.startsWith('/api/load-products/')) {
+    // Cache product data for 5 minutes (browser cache)
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.setHeader('ETag', `"products-${Date.now()}"`);
+  } else {
+    // No cache for other API endpoints and dynamic content
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
   next();
 });
 
@@ -201,11 +209,27 @@ app.get('/api/load-products/:category', async (req, res) => {
     const { category } = req.params;
     console.log(`Loading ${category} products from Cloud Storage...`);
     
-    // Use server-side fetch to get data from Firebase Storage
+    // Use server-side fetch to get data from Firebase Storage with proper caching
     const storageUrl = `https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2F${category}-products.json?alt=media&token=c6a2eb63-56e3-4fc0-96ac-66773cf45f96`;
     
-    const response = await fetch(storageUrl);
+    // Add cache-friendly headers to the Firebase Storage request
+    const response = await fetch(storageUrl, {
+      headers: {
+        'Cache-Control': 'public, max-age=2592000' // 30 days
+      }
+    });
+    
     if (!response.ok) {
+      if (response.status === 404) {
+        console.log(`No ${category} products found in Firebase Storage`);
+        return res.json({
+          success: true,
+          products: [],
+          count: 0,
+          category: category,
+          message: `No ${category} products found - add some through the admin panel`
+        });
+      }
       throw new Error(`Failed to fetch from storage: ${response.status}`);
     }
     
