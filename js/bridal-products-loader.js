@@ -92,7 +92,8 @@ const BridalProductsLoader = (function() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                cache: 'default' // Use browser's default caching behavior
             });
             
             if (!response.ok) {
