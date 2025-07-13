@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restore Original Products</title>
+</head>
+<body>
+    <h1>Restoring Original Bridal Products</h1>
+    <div id="status">Working...</div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.firebasestorage.app",
+            messagingSenderId: "878979958342",
+            appId: "1:878979958342:web:e6092f7522488d21eaec47",
+            measurementId: "G-ZYZ750JHMB"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        // Original 6 bridal products
+        const originalProducts = [
+            {
+                "id": "bridal-001",
+                "name": "Radiant Bridal Necklace Set",
+                "price": 125000,
+                "image": "6Y4A6490.jpg",
+                "description": "Exquisite gold necklace set with intricate designs perfect for your special day",
+                "stock": 3,
+                "category": "bridal",
+                "createdAt": "2025-07-12T10:00:00.000Z",
+                "updatedAt": "2025-07-12T10:00:00.000Z"
+            },
+            {
+                "id": "bridal-002",
+                "name": "Royal Wedding Collection",
+                "price": 98500,
+                "image": "6Y4A6534.jpg",
+                "description": "Traditional bridal jewelry set featuring elegant craftsmanship",
+                "stock": 2,
+                "category": "bridal",
+                "createdAt": "2025-07-12T10:01:00.000Z",
+                "updatedAt": "2025-07-12T10:01:00.000Z"
+            },
+            {
+                "id": "bridal-003",
+                "name": "Classic Bridal Ensemble",
+                "price": 145000,
+                "image": "6Y4A6225.jpg",
+                "description": "Timeless bridal jewelry collection with premium finish",
+                "stock": 4,
+                "category": "bridal",
+                "createdAt": "2025-07-12T10:02:00.000Z",
+                "updatedAt": "2025-07-12T10:02:00.000Z"
+            },
+            {
+                "id": "bridal-004",
+                "name": "Premium Bridal Set",
+                "price": 167500,
+                "image": "490A9712.jpg",
+                "description": "Luxurious bridal jewelry featuring detailed workmanship",
+                "stock": 1,
+                "category": "bridal",
+                "createdAt": "2025-07-12T10:03:00.000Z",
+                "updatedAt": "2025-07-12T10:03:00.000Z"
+            },
+            {
+                "id": "bridal-005",
+                "name": "Elegant Wedding Collection",
+                "price": 89000,
+                "image": "490A9757.jpg",
+                "description": "Beautiful bridal set with traditional and modern elements",
+                "stock": 5,
+                "category": "bridal",
+                "createdAt": "2025-07-12T10:04:00.000Z",
+                "updatedAt": "2025-07-12T10:04:00.000Z"
+            },
+            {
+                "id": "bridal-006",
+                "name": "Grand Bridal Heritage",
+                "price": 198000,
+                "image": "490A9973.jpg",
+                "description": "Heritage-inspired bridal jewelry with premium gold work",
+                "stock": 2,
+                "category": "bridal",
+                "createdAt": "2025-07-12T10:05:00.000Z",
+                "updatedAt": "2025-07-12T10:05:00.000Z"
+            }
+        ];
+
+        async function restoreProducts() {
+            try {
+                document.getElementById('status').textContent = 'Uploading original products to Cloud Storage...';
+                
+                const jsonData = JSON.stringify(originalProducts, null, 2);
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                
+                const storageRef = storage.ref('productData/bridal-products.json');
+                await storageRef.put(blob);
+                
+                document.getElementById('status').innerHTML = `
+                    <h2 style="color: green;">✅ Success!</h2>
+                    <p>Restored ${originalProducts.length} original bridal products to Cloud Storage.</p>
+                    <p>You can now go back to your main page and admin panel.</p>
+                `;
+                
+            } catch (error) {
+                console.error('Error restoring products:', error);
+                document.getElementById('status').innerHTML = `
+                    <h2 style="color: red;">❌ Error!</h2>
+                    <p>Failed to restore products: ${error.message}</p>
+                `;
+            }
+        }
+
+        // Start restoration when page loads
+        window.addEventListener('load', restoreProducts);
+    </script>
+</body>
+</html>
