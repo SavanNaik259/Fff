@@ -101,10 +101,12 @@ const BridalProductsLoader = (function() {
             
             const data = await response.json();
             if (!data.success) {
-                throw new Error(data.error || 'Failed to load products from server');
+                console.warn('Server returned error, using fallback:', data.error);
+                // Still try to use products if they exist in the response
+                products = data.products || [];
+            } else {
+                products = data.products || [];
             }
-            
-            products = data.products || [];
             console.log('Successfully loaded products via server:', products.length);
             
             // Validate and filter products
