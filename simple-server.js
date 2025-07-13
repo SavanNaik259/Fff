@@ -40,7 +40,8 @@ app.use((req, res, next) => {
   if (req.url.startsWith('/api/load-products/')) {
     // Cache product data for 5 minutes (browser cache)
     res.setHeader('Cache-Control', 'public, max-age=300');
-    res.setHeader('ETag', `"products-${Date.now()}"`);
+    // Use a stable ETag based on URL (will be updated with actual data hash later)
+    res.setHeader('ETag', `"products-${req.url.replace(/[^a-zA-Z0-9]/g, '-')}"`);
   } else {
     // No cache for other API endpoints and dynamic content
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
@@ -207,6 +208,13 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
 app.get('/api/load-products/:category', async (req, res) => {
   try {
     const { category } = req.params;
+    
+    // Check for conditional requests (If-None-Match header)
+    const clientETag = req.headers['if-none-match'];
+    if (clientETag) {
+      console.log(`Client sent ETag: ${clientETag}, checking for cache hit...`);
+    }
+    
     console.log(`Loading ${category} products from Cloud Storage...`);
     
     // Use server-side fetch to get data from Firebase Storage with proper caching
@@ -236,12 +244,29 @@ app.get('/api/load-products/:category', async (req, res) => {
     const products = await response.json();
     console.log(`Successfully loaded ${products.length} ${category} products`);
     
-    res.json({
+    const responseData = {
       success: true,
       products: products,
       count: products.length,
       category: category
-    });
+    };
+    
+    // Generate a proper ETag based on the actual data content
+    const crypto = require('crypto');
+    const dataHash = crypto.createHash('md5').update(JSON.stringify(responseData)).digest('hex');
+    const etag = `"products-${category}-${dataHash}"`;
+    
+    // Check if client has the same ETag (cache hit)
+    if (clientETag && clientETag === etag) {
+      console.log(`Cache hit! Client has current version, returning 304 Not Modified`);
+      res.status(304).end();
+      return;
+    }
+    
+    res.setHeader('ETag', etag);
+    console.log(`Cache miss, sending fresh data with ETag: ${etag}`);
+    
+    res.json(responseData);
     
   } catch (error) {
     console.error('Error loading products:', error);

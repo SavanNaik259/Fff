@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Caching Test - Auric Jewelry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success { border-color: #4caf50; background-color: #f0f8f0; }
+        .error { border-color: #f44336; background-color: #fdf0f0; }
+        .warning { border-color: #ff9800; background-color: #fff8f0; }
+        .info { border-color: #2196F3; background-color: #f0f8ff; }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #5a3f2a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #4a321f;
+        }
+        .performance-chart {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .cache-status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            display: inline-block;
+        }
+        .cache-hit { background-color: #d4edda; color: #155724; }
+        .cache-miss { background-color: #f8d7da; color: #721c24; }
+        .cache-stale { background-color: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>Complete Caching Test - Auric Jewelry</h1>
+    <p>This page tests the complete caching solution including server-side cache validation and browser HTTP caching.</p>
+
+    <div class="test-section">
+        <h3>Quick Actions</h3>
+        <button onclick="testFullCachingCycle()">Test Full Caching Cycle</button>
+        <button onclick="testCacheValidation()">Test Cache Validation</button>
+        <button onclick="testBandwidthSaving()">Test Bandwidth Saving</button>
+        <button onclick="clearAllCaches()">Clear All Caches</button>
+    </div>
+
+    <div class="test-section info" id="cacheExplanation">
+        <h3>How the Caching Works</h3>
+        <div>
+            <strong>1. Browser Cache:</strong> Stores responses for 5 minutes (max-age=300)<br>
+            <strong>2. ETag Validation:</strong> Server sends content hash, client validates with If-None-Match<br>
+            <strong>3. 304 Not Modified:</strong> Server returns 304 if content hasn't changed<br>
+            <strong>4. Firebase CDN:</strong> Firebase Storage files cached for 30 days<br>
+            <strong>5. Local Storage:</strong> JavaScript cache for quick access
+        </div>
+    </div>
+
+    <div class="test-section" id="fullCycleTest">
+        <h3>1. Full Caching Cycle Test</h3>
+        <div id="fullCycleResult">Click "Test Full Caching Cycle" to start</div>
+    </div>
+
+    <div class="test-section" id="validationTest">
+        <h3>2. Cache Validation Test</h3>
+        <div id="validationResult">Click "Test Cache Validation" to start</div>
+    </div>
+
+    <div class="test-section" id="bandwidthTest">
+        <h3>3. Bandwidth Saving Test</h3>
+        <div id="bandwidthResult">Click "Test Bandwidth Saving" to start</div>
+    </div>
+
+    <div class="test-section" id="performanceMetrics">
+        <h3>4. Performance Metrics</h3>
+        <div id="metricsResult">Performance data will appear after testing</div>
+    </div>
+
+    <script>
+        let testData = {
+            requests: [],
+            totalBandwidth: 0,
+            cacheHits: 0,
+            cacheMisses: 0
+        };
+
+        async function testFullCachingCycle() {
+            const result = document.getElementById('fullCycleResult');
+            const section = document.getElementById('fullCycleTest');
+            
+            result.innerHTML = '<div class="test-result">🔄 Starting full caching cycle test...</div>';
+            
+            try {
+                // Test 1: First request (should be cache miss)
+                await makeTestRequest('First request (cache miss)', true);
+                
+                // Test 2: Immediate second request (should be cache hit)
+                await makeTestRequest('Second request (cache hit)', false);
+                
+                // Test 3: Third request with same ETag (should be 304)
+                await makeTestRequest('Third request (304 validation)', false);
+                
+                // Test 4: Wait a bit and test again
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                await makeTestRequest('Fourth request (after delay)', false);
+                
+                section.className = 'test-section success';
+                result.innerHTML += '<div class="test-result">✅ Full caching cycle completed successfully</div>';
+                
+                updatePerformanceMetrics();
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML += `<div class="test-result">❌ Error in caching cycle: ${error.message}</div>`;
+            }
+        }
+
+        async function testCacheValidation() {
+            const result = document.getElementById('validationResult');
+            const section = document.getElementById('validationTest');
+            
+            result.innerHTML = '<div class="test-result">🔄 Testing cache validation...</div>';
+            
+            try {
+                // Make a request and capture the ETag
+                const response = await fetch('/api/load-products/bridal', {
+                    cache: 'no-cache' // Force fresh request
+                });
+                
+                const etag = response.headers.get('ETag');
+                const data = await response.json();
+                
+                let html = `
+                    <div class="test-result">
+                        <strong>Initial Request:</strong><br>
+                        Status: ${response.status}<br>
+                        ETag: ${etag}<br>
+                        Data Size: ${JSON.stringify(data).length} bytes
+                    </div>
+                `;
+                
+                // Now make a conditional request with the same ETag
+                const conditionalResponse = await fetch('/api/load-products/bridal', {
+                    headers: {
+                        'If-None-Match': etag
+                    }
+                });
+                
+                html += `
+                    <div class="test-result">
+                        <strong>Conditional Request:</strong><br>
+                        Status: ${conditionalResponse.status}<br>
+                        ETag Match: ${conditionalResponse.headers.get('ETag') === etag ? 'Yes' : 'No'}<br>
+                        Expected: 304 Not Modified
+                    </div>
+                `;
+                
+                if (conditionalResponse.status === 304) {
+                    section.className = 'test-section success';
+                    html += '<div class="test-result">✅ Cache validation working perfectly - 304 Not Modified returned</div>';
+                } else {
+                    section.className = 'test-section warning';
+                    html += '<div class="test-result">⚠️ Cache validation not optimal - expected 304 status</div>';
+                }
+                
+                result.innerHTML = html;
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `<div class="test-result">❌ Error testing cache validation: ${error.message}</div>`;
+            }
+        }
+
+        async function testBandwidthSaving() {
+            const result = document.getElementById('bandwidthResult');
+            const section = document.getElementById('bandwidthTest');
+            
+            result.innerHTML = '<div class="test-result">🔄 Testing bandwidth saving...</div>';
+            
+            try {
+                const requests = [];
+                const requestCount = 10;
+                
+                for (let i = 1; i <= requestCount; i++) {
+                    const startTime = performance.now();
+                    
+                    const response = await fetch('/api/load-products/bridal', {
+                        cache: 'default'
+                    });
+                    
+                    const endTime = performance.now();
+                    const responseTime = endTime - startTime;
+                    
+                    const wasCached = response.status === 304 || responseTime < 5;
+                    
+                    requests.push({
+                        number: i,
+                        time: responseTime,
+                        status: response.status,
+                        cached: wasCached,
+                        size: response.status === 304 ? 0 : 1286 // Approximate size
+                    });
+                    
+                    result.innerHTML = `<div class="test-result">Request ${i}/${requestCount} - ${responseTime.toFixed(2)}ms (${wasCached ? 'CACHED' : 'FRESH'})</div>`;
+                    
+                    // Small delay between requests
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                const totalTime = requests.reduce((sum, r) => sum + r.time, 0);
+                const cachedRequests = requests.filter(r => r.cached).length;
+                const freshRequests = requests.filter(r => !r.cached).length;
+                const totalBandwidth = requests.reduce((sum, r) => sum + r.size, 0);
+                
+                let html = `
+                    <div class="performance-chart">
+                        <strong>Bandwidth Saving Results:</strong><br>
+                        Total Requests: ${requestCount}<br>
+                        Fresh Requests: ${freshRequests} (${((freshRequests/requestCount)*100).toFixed(1)}%)<br>
+                        Cached Requests: ${cachedRequests} (${((cachedRequests/requestCount)*100).toFixed(1)}%)<br>
+                        Total Bandwidth: ${totalBandwidth} bytes<br>
+                        Average Response Time: ${(totalTime/requestCount).toFixed(2)}ms<br>
+                        Bandwidth Saved: ${(cachedRequests * 1286)} bytes (${((cachedRequests * 1286) / (requestCount * 1286) * 100).toFixed(1)}%)
+                    </div>
+                `;
+                
+                // Show individual request details
+                html += '<div class="test-result"><strong>Individual Requests:</strong><br>';
+                requests.forEach(req => {
+                    const statusClass = req.cached ? 'cache-hit' : 'cache-miss';
+                    html += `<span class="cache-status ${statusClass}">Request ${req.number}: ${req.time.toFixed(2)}ms (${req.status})</span><br>`;
+                });
+                html += '</div>';
+                
+                if (cachedRequests > freshRequests) {
+                    section.className = 'test-section success';
+                    html += '<div class="test-result">✅ Excellent bandwidth saving - majority of requests cached</div>';
+                } else if (cachedRequests > 0) {
+                    section.className = 'test-section warning';
+                    html += '<div class="test-result">⚠️ Some bandwidth saving - but could be better</div>';
+                } else {
+                    section.className = 'test-section error';
+                    html += '<div class="test-result">❌ No bandwidth saving detected</div>';
+                }
+                
+                result.innerHTML = html;
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `<div class="test-result">❌ Error testing bandwidth saving: ${error.message}</div>`;
+            }
+        }
+
+        async function makeTestRequest(description, isFirst) {
+            const result = document.getElementById('fullCycleResult');
+            
+            const startTime = performance.now();
+            const response = await fetch('/api/load-products/bridal', {
+                cache: 'default'
+            });
+            const endTime = performance.now();
+            
+            const responseTime = endTime - startTime;
+            const etag = response.headers.get('ETag');
+            const cacheControl = response.headers.get('Cache-Control');
+            
+            let data;
+            if (response.status !== 304) {
+                data = await response.json();
+            }
+            
+            const requestInfo = {
+                description,
+                time: responseTime,
+                status: response.status,
+                etag,
+                cacheControl,
+                size: response.status === 304 ? 0 : JSON.stringify(data || {}).length
+            };
+            
+            testData.requests.push(requestInfo);
+            testData.totalBandwidth += requestInfo.size;
+            
+            if (response.status === 304 || responseTime < 10) {
+                testData.cacheHits++;
+            } else {
+                testData.cacheMisses++;
+            }
+            
+            const statusClass = response.status === 304 ? 'cache-hit' : 'cache-miss';
+            result.innerHTML += `
+                <div class="test-result">
+                    <strong>${description}:</strong><br>
+                    <span class="cache-status ${statusClass}">Status: ${response.status} - ${responseTime.toFixed(2)}ms</span><br>
+                    ETag: ${etag}<br>
+                    Size: ${requestInfo.size} bytes
+                </div>
+            `;
+            
+            return requestInfo;
+        }
+
+        function updatePerformanceMetrics() {
+            const result = document.getElementById('metricsResult');
+            
+            const avgResponseTime = testData.requests.reduce((sum, r) => sum + r.time, 0) / testData.requests.length;
+            const cacheHitRate = (testData.cacheHits / testData.requests.length) * 100;
+            
+            const html = `
+                <div class="performance-chart">
+                    <strong>Performance Summary:</strong><br>
+                    Total Requests: ${testData.requests.length}<br>
+                    Cache Hits: ${testData.cacheHits}<br>
+                    Cache Misses: ${testData.cacheMisses}<br>
+                    Cache Hit Rate: ${cacheHitRate.toFixed(1)}%<br>
+                    Average Response Time: ${avgResponseTime.toFixed(2)}ms<br>
+                    Total Bandwidth Used: ${testData.totalBandwidth} bytes<br>
+                    Bandwidth Saved: ${(testData.cacheHits * 1286)} bytes
+                </div>
+            `;
+            
+            result.innerHTML = html;
+        }
+
+        function clearAllCaches() {
+            // Clear test data
+            testData = {
+                requests: [],
+                totalBandwidth: 0,
+                cacheHits: 0,
+                cacheMisses: 0
+            };
+            
+            // Clear browser cache
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    return Promise.all(
+                        names.map(function(name) {
+                            return caches.delete(name);
+                        })
+                    );
+                });
+            }
+            
+            // Clear localStorage
+            localStorage.removeItem('bridalProducts');
+            localStorage.removeItem('bridalProductsTime');
+            
+            // Reset UI
+            document.getElementById('fullCycleResult').innerHTML = 'Click "Test Full Caching Cycle" to start';
+            document.getElementById('validationResult').innerHTML = 'Click "Test Cache Validation" to start';
+            document.getElementById('bandwidthResult').innerHTML = 'Click "Test Bandwidth Saving" to start';
+            document.getElementById('metricsResult').innerHTML = 'Performance data will appear after testing';
+            
+            // Reset section classes
+            document.getElementById('fullCycleTest').className = 'test-section';
+            document.getElementById('validationTest').className = 'test-section';
+            document.getElementById('bandwidthTest').className = 'test-section';
+            
+            alert('All caches cleared. Run tests again to see fresh results.');
+        }
+
+        // Auto-run a quick test when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testCacheValidation();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
