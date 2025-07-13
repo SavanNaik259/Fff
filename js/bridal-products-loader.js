@@ -85,8 +85,20 @@ const BridalProductsLoader = (function() {
             
             const storageRef = storage.ref('productData/bridal-products.json');
             const downloadURL = await storageRef.getDownloadURL();
+            console.log('Got download URL:', downloadURL);
             
-            const response = await fetch(downloadURL);
+            const response = await fetch(downloadURL, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
+            });
+            
+            console.log('Fetch response status:', response.status);
+            console.log('Fetch response ok:', response.ok);
+            
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
