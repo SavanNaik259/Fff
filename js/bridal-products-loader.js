@@ -80,40 +80,27 @@ const BridalProductsLoader = (function() {
         let products = [];
 
         try {
-            // Load products EXCLUSIVELY from Firebase Cloud Storage
-            console.log('Loading bridal products from Firebase Cloud Storage...');
+            // Load products EXCLUSIVELY from Firebase Cloud Storage via server endpoint
+            console.log('Loading bridal products from Cloud Storage via server...');
             
-            // Try direct Firebase Storage download first
-            const storageRef = storage.ref('productData/bridal-products.json');
-            
-            try {
-                // Method 1: Try to get download bytes directly
-                const blob = await storageRef.getBlob();
-                const text = await blob.text();
-                products = JSON.parse(text);
-                console.log('Successfully loaded products via blob download:', products.length);
-            } catch (blobError) {
-                console.warn('Blob download failed, trying URL method:', blobError);
-                
-                // Method 2: Fallback to download URL with better error handling
-                const downloadURL = await storageRef.getDownloadURL();
-                console.log('Got download URL:', downloadURL);
-                
-                const response = await fetch(downloadURL, {
-                    method: 'GET',
-                    mode: 'cors',
-                    cache: 'no-cache'
-                });
-                
-                console.log('Fetch response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            const response = await fetch('/api/load-products/bridal', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-                
-                products = await response.json();
-                console.log('Successfully loaded products via URL fetch:', products.length);
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
             }
+            
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to load products from server');
+            }
+            
+            products = data.products || [];
+            console.log('Successfully loaded products via server:', products.length);
             
             // Validate and filter products
             products = products.filter(product => {

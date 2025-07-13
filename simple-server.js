@@ -193,6 +193,43 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
 });
 
 /**
+ * Load products from Firebase Cloud Storage
+ * Used to bypass CORS issues with client-side Firebase Storage access
+ */
+app.get('/api/load-products/:category', async (req, res) => {
+  try {
+    const { category } = req.params;
+    console.log(`Loading ${category} products from Cloud Storage...`);
+    
+    // Use server-side fetch to get data from Firebase Storage
+    const storageUrl = `https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2F${category}-products.json?alt=media&token=c6a2eb63-56e3-4fc0-96ac-66773cf45f96`;
+    
+    const response = await fetch(storageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch from storage: ${response.status}`);
+    }
+    
+    const products = await response.json();
+    console.log(`Successfully loaded ${products.length} ${category} products`);
+    
+    res.json({
+      success: true,
+      products: products,
+      count: products.length,
+      category: category
+    });
+    
+  } catch (error) {
+    console.error('Error loading products:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      products: []
+    });
+  }
+});
+
+/**
  * Health check endpoint
  * Used to verify server is running properly
  */
@@ -282,6 +319,7 @@ Available Routes:
 - POST /api/send-order-email : Send order confirmation emails
 - POST /api/create-razorpay-order : Create a new Razorpay payment order
 - POST /api/verify-razorpay-payment : Verify a Razorpay payment signature
+- GET  /api/load-products/:category : Load products from Firebase Cloud Storage
 - GET  /api/health : Health check endpoint
 
 Press Ctrl+C to stop the server
