@@ -387,7 +387,7 @@
             return new Promise((resolve, reject) => {
                 // Set metadata for 30-day CDN caching
                 const metadata = {
-                    cacheControl: 'public, max-age=2592000', // 30 days
+                    cacheControl: 'public, max-age=2592000', // 30 days CDN cache
                     contentType: file.type
                 };
 
@@ -534,10 +534,10 @@
 
                 const storageRef = storage.ref(`productData/${category}-products.json`);
                 
-                // Upload the file
+                // Upload the file with 30-day CDN cache for optimal performance
                 const uploadTask = await storageRef.put(blob, {
                     contentType: 'application/json',
-                    cacheControl: 'public, max-age=60'
+                    cacheControl: 'public, max-age=2592000' // 30 days CDN cache
                 });
 
                 console.log('Products JSON file updated successfully with', existingProducts.length, 'products');
