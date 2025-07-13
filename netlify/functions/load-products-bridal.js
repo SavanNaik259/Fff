@@ -47,7 +47,7 @@ exports.handler = async (event, context) => {
   // Set CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, If-None-Match',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Content-Type': 'application/json'
   };
@@ -112,6 +112,23 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Get file metadata for ETag
+    const [metadata] = await file.getMetadata();
+    const etag = metadata.etag || metadata.md5Hash;
+    
+    // Check if client has cached version
+    const clientETag = event.headers['if-none-match'];
+    if (clientETag && clientETag === etag) {
+      return {
+        statusCode: 304,
+        headers: {
+          ...headers,
+          'ETag': etag,
+          'Cache-Control': 'public, max-age=300'
+        }
+      };
+    }
+
     // Download and parse the file
     const [fileContents] = await file.download();
     const products = JSON.parse(fileContents.toString());
@@ -120,7 +137,11 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      headers,
+      headers: {
+        ...headers,
+        'ETag': etag,
+        'Cache-Control': 'public, max-age=300'
+      },
       body: JSON.stringify({
         success: true,
         products: Array.isArray(products) ? products : [],
