@@ -186,12 +186,44 @@ const BridalProductsLoader = (function() {
             if (!existingLoadingMsg) {
                 const loadingDiv = document.createElement('div');
                 loadingDiv.className = 'loading-products';
-                loadingDiv.textContent = 'Loading products...';
+                loadingDiv.style.cssText = `
+                    grid-column: 1 / -1;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 60px 20px;
+                    text-align: center;
+                    color: #5a3f2a;
+                    font-family: 'Lato', sans-serif;
+                `;
+                loadingDiv.innerHTML = `
+                    <div class="loading-spinner" style="
+                        width: 40px;
+                        height: 40px;
+                        border: 3px solid #f3f3f3;
+                        border-top: 3px solid #5a3f2a;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                        margin-bottom: 15px;
+                    "></div>
+                    <p style="margin: 0; font-size: 16px; font-weight: 500;">Loading Products...</p>
+                    <style>
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
+                `;
                 bridalGrid.insertBefore(loadingDiv, bridalGrid.firstChild);
             }
 
             // Load products from Firebase
             const products = await loadBridalProducts();
+
+            // Remove loading indicator
+            const loadingElements = bridalGrid.querySelectorAll('.loading-products');
+            loadingElements.forEach(el => el.remove());
 
             if (products.length > 0) {
                 // Firebase products found - show only these
@@ -203,8 +235,9 @@ const BridalProductsLoader = (function() {
                 console.log('No products found in Firebase');
                 bridalGrid.innerHTML = `
                     <div class="no-products-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
-                        <h3>No Products Available</h3>
-                        <p>Products will appear here once they are added through the admin panel.</p>
+                        <i class="fas fa-gem" style="font-size: 48px; color: #5a3f2a; margin-bottom: 20px;"></i>
+                        <h3 style="color: #5a3f2a; margin-bottom: 10px;">No Products Available</h3>
+                        <p style="color: #666;">Products will appear here once they are added through the admin panel.</p>
                     </div>
                 `;
             }
