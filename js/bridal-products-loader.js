@@ -83,28 +83,37 @@ const BridalProductsLoader = (function() {
             // Load products EXCLUSIVELY from Firebase Cloud Storage
             console.log('Loading bridal products from Firebase Cloud Storage...');
             
+            // Try direct Firebase Storage download first
             const storageRef = storage.ref('productData/bridal-products.json');
-            const downloadURL = await storageRef.getDownloadURL();
-            console.log('Got download URL:', downloadURL);
             
-            const response = await fetch(downloadURL, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                mode: 'cors'
-            });
-            
-            console.log('Fetch response status:', response.status);
-            console.log('Fetch response ok:', response.ok);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            try {
+                // Method 1: Try to get download bytes directly
+                const blob = await storageRef.getBlob();
+                const text = await blob.text();
+                products = JSON.parse(text);
+                console.log('Successfully loaded products via blob download:', products.length);
+            } catch (blobError) {
+                console.warn('Blob download failed, trying URL method:', blobError);
+                
+                // Method 2: Fallback to download URL with better error handling
+                const downloadURL = await storageRef.getDownloadURL();
+                console.log('Got download URL:', downloadURL);
+                
+                const response = await fetch(downloadURL, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                console.log('Fetch response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                products = await response.json();
+                console.log('Successfully loaded products via URL fetch:', products.length);
             }
-            
-            products = await response.json();
-            console.log('Successfully loaded products from Cloud Storage:', products.length);
             
             // Validate and filter products
             products = products.filter(product => {
@@ -275,7 +284,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wait a bit for Firebase to initialize
     setTimeout(() => {
         if (BridalProductsLoader.init()) {
-            BridalProductsLoader.updateBridalSection();
+            // Force refresh to bypass any cache issues
+            BridalProductsLoader.loadBridalProducts(true).then(products => {
+                console.log('Initial load completed with', products.length, 'products');
+                BridalProductsLoader.updateBridalSection();
+            }).catch(error => {
+                console.error('Initial load failed:', error);
+                BridalProductsLoader.updateBridalSection();
+            });
         }
     }, 1000);
 });
