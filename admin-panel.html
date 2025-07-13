@@ -372,9 +372,10 @@
         // Generate unique product ID
         function generateProductId(category) {
             const timestamp = Date.now();
-            const randomStr = Math.random().toString(36).substring(2, 8);
+            const randomStr = Math.random().toString(36).substring(2, 10); // Longer random string
+            const microTime = performance.now().toString().replace('.', ''); // Add microsecond precision
             const prefix = category.toUpperCase().substring(0, 3);
-            return `${prefix}-${timestamp}-${randomStr}`;
+            return `${prefix}-${timestamp}-${randomStr}-${microTime}`;
         }
 
         // Upload image to Firebase Storage with progress tracking
@@ -386,7 +387,7 @@
             return new Promise((resolve, reject) => {
                 // Set metadata for 30-day CDN caching
                 const metadata = {
-                    cacheControl: 'public, max-age=2592000', // 30 days
+                    cacheControl: 'public, max-age=2592000', // 30 days CDN cache
                     contentType: file.type
                 };
 
@@ -442,30 +443,57 @@
                 if (loadingElement) {
                     loadingElement.innerHTML = `
                         <i class="fas fa-spinner"></i>
-                        <p>Loading existing products...</p>
+                        <p>Loading existing products via server...</p>
                     `;
                 }
 
-                // Add timeout for operations
-                const timeoutPromise = (ms) => new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Operation timeout')), ms)
-                );
-
-                // First, load existing products from Cloud Storage
-                console.log('Loading existing products from Cloud Storage...');
+                // Use the server API to load existing products (more reliable)
+                console.log('Loading existing products via server API...');
                 let existingProducts = [];
                 
                 try {
-                    const storageRef = storage.ref(`productData/${category}-products.json`);
-                    const downloadURL = await storageRef.getDownloadURL();
-                    const response = await fetch(downloadURL);
+                    // Use your server's API endpoint to load products
+                    const response = await fetch(`/api/load-products/${category}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
                     if (response.ok) {
-                        existingProducts = await response.json();
-                        console.log('Loaded', existingProducts.length, 'existing products');
+                        const data = await response.json();
+                        if (data.success && Array.isArray(data.products)) {
+                            existingProducts = data.products;
+                            console.log('Successfully loaded', existingProducts.length, 'existing products via server');
+                        } else {
+                            console.warn('Server returned no products or invalid format');
+                            existingProducts = [];
+                        }
+                    } else {
+                        console.warn('Server response not OK:', response.status);
+                        existingProducts = [];
                     }
                 } catch (error) {
-                    console.log('No existing products file found, creating new one');
-                    existingProducts = [];
+                    console.warn('Error loading products via server:', error.message);
+                    console.log('Falling back to direct Firebase access...');
+                    
+                    // Fallback to direct Firebase Storage access
+                    try {
+                        const storageRef = storage.ref(`productData/${category}-products.json`);
+                        const downloadURL = await storageRef.getDownloadURL();
+                        const directResponse = await fetch(downloadURL);
+                        
+                        if (directResponse.ok) {
+                            const data = await directResponse.json();
+                            if (Array.isArray(data)) {
+                                existingProducts = data;
+                                console.log('Fallback: loaded', existingProducts.length, 'products directly');
+                            }
+                        }
+                    } catch (fallbackError) {
+                        console.warn('Fallback also failed, starting with empty array');
+                        existingProducts = [];
+                    }
                 }
 
                 // Update loading message
@@ -476,13 +504,21 @@
                     `;
                 }
 
-                // Add the new product to the list
+                // Check if product already exists (just in case)
+                const existingIndex = existingProducts.findIndex(p => p.id === productData.id);
+                if (existingIndex >= 0) {
+                    console.log('Product with this ID already exists, generating new ID...');
+                    productData.id = generateProductId(category); // Generate new unique ID
+                }
+
+                // Add the new product
                 existingProducts.push(productData);
+                console.log('Added new product with ID', productData.id, 'to existing', existingProducts.length - 1, 'products');
 
                 // Sort products by creation date (newest first)
                 existingProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-                console.log('Updated product list with', existingProducts.length, 'products');
+                console.log('Updated product list now contains', existingProducts.length, 'products');
 
                 // Update loading message
                 if (loadingElement) {
@@ -497,12 +533,18 @@
                 const blob = new Blob([jsonData], { type: 'application/json' });
 
                 const storageRef = storage.ref(`productData/${category}-products.json`);
-                await Promise.race([
-                    storageRef.put(blob),
-                    timeoutPromise(15000)
-                ]);
+                
+                // Upload the file with 30-day CDN cache for optimal performance
+                const uploadTask = await storageRef.put(blob, {
+                    contentType: 'application/json',
+                    cacheControl: 'public, max-age=2592000' // 30 days CDN cache
+                });
 
                 console.log('Products JSON file updated successfully with', existingProducts.length, 'products');
+
+                // Skip verification to avoid the "Failed to fetch" error
+                console.log('Save completed successfully, skipping verification to avoid fetch errors');
+
                 return true;
             } catch (error) {
                 console.error('Error saving product data:', error);

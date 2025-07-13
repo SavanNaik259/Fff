@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netlify Deployment Test - Auric Jewelry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success { border-color: #4caf50; background-color: #f0f8f0; }
+        .error { border-color: #f44336; background-color: #fdf0f0; }
+        .warning { border-color: #ff9800; background-color: #fff8f0; }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        button {
+            background-color: #5a3f2a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #4a321f;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .instructions {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Netlify Deployment Test for Auric Jewelry</h1>
+    <p>This page will help you diagnose why your Netlify deployment shows sample products instead of your actual products.</p>
+
+    <div class="instructions">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Upload this file to your Netlify site</li>
+            <li>Access it at: <code>https://yoursite.netlify.app/test-netlify-deployment.html</code></li>
+            <li>Click "Run All Tests" to diagnose the issue</li>
+            <li>Follow the recommendations shown below</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>Quick Actions</h3>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="testNetlifyFunction()">Test Netlify Function Only</button>
+        <button onclick="clearCacheAndReload()">Clear Cache & Reload</button>
+    </div>
+
+    <div class="test-section" id="environmentTest">
+        <h3>1. Environment Detection</h3>
+        <div id="environmentResult" class="loading">Testing environment...</div>
+    </div>
+
+    <div class="test-section" id="functionTest">
+        <h3>2. Netlify Function Test</h3>
+        <div id="functionResult" class="loading">Testing Netlify function...</div>
+    </div>
+
+    <div class="test-section" id="productTest">
+        <h3>3. Product Loading Test</h3>
+        <div id="productResult" class="loading">Testing product loading...</div>
+    </div>
+
+    <div class="test-section" id="cacheTest">
+        <h3>4. Cache Status</h3>
+        <div id="cacheResult" class="loading">Checking cache...</div>
+    </div>
+
+    <div class="test-section" id="recommendations">
+        <h3>5. Recommendations</h3>
+        <div id="recommendationResult">Run tests first to see recommendations.</div>
+    </div>
+
+    <script>
+        function runAllTests() {
+            testEnvironment();
+            testNetlifyFunction();
+            testProductLoading();
+            testCache();
+        }
+
+        function testEnvironment() {
+            const result = document.getElementById('environmentResult');
+            const section = document.getElementById('environmentTest');
+            
+            const hostname = window.location.hostname;
+            const isNetlify = hostname.includes('netlify') || hostname.includes('.app');
+            const isLocal = hostname === 'localhost' || hostname.startsWith('192.168') || hostname.startsWith('127.0');
+            
+            let html = `
+                <div class="test-result">
+                    <strong>Current Environment:</strong><br>
+                    Hostname: ${hostname}<br>
+                    Is Netlify: ${isNetlify}<br>
+                    Is Local: ${isLocal}<br>
+                    Full URL: ${window.location.href}
+                </div>
+            `;
+            
+            if (isNetlify) {
+                section.className = 'test-section success';
+                html += '<div class="test-result">✅ Running on Netlify deployment</div>';
+            } else if (isLocal) {
+                section.className = 'test-section warning';
+                html += '<div class="test-result">⚠️ Running locally - deploy to Netlify to test production issues</div>';
+            } else {
+                section.className = 'test-section warning';
+                html += '<div class="test-result">⚠️ Unknown environment</div>';
+            }
+            
+            result.innerHTML = html;
+        }
+
+        async function testNetlifyFunction() {
+            const result = document.getElementById('functionResult');
+            const section = document.getElementById('functionTest');
+            
+            try {
+                result.innerHTML = '<div class="loading">Testing Netlify function...</div>';
+                
+                const functionUrl = '/.netlify/functions/load-products-bridal';
+                const response = await fetch(functionUrl);
+                const data = await response.json();
+                
+                let html = `
+                    <div class="test-result">
+                        <strong>Function Response:</strong><br>
+                        Status: ${response.status}<br>
+                        Success: ${data.success}<br>
+                        Products Count: ${data.products ? data.products.length : 0}<br>
+                        Message: ${data.message || 'None'}<br>
+                        Error: ${data.error || 'None'}
+                    </div>
+                `;
+                
+                if (data.success && data.products && data.products.length > 0) {
+                    section.className = 'test-section success';
+                    html += '<div class="test-result">✅ Netlify function is working and returning products</div>';
+                    html += `<details><summary>View Products (${data.products.length})</summary><pre>${JSON.stringify(data.products, null, 2)}</pre></details>`;
+                } else if (data.error && data.error.includes('Firebase Admin not configured')) {
+                    section.className = 'test-section error';
+                    html += '<div class="test-result">❌ Firebase Admin credentials not configured in Netlify</div>';
+                    html += '<div class="test-result"><strong>SOLUTION:</strong> Follow the steps in NETLIFY_DEPLOYMENT_FIX.md</div>';
+                } else {
+                    section.className = 'test-section warning';
+                    html += '<div class="test-result">⚠️ Function working but no products found</div>';
+                }
+                
+                result.innerHTML = html;
+                generateRecommendations();
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `
+                    <div class="test-result">❌ Error calling Netlify function: ${error.message}</div>
+                    <div class="test-result">This usually means the function doesn't exist or there's a network error.</div>
+                `;
+                generateRecommendations();
+            }
+        }
+
+        async function testProductLoading() {
+            const result = document.getElementById('productResult');
+            const section = document.getElementById('productTest');
+            
+            try {
+                result.innerHTML = '<div class="loading">Testing product loading...</div>';
+                
+                // Simulate the same logic as the bridal products loader
+                const isNetlify = window.location.hostname.includes('netlify') || window.location.hostname.includes('.app');
+                const apiEndpoint = isNetlify 
+                    ? '/.netlify/functions/load-products-bridal'
+                    : '/api/load-products/bridal';
+                
+                const response = await fetch(apiEndpoint);
+                const data = await response.json();
+                
+                let html = `
+                    <div class="test-result">
+                        <strong>Product Loading Test:</strong><br>
+                        Endpoint Used: ${apiEndpoint}<br>
+                        Response Status: ${response.status}<br>
+                        Success: ${data.success}<br>
+                        Products: ${data.products ? data.products.length : 0}
+                    </div>
+                `;
+                
+                if (data.success && data.products && data.products.length > 0) {
+                    section.className = 'test-section success';
+                    html += '<div class="test-result">✅ Products loading correctly</div>';
+                } else {
+                    section.className = 'test-section error';
+                    html += '<div class="test-result">❌ No products loaded</div>';
+                }
+                
+                result.innerHTML = html;
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `<div class="test-result">❌ Error testing product loading: ${error.message}</div>`;
+            }
+        }
+
+        function testCache() {
+            const result = document.getElementById('cacheResult');
+            const section = document.getElementById('cacheTest');
+            
+            try {
+                const bridalProducts = localStorage.getItem('bridalProducts');
+                const bridalProductsTime = localStorage.getItem('bridalProductsTime');
+                
+                let html = `
+                    <div class="test-result">
+                        <strong>Cache Status:</strong><br>
+                        localStorage bridalProducts: ${bridalProducts ? 'Present' : 'None'}<br>
+                        localStorage bridalProductsTime: ${bridalProductsTime ? new Date(parseInt(bridalProductsTime)).toLocaleString() : 'None'}
+                    </div>
+                `;
+                
+                if (bridalProducts) {
+                    try {
+                        const products = JSON.parse(bridalProducts);
+                        html += `<div class="test-result">Cached Products Count: ${products.length}</div>`;
+                        html += `<details><summary>View Cached Products</summary><pre>${JSON.stringify(products, null, 2)}</pre></details>`;
+                        
+                        section.className = 'test-section warning';
+                        html += '<div class="test-result">⚠️ Cache present - this might show old data</div>';
+                    } catch (e) {
+                        section.className = 'test-section error';
+                        html += '<div class="test-result">❌ Corrupted cache data</div>';
+                    }
+                } else {
+                    section.className = 'test-section success';
+                    html += '<div class="test-result">✅ No cache - will load fresh data</div>';
+                }
+                
+                result.innerHTML = html;
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `<div class="test-result">❌ Error checking cache: ${error.message}</div>`;
+            }
+        }
+
+        function clearCacheAndReload() {
+            try {
+                localStorage.removeItem('bridalProducts');
+                localStorage.removeItem('bridalProductsTime');
+                alert('Cache cleared! The page will reload to test fresh data loading.');
+                window.location.reload();
+            } catch (error) {
+                alert('Error clearing cache: ' + error.message);
+            }
+        }
+
+        function generateRecommendations() {
+            const result = document.getElementById('recommendationResult');
+            const section = document.getElementById('recommendations');
+            
+            // Get test results
+            const isNetlify = window.location.hostname.includes('netlify') || window.location.hostname.includes('.app');
+            
+            let html = '<div class="test-result"><strong>Based on the test results:</strong></div>';
+            
+            if (isNetlify) {
+                html += `
+                    <div class="test-result">
+                        <strong>1. Configure Firebase Admin Credentials</strong><br>
+                        • Go to your Netlify dashboard → Site Settings → Environment Variables<br>
+                        • Add the required Firebase Admin SDK variables<br>
+                        • See NETLIFY_DEPLOYMENT_FIX.md for detailed instructions
+                    </div>
+                    <div class="test-result">
+                        <strong>2. Redeploy Your Site</strong><br>
+                        • After adding environment variables, trigger a new deployment<br>
+                        • Go to Deploys tab → Trigger Deploy → Deploy Site
+                    </div>
+                    <div class="test-result">
+                        <strong>3. Test Again</strong><br>
+                        • After redeployment, refresh this page and run tests again<br>
+                        • Visit your main site to verify bridal section shows your products
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="test-result">
+                        <strong>Running Locally</strong><br>
+                        • Deploy this test file to your Netlify site to diagnose production issues<br>
+                        • Local development uses different endpoints than production
+                    </div>
+                `;
+            }
+            
+            result.innerHTML = html;
+        }
+
+        // Auto-run tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testEnvironment();
+                testCache();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -2,7 +2,7 @@
   # Directory with the built static site
   publish = "."
   # Your build command - install function dependencies
-  command = "cd netlify/functions && npm install"
+  command = "cd netlify/functions && npm install --production"
   # Directory with Netlify Functions
   functions = "netlify/functions"
 
