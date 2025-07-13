@@ -83,7 +83,12 @@ const BridalProductsLoader = (function() {
             // Load products EXCLUSIVELY from Firebase Cloud Storage via server endpoint
             console.log('Loading bridal products from Cloud Storage via server...');
             
-            const response = await fetch('/api/load-products/bridal', {
+            // Use different endpoint for Netlify vs local development
+            const apiEndpoint = window.location.hostname.includes('netlify') || window.location.hostname.includes('.app') 
+                ? '/.netlify/functions/load-products-bridal'
+                : '/api/load-products/bridal';
+            
+            const response = await fetch(apiEndpoint, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
