@@ -144,6 +144,14 @@ Auric is a premium jewelry e-commerce platform built with a modern web stack fea
   - Created `test-netlify-deployment.html` for comprehensive deployment testing and diagnosis
   - Enhanced error handling in `js/bridal-products-loader.js` to detect and report configuration issues
   - Improved user messaging when Firebase Admin credentials are missing on Netlify
+- July 13, 2025: Fixed admin panel overwriting products issue
+  - Issue: Admin panel on deployed site overwrites existing products instead of adding to them
+  - Root cause: Admin panel used local server endpoint even on Netlify deployment
+  - Created generic `netlify/functions/load-products.js` function that accepts category parameter
+  - Updated `admin-panel.html` to detect environment and use correct endpoint
+  - Updated `js/bridal-products-loader.js` to use new generic Netlify function
+  - Created `test-admin-panel-fix.html` for testing and validating the fix
+  - Admin panel now correctly loads existing products before adding new ones on both local and deployed sites
 
 ## User Preferences
 

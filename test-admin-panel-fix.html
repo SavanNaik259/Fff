@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Panel Fix - Auric Jewelry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success { border-color: #4caf50; background-color: #f0f8f0; }
+        .error { border-color: #f44336; background-color: #fdf0f0; }
+        .warning { border-color: #ff9800; background-color: #fff8f0; }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        button {
+            background-color: #5a3f2a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #4a321f;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel Fix Test - Auric Jewelry</h1>
+    <p>This page tests whether the admin panel correctly loads existing products before adding new ones.</p>
+
+    <div class="test-section">
+        <h3>Quick Actions</h3>
+        <button onclick="testProductLoading()">Test Product Loading</button>
+        <button onclick="testEnvironmentDetection()">Test Environment Detection</button>
+        <button onclick="testAllEndpoints()">Test All Endpoints</button>
+    </div>
+
+    <div class="test-section" id="environmentTest">
+        <h3>1. Environment Detection</h3>
+        <div id="environmentResult">Click "Test Environment Detection" to check</div>
+    </div>
+
+    <div class="test-section" id="loadingTest">
+        <h3>2. Product Loading Test</h3>
+        <div id="loadingResult">Click "Test Product Loading" to check</div>
+    </div>
+
+    <div class="test-section" id="endpointTest">
+        <h3>3. Endpoint Availability</h3>
+        <div id="endpointResult">Click "Test All Endpoints" to check</div>
+    </div>
+
+    <div class="test-section" id="adminPanelTest">
+        <h3>4. Admin Panel Logic Simulation</h3>
+        <div id="adminResult">Tests will simulate admin panel logic</div>
+    </div>
+
+    <script>
+        function testEnvironmentDetection() {
+            const result = document.getElementById('environmentResult');
+            const section = document.getElementById('environmentTest');
+            
+            const hostname = window.location.hostname;
+            const isNetlify = hostname.includes('netlify') || hostname.includes('.app');
+            const isLocal = hostname === 'localhost' || hostname.startsWith('192.168') || hostname.startsWith('127.0');
+            
+            // Test which endpoints would be used
+            const bridalEndpoint = isNetlify 
+                ? '/.netlify/functions/load-products?category=bridal'
+                : '/api/load-products/bridal';
+            
+            const polkiEndpoint = isNetlify 
+                ? '/.netlify/functions/load-products?category=polki'
+                : '/api/load-products/polki';
+            
+            let html = `
+                <div class="test-result">
+                    <strong>Environment Detection:</strong><br>
+                    Hostname: ${hostname}<br>
+                    Is Netlify: ${isNetlify}<br>
+                    Is Local: ${isLocal}<br><br>
+                    <strong>Endpoints that would be used:</strong><br>
+                    Bridal: ${bridalEndpoint}<br>
+                    Polki: ${polkiEndpoint}
+                </div>
+            `;
+            
+            section.className = 'test-section success';
+            result.innerHTML = html;
+        }
+
+        async function testProductLoading() {
+            const result = document.getElementById('loadingResult');
+            const section = document.getElementById('loadingTest');
+            
+            result.innerHTML = '<div class="test-result">Testing product loading...</div>';
+            
+            try {
+                // Test bridal products loading
+                const hostname = window.location.hostname;
+                const isNetlify = hostname.includes('netlify') || hostname.includes('.app');
+                const bridalEndpoint = isNetlify 
+                    ? '/.netlify/functions/load-products?category=bridal'
+                    : '/api/load-products/bridal';
+                
+                const response = await fetch(bridalEndpoint);
+                const data = await response.json();
+                
+                let html = `
+                    <div class="test-result">
+                        <strong>Bridal Products Test:</strong><br>
+                        Endpoint: ${bridalEndpoint}<br>
+                        Status: ${response.status}<br>
+                        Success: ${data.success}<br>
+                        Products Count: ${data.products ? data.products.length : 0}<br>
+                        Message: ${data.message || 'None'}
+                    </div>
+                `;
+                
+                if (data.success && data.products && data.products.length > 0) {
+                    section.className = 'test-section success';
+                    html += '<div class="test-result">✅ Product loading works correctly</div>';
+                    html += `<details><summary>View Products (${data.products.length})</summary><pre>${JSON.stringify(data.products, null, 2)}</pre></details>`;
+                } else if (data.success && data.products && data.products.length === 0) {
+                    section.className = 'test-section warning';
+                    html += '<div class="test-result">⚠️ No products found (this is expected if no products have been added)</div>';
+                } else {
+                    section.className = 'test-section error';
+                    html += '<div class="test-result">❌ Product loading failed</div>';
+                }
+                
+                result.innerHTML = html;
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `<div class="test-result">❌ Error testing product loading: ${error.message}</div>`;
+            }
+        }
+
+        async function testAllEndpoints() {
+            const result = document.getElementById('endpointResult');
+            const section = document.getElementById('endpointTest');
+            
+            result.innerHTML = '<div class="test-result">Testing all endpoints...</div>';
+            
+            const hostname = window.location.hostname;
+            const isNetlify = hostname.includes('netlify') || hostname.includes('.app');
+            
+            const endpoints = [
+                { name: 'Bridal', url: isNetlify ? '/.netlify/functions/load-products?category=bridal' : '/api/load-products/bridal' },
+                { name: 'Polki', url: isNetlify ? '/.netlify/functions/load-products?category=polki' : '/api/load-products/polki' },
+                { name: 'Rings', url: isNetlify ? '/.netlify/functions/load-products?category=rings' : '/api/load-products/rings' }
+            ];
+            
+            let allSuccess = true;
+            let html = '<div class="test-result"><strong>Endpoint Tests:</strong></div>';
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint.url);
+                    const data = await response.json();
+                    
+                    const status = response.ok && data.success ? '✅' : '❌';
+                    const productCount = data.products ? data.products.length : 0;
+                    
+                    html += `
+                        <div class="test-result">
+                            ${status} ${endpoint.name}: ${response.status} - ${productCount} products
+                        </div>
+                    `;
+                    
+                    if (!response.ok || !data.success) {
+                        allSuccess = false;
+                    }
+                    
+                } catch (error) {
+                    html += `
+                        <div class="test-result">
+                            ❌ ${endpoint.name}: Error - ${error.message}
+                        </div>
+                    `;
+                    allSuccess = false;
+                }
+            }
+            
+            section.className = allSuccess ? 'test-section success' : 'test-section warning';
+            result.innerHTML = html;
+        }
+
+        async function simulateAdminPanelLogic() {
+            const result = document.getElementById('adminResult');
+            const section = document.getElementById('adminPanelTest');
+            
+            result.innerHTML = '<div class="test-result">Simulating admin panel logic...</div>';
+            
+            try {
+                const category = 'bridal';
+                const hostname = window.location.hostname;
+                const isNetlify = hostname.includes('netlify') || hostname.includes('.app');
+                const apiEndpoint = isNetlify 
+                    ? `/.netlify/functions/load-products?category=${category}`
+                    : `/api/load-products/${category}`;
+                
+                // Step 1: Load existing products (like admin panel does)
+                const response = await fetch(apiEndpoint);
+                const data = await response.json();
+                
+                let existingProducts = [];
+                if (data.success && Array.isArray(data.products)) {
+                    existingProducts = data.products;
+                }
+                
+                // Step 2: Simulate adding a new product
+                const newProduct = {
+                    id: 'TEST-' + Date.now(),
+                    name: 'Test Product',
+                    price: 50000,
+                    category: category,
+                    description: 'Test product for simulation',
+                    image: 'test.jpg',
+                    stock: 1,
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Step 3: Add to existing products
+                const updatedProducts = [...existingProducts, newProduct];
+                
+                let html = `
+                    <div class="test-result">
+                        <strong>Admin Panel Logic Simulation:</strong><br>
+                        Endpoint Used: ${apiEndpoint}<br>
+                        Existing Products Loaded: ${existingProducts.length}<br>
+                        New Product Added: ${newProduct.name}<br>
+                        Total Products After Addition: ${updatedProducts.length}<br><br>
+                        <strong>Result:</strong> ${updatedProducts.length > existingProducts.length ? '✅ Products would be added correctly' : '❌ Addition logic failed'}
+                    </div>
+                `;
+                
+                html += `<details><summary>View Simulated Product List</summary><pre>${JSON.stringify(updatedProducts, null, 2)}</pre></details>`;
+                
+                section.className = 'test-section success';
+                result.innerHTML = html;
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `<div class="test-result">❌ Error simulating admin panel logic: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-run environment test when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testEnvironmentDetection();
+                simulateAdminPanelLogic();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
