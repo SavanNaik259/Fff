@@ -77,7 +77,17 @@ exports.handler = async (event, context) => {
 
     // Check if Firebase Admin is properly initialized
     if (admin.apps.length === 0) {
-      throw new Error('Firebase Admin not initialized - check environment variables');
+      console.error('Firebase Admin not initialized - missing environment variables');
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          products: [],
+          error: 'Firebase Admin not configured. Please set up environment variables.',
+          message: 'Missing Firebase credentials in Netlify environment variables'
+        })
+      };
     }
 
     // Get Firebase Storage bucket
