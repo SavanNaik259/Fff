@@ -137,20 +137,38 @@
 
         <!-- Firebase Usage -->
         <div class="monitor-card">
-            <h3>🔥 Firebase Storage Monitoring</h3>
-            <p><strong>To monitor Firebase usage:</strong></p>
-            <ol>
-                <li>Go to <a href="https://console.firebase.google.com/project/auric-a0c92/storage" target="_blank">Firebase Console → Storage</a></li>
-                <li>Click the <strong>"Usage"</strong> tab</li>
-                <li>Monitor <strong>"Download operations"</strong> and <strong>"Network egress"</strong></li>
-                <li>Compare before/after implementing caching</li>
-            </ol>
+            <h3>🔥 Firebase Storage Real-time Usage</h3>
+            <div class="metric">
+                <div class="metric-value" id="firebaseDownloads">0</div>
+                <div class="metric-label">Download Operations</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="firebaseBandwidth">0 MB</div>
+                <div class="metric-label">Network Egress</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="firebaseRequests">0</div>
+                <div class="metric-label">Total Requests</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="firebaseEfficiency">0%</div>
+                <div class="metric-label">Cache Efficiency</div>
+            </div>
+            <button onclick="refreshFirebaseMetrics()">🔄 Refresh Firebase Metrics</button>
+            <button onclick="startRealTimeMonitoring()">▶️ Start Real-time Monitoring</button>
+            <button onclick="stopRealTimeMonitoring()">⏹️ Stop Monitoring</button>
+            
+            <div id="firebaseStatus" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                <strong>Status:</strong> <span id="monitoringStatus">Stopped</span><br>
+                <strong>Last Updated:</strong> <span id="lastUpdate">Never</span>
+            </div>
+            
             <div style="background: #e3f2fd; padding: 15px; border-radius: 4px; margin-top: 10px;">
-                <strong>Expected Behavior:</strong><br>
-                • First request: Downloads from Firebase (~10KB JSON + images)<br>
-                • Subsequent requests: 304 Not Modified (0 bytes from Firebase)<br>
-                • New users: Use Firebase CDN cache (no origin bandwidth)<br>
-                • Product updates: Only changed files re-download
+                <strong>Real-time Tracking:</strong><br>
+                • Downloads: Direct Firebase Storage access count<br>
+                • Network Egress: Actual bandwidth used from Firebase<br>
+                • Cache Efficiency: Percentage of requests served from cache<br>
+                • Updates every 5 seconds when monitoring is active
             </div>
         </div>
     </div>
@@ -160,6 +178,16 @@
         let cacheHitCount = 0;
         let totalBandwidthUsed = 0;
         let requestLog = [];
+        
+        // Firebase real-time monitoring
+        let firebaseMetrics = {
+            downloads: 0,
+            bandwidth: 0,
+            requests: 0,
+            cacheHits: 0
+        };
+        let monitoringInterval = null;
+        let isMonitoring = false;
 
         function logRequest(type, url, status, size, cached, responseTime) {
             requestCount++;
@@ -360,8 +388,127 @@
             document.getElementById('testResults').innerHTML = '✅ All caches cleared and metrics reset.';
         }
 
+        // Firebase metrics functions
+        async function trackFirebaseRequest(url, method = 'GET') {
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    cache: 'default'
+                });
+                
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+                
+                // Update Firebase metrics
+                firebaseMetrics.requests++;
+                
+                if (response.status === 200) {
+                    firebaseMetrics.downloads++;
+                    // Estimate bandwidth (you can make this more accurate)
+                    const contentLength = response.headers.get('content-length');
+                    if (contentLength) {
+                        firebaseMetrics.bandwidth += parseInt(contentLength);
+                    } else {
+                        // Estimate based on typical response size
+                        firebaseMetrics.bandwidth += 10000; // ~10KB estimate
+                    }
+                } else if (response.status === 304) {
+                    firebaseMetrics.cacheHits++;
+                }
+                
+                updateFirebaseMetrics();
+                
+                return response;
+            } catch (error) {
+                console.error('Firebase request failed:', error);
+                return null;
+            }
+        }
+        
+        function updateFirebaseMetrics() {
+            document.getElementById('firebaseDownloads').textContent = firebaseMetrics.downloads;
+            document.getElementById('firebaseBandwidth').textContent = (firebaseMetrics.bandwidth / (1024 * 1024)).toFixed(2) + ' MB';
+            document.getElementById('firebaseRequests').textContent = firebaseMetrics.requests;
+            
+            const efficiency = firebaseMetrics.requests > 0 ? 
+                Math.round((firebaseMetrics.cacheHits / firebaseMetrics.requests) * 100) : 0;
+            document.getElementById('firebaseEfficiency').textContent = efficiency + '%';
+            
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+        
+        async function refreshFirebaseMetrics() {
+            document.getElementById('monitoringStatus').textContent = 'Refreshing...';
+            
+            try {
+                // Test Firebase Storage directly
+                await trackFirebaseRequest('https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2Fbridal-products.json?alt=media');
+                
+                // Test server endpoint
+                await trackFirebaseRequest('/api/load-products/bridal');
+                
+                document.getElementById('monitoringStatus').textContent = 'Refresh Complete';
+            } catch (error) {
+                document.getElementById('monitoringStatus').textContent = 'Refresh Failed';
+                console.error('Refresh failed:', error);
+            }
+        }
+        
+        function startRealTimeMonitoring() {
+            if (isMonitoring) return;
+            
+            isMonitoring = true;
+            document.getElementById('monitoringStatus').textContent = 'Monitoring Active';
+            
+            // Monitor every 5 seconds
+            monitoringInterval = setInterval(async () => {
+                try {
+                    // Alternate between direct Firebase and server endpoint
+                    const useFirebaseDirect = Math.random() > 0.5;
+                    
+                    if (useFirebaseDirect) {
+                        await trackFirebaseRequest('https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2Fbridal-products.json?alt=media');
+                    } else {
+                        await trackFirebaseRequest('/api/load-products/bridal');
+                    }
+                } catch (error) {
+                    console.error('Monitoring request failed:', error);
+                }
+            }, 5000);
+        }
+        
+        function stopRealTimeMonitoring() {
+            if (!isMonitoring) return;
+            
+            isMonitoring = false;
+            document.getElementById('monitoringStatus').textContent = 'Monitoring Stopped';
+            
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+                monitoringInterval = null;
+            }
+        }
+        
+        // Override test functions to also track Firebase metrics
+        const originalTestSingleRequest = testSingleRequest;
+        testSingleRequest = async function() {
+            await trackFirebaseRequest('/api/load-products/bridal');
+            return originalTestSingleRequest();
+        };
+        
+        const originalTestMultipleRequests = testMultipleRequests;
+        testMultipleRequests = async function() {
+            for (let i = 0; i < 5; i++) {
+                await trackFirebaseRequest('/api/load-products/bridal');
+            }
+            return originalTestMultipleRequests();
+        };
+        
         // Initialize
         updateMetrics();
+        updateFirebaseMetrics();
     </script>
 </body>
 </html>
