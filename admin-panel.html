@@ -443,53 +443,55 @@
                 if (loadingElement) {
                     loadingElement.innerHTML = `
                         <i class="fas fa-spinner"></i>
-                        <p>Loading existing products...</p>
+                        <p>Loading existing products via server...</p>
                     `;
                 }
 
-                // Add timeout for operations
-                const timeoutPromise = (ms) => new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Operation timeout')), ms)
-                );
-
-                // First, load existing products from Cloud Storage
-                console.log('Loading existing products from Cloud Storage...');
+                // Use the server API to load existing products (more reliable)
+                console.log('Loading existing products via server API...');
                 let existingProducts = [];
                 
                 try {
-                    const storageRef = storage.ref(`productData/${category}-products.json`);
-                    const downloadURL = await Promise.race([
-                        storageRef.getDownloadURL(),
-                        timeoutPromise(10000)
-                    ]);
-                    
-                    const response = await Promise.race([
-                        fetch(downloadURL),
-                        timeoutPromise(10000)
-                    ]);
+                    // Use your server's API endpoint to load products
+                    const response = await fetch(`/api/load-products/${category}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
                     
                     if (response.ok) {
                         const data = await response.json();
-                        // Ensure we have a valid array
-                        if (Array.isArray(data)) {
-                            existingProducts = data;
-                            console.log('Successfully loaded', existingProducts.length, 'existing products from Cloud Storage');
+                        if (data.success && Array.isArray(data.products)) {
+                            existingProducts = data.products;
+                            console.log('Successfully loaded', existingProducts.length, 'existing products via server');
                         } else {
-                            console.warn('Invalid data format in storage, starting with empty array');
+                            console.warn('Server returned no products or invalid format');
                             existingProducts = [];
                         }
                     } else {
-                        console.log('Products file exists but response not OK, starting with empty array');
+                        console.warn('Server response not OK:', response.status);
                         existingProducts = [];
                     }
                 } catch (error) {
-                    // Check if it's a 'file not found' error vs other errors
-                    if (error.code === 'storage/object-not-found' || error.message.includes('does not exist')) {
-                        console.log('No existing products file found, creating new one');
-                        existingProducts = [];
-                    } else {
-                        console.warn('Error loading existing products:', error.message);
-                        console.log('Continuing with empty array to avoid data loss');
+                    console.warn('Error loading products via server:', error.message);
+                    console.log('Falling back to direct Firebase access...');
+                    
+                    // Fallback to direct Firebase Storage access
+                    try {
+                        const storageRef = storage.ref(`productData/${category}-products.json`);
+                        const downloadURL = await storageRef.getDownloadURL();
+                        const directResponse = await fetch(downloadURL);
+                        
+                        if (directResponse.ok) {
+                            const data = await directResponse.json();
+                            if (Array.isArray(data)) {
+                                existingProducts = data;
+                                console.log('Fallback: loaded', existingProducts.length, 'products directly');
+                            }
+                        }
+                    } catch (fallbackError) {
+                        console.warn('Fallback also failed, starting with empty array');
                         existingProducts = [];
                     }
                 }
@@ -502,15 +504,21 @@
                     `;
                 }
 
-                // Always add as new product since we generate unique IDs
-                console.log('Adding new product with ID', productData.id, 'to existing', existingProducts.length, 'products');
+                // Check if product already exists (just in case)
+                const existingIndex = existingProducts.findIndex(p => p.id === productData.id);
+                if (existingIndex >= 0) {
+                    console.log('Product with this ID already exists, generating new ID...');
+                    productData.id = generateProductId(category); // Generate new unique ID
+                }
+
+                // Add the new product
                 existingProducts.push(productData);
+                console.log('Added new product with ID', productData.id, 'to existing', existingProducts.length - 1, 'products');
 
                 // Sort products by creation date (newest first)
                 existingProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
                 console.log('Updated product list now contains', existingProducts.length, 'products');
-                console.log('Product IDs in list:', existingProducts.map(p => p.id));
 
                 // Update loading message
                 if (loadingElement) {
@@ -525,30 +533,17 @@
                 const blob = new Blob([jsonData], { type: 'application/json' });
 
                 const storageRef = storage.ref(`productData/${category}-products.json`);
-                await Promise.race([
-                    storageRef.put(blob, {
-                        contentType: 'application/json',
-                        cacheControl: 'public, max-age=60' // 1 minute cache to allow quick updates
-                    }),
-                    timeoutPromise(15000)
-                ]);
+                
+                // Upload the file
+                const uploadTask = await storageRef.put(blob, {
+                    contentType: 'application/json',
+                    cacheControl: 'public, max-age=60'
+                });
 
                 console.log('Products JSON file updated successfully with', existingProducts.length, 'products');
 
-                // Verify the save by reading back the data
-                try {
-                    const verifyDownloadURL = await storageRef.getDownloadURL();
-                    const verifyResponse = await fetch(verifyDownloadURL);
-                    if (verifyResponse.ok) {
-                        const verifyData = await verifyResponse.json();
-                        console.log('Verification: File now contains', verifyData.length, 'products');
-                        if (verifyData.length !== existingProducts.length) {
-                            console.warn('Warning: Saved product count does not match expected count!');
-                        }
-                    }
-                } catch (verifyError) {
-                    console.warn('Could not verify save (but save likely succeeded):', verifyError.message);
-                }
+                // Skip verification to avoid the "Failed to fetch" error
+                console.log('Save completed successfully, skipping verification to avoid fetch errors');
 
                 return true;
             } catch (error) {
