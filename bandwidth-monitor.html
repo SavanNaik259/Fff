@@ -114,6 +114,8 @@
             <h3>🧪 Test Caching Effectiveness</h3>
             <button onclick="testSingleRequest()">Single Request Test</button>
             <button onclick="testMultipleRequests()">5 Consecutive Requests</button>
+            <button onclick="enhancedTestSingleRequest()">Enhanced Single Test</button>
+            <button onclick="enhancedTestMultipleRequests()">Enhanced Multiple Test</button>
             <button onclick="testFirebaseDirectly()">Test Firebase Storage Direct</button>
             <button onclick="simulateNewUser()">Simulate New User</button>
             <button onclick="clearAllCaches()">Clear All Caches</button>
@@ -406,13 +408,20 @@
                 
                 if (response.status === 200) {
                     firebaseMetrics.downloads++;
-                    // Estimate bandwidth (you can make this more accurate)
+                    // Try to get actual content length
                     const contentLength = response.headers.get('content-length');
                     if (contentLength) {
                         firebaseMetrics.bandwidth += parseInt(contentLength);
                     } else {
-                        // Estimate based on typical response size
-                        firebaseMetrics.bandwidth += 10000; // ~10KB estimate
+                        // For JSON responses, estimate size
+                        try {
+                            const clonedResponse = response.clone();
+                            const text = await clonedResponse.text();
+                            firebaseMetrics.bandwidth += text.length;
+                        } catch (e) {
+                            // Fallback estimate
+                            firebaseMetrics.bandwidth += 10000; // ~10KB estimate
+                        }
                     }
                 } else if (response.status === 304) {
                     firebaseMetrics.cacheHits++;
@@ -423,6 +432,8 @@
                 return response;
             } catch (error) {
                 console.error('Firebase request failed:', error);
+                firebaseMetrics.requests++; // Count failed requests too
+                updateFirebaseMetrics();
                 return null;
             }
         }
@@ -463,19 +474,21 @@
             document.getElementById('monitoringStatus').textContent = 'Monitoring Active';
             
             // Monitor every 5 seconds
-            monitoringInterval = setInterval(async () => {
-                try {
-                    // Alternate between direct Firebase and server endpoint
-                    const useFirebaseDirect = Math.random() > 0.5;
-                    
-                    if (useFirebaseDirect) {
-                        await trackFirebaseRequest('https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2Fbridal-products.json?alt=media');
-                    } else {
-                        await trackFirebaseRequest('/api/load-products/bridal');
+            monitoringInterval = setInterval(() => {
+                (async () => {
+                    try {
+                        // Alternate between direct Firebase and server endpoint
+                        const useFirebaseDirect = Math.random() > 0.5;
+                        
+                        if (useFirebaseDirect) {
+                            await trackFirebaseRequest('https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2Fbridal-products.json?alt=media');
+                        } else {
+                            await trackFirebaseRequest('/api/load-products/bridal');
+                        }
+                    } catch (error) {
+                        console.error('Monitoring request failed:', error);
                     }
-                } catch (error) {
-                    console.error('Monitoring request failed:', error);
-                }
+                })();
             }, 5000);
         }
         
@@ -491,20 +504,19 @@
             }
         }
         
-        // Override test functions to also track Firebase metrics
-        const originalTestSingleRequest = testSingleRequest;
-        testSingleRequest = async function() {
+        // Enhanced test functions that also track Firebase metrics
+        async function enhancedTestSingleRequest() {
             await trackFirebaseRequest('/api/load-products/bridal');
-            return originalTestSingleRequest();
-        };
+            return await testSingleRequest();
+        }
         
-        const originalTestMultipleRequests = testMultipleRequests;
-        testMultipleRequests = async function() {
+        async function enhancedTestMultipleRequests() {
             for (let i = 0; i < 5; i++) {
                 await trackFirebaseRequest('/api/load-products/bridal');
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
-            return originalTestMultipleRequests();
-        };
+            return await testMultipleRequests();
+        }
         
         // Initialize
         updateMetrics();
