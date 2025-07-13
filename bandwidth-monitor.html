@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandwidth Monitor - Auric Jewelry</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .monitor-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-good { border-left: 4px solid #4CAF50; }
+        .status-warning { border-left: 4px solid #FF9800; }
+        .status-error { border-left: 4px solid #f44336; }
+        .metric {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        button {
+            background: #5a3f2a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #4a2f1a;
+        }
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .cache-hit {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .cache-miss {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .request-log {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #1e1e1e;
+            color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Bandwidth & Caching Monitor</h1>
+        <p>Monitor your Firebase Storage bandwidth usage and cache effectiveness in real-time.</p>
+
+        <!-- Current Status -->
+        <div class="monitor-card" id="statusCard">
+            <h3>📊 Current Status</h3>
+            <div class="metric">
+                <div class="metric-value" id="totalRequests">0</div>
+                <div class="metric-label">Total Requests</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="cacheHits">0</div>
+                <div class="metric-label">Cache Hits</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="totalBandwidth">0 KB</div>
+                <div class="metric-label">Bandwidth Used</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value" id="cacheSavings">0%</div>
+                <div class="metric-label">Bandwidth Saved</div>
+            </div>
+        </div>
+
+        <!-- Test Controls -->
+        <div class="monitor-card">
+            <h3>🧪 Test Caching Effectiveness</h3>
+            <button onclick="testSingleRequest()">Single Request Test</button>
+            <button onclick="testMultipleRequests()">5 Consecutive Requests</button>
+            <button onclick="testFirebaseDirectly()">Test Firebase Storage Direct</button>
+            <button onclick="simulateNewUser()">Simulate New User</button>
+            <button onclick="clearAllCaches()">Clear All Caches</button>
+        </div>
+
+        <!-- Real-time Results -->
+        <div class="monitor-card" id="resultsCard">
+            <h3>📈 Real-time Results</h3>
+            <div id="testResults" class="test-results">
+                Click a test button above to start monitoring...
+            </div>
+        </div>
+
+        <!-- Request Log -->
+        <div class="monitor-card">
+            <h3>📝 Request Log</h3>
+            <div id="requestLog" class="request-log">
+                Waiting for requests...
+            </div>
+        </div>
+
+        <!-- Firebase Usage -->
+        <div class="monitor-card">
+            <h3>🔥 Firebase Storage Monitoring</h3>
+            <p><strong>To monitor Firebase usage:</strong></p>
+            <ol>
+                <li>Go to <a href="https://console.firebase.google.com/project/auric-a0c92/storage" target="_blank">Firebase Console → Storage</a></li>
+                <li>Click the <strong>"Usage"</strong> tab</li>
+                <li>Monitor <strong>"Download operations"</strong> and <strong>"Network egress"</strong></li>
+                <li>Compare before/after implementing caching</li>
+            </ol>
+            <div style="background: #e3f2fd; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                <strong>Expected Behavior:</strong><br>
+                • First request: Downloads from Firebase (~10KB JSON + images)<br>
+                • Subsequent requests: 304 Not Modified (0 bytes from Firebase)<br>
+                • New users: Use Firebase CDN cache (no origin bandwidth)<br>
+                • Product updates: Only changed files re-download
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let requestCount = 0;
+        let cacheHitCount = 0;
+        let totalBandwidthUsed = 0;
+        let requestLog = [];
+
+        function logRequest(type, url, status, size, cached, responseTime) {
+            requestCount++;
+            if (cached || status === 304) {
+                cacheHitCount++;
+            }
+            if (!cached && status !== 304) {
+                totalBandwidthUsed += size;
+            }
+
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type}: ${status} - ${size} bytes - ${responseTime}ms ${cached ? '(CACHED)' : '(FRESH)'}`;
+            requestLog.push(logEntry);
+
+            updateMetrics();
+            updateLog();
+        }
+
+        function updateMetrics() {
+            document.getElementById('totalRequests').textContent = requestCount;
+            document.getElementById('cacheHits').textContent = cacheHitCount;
+            document.getElementById('totalBandwidth').textContent = Math.round(totalBandwidthUsed / 1024) + ' KB';
+            
+            const savingsPercent = requestCount > 0 ? Math.round((cacheHitCount / requestCount) * 100) : 0;
+            document.getElementById('cacheSavings').textContent = savingsPercent + '%';
+
+            // Update status card color
+            const statusCard = document.getElementById('statusCard');
+            if (savingsPercent >= 80) {
+                statusCard.className = 'monitor-card status-good';
+            } else if (savingsPercent >= 50) {
+                statusCard.className = 'monitor-card status-warning';
+            } else {
+                statusCard.className = 'monitor-card status-error';
+            }
+        }
+
+        function updateLog() {
+            const logDiv = document.getElementById('requestLog');
+            logDiv.innerHTML = requestLog.slice(-20).reverse().join('\n');
+            logDiv.scrollTop = 0;
+        }
+
+        async function testSingleRequest() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '🔄 Testing single request...';
+
+            try {
+                const startTime = performance.now();
+                const response = await fetch('/api/load-products/bridal', {
+                    cache: 'default'
+                });
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+
+                const etag = response.headers.get('ETag');
+                const cacheControl = response.headers.get('Cache-Control');
+                const cached = response.status === 304 || responseTime < 10;
+                
+                let size = 0;
+                if (response.status !== 304) {
+                    const data = await response.json();
+                    size = JSON.stringify(data).length;
+                }
+
+                logRequest('API', '/api/load-products/bridal', response.status, size, cached, responseTime);
+
+                results.innerHTML = `
+                    <div class="${cached ? 'cache-hit' : 'cache-miss'}">
+                        ✅ Request completed in ${responseTime}ms<br>
+                        Status: ${response.status} ${response.status === 304 ? '(Not Modified)' : '(Fresh)'}<br>
+                        ETag: ${etag}<br>
+                        Cache-Control: ${cacheControl}<br>
+                        Size: ${size} bytes<br>
+                        Cached: ${cached ? 'YES' : 'NO'}
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function testMultipleRequests() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '🔄 Testing 5 consecutive requests...';
+
+            const times = [];
+            for (let i = 1; i <= 5; i++) {
+                try {
+                    const startTime = performance.now();
+                    const response = await fetch('/api/load-products/bridal', {
+                        cache: 'default'
+                    });
+                    const endTime = performance.now();
+                    const responseTime = Math.round(endTime - startTime);
+                    
+                    const cached = response.status === 304 || responseTime < 10;
+                    let size = 0;
+                    if (response.status !== 304) {
+                        const data = await response.json();
+                        size = JSON.stringify(data).length;
+                    }
+
+                    logRequest(`REQ${i}`, '/api/load-products/bridal', response.status, size, cached, responseTime);
+                    times.push({i, time: responseTime, status: response.status, cached});
+                    
+                    // Add small delay between requests
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                } catch (error) {
+                    console.error(`Request ${i} failed:`, error);
+                }
+            }
+
+            const avgTime = Math.round(times.reduce((sum, t) => sum + t.time, 0) / times.length);
+            const cacheHits = times.filter(t => t.cached).length;
+
+            results.innerHTML = `
+                <div>
+                    ✅ Completed 5 requests<br>
+                    Average time: ${avgTime}ms<br>
+                    Cache hits: ${cacheHits}/5 (${Math.round(cacheHits/5*100)}%)<br>
+                    ${times.map(t => `Request ${t.i}: ${t.time}ms ${t.cached ? '(CACHED)' : '(FRESH)'}`).join('<br>')}
+                </div>
+            `;
+        }
+
+        async function testFirebaseDirectly() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '🔄 Testing Firebase Storage directly...';
+
+            try {
+                const startTime = performance.now();
+                const response = await fetch('https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2Fbridal-products.json?alt=media', {
+                    cache: 'default'
+                });
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+
+                const cached = responseTime < 50; // Firebase CDN is very fast when cached
+                let size = 0;
+                if (response.ok) {
+                    const data = await response.json();
+                    size = JSON.stringify(data).length;
+                }
+
+                logRequest('FIREBASE', 'Firebase Storage Direct', response.status, size, cached, responseTime);
+
+                results.innerHTML = `
+                    <div class="${cached ? 'cache-hit' : 'cache-miss'}">
+                        ✅ Firebase direct access: ${responseTime}ms<br>
+                        Status: ${response.status}<br>
+                        Size: ${size} bytes<br>
+                        CDN Cached: ${cached ? 'YES' : 'NO'}<br>
+                        Cache-Control: ${response.headers.get('Cache-Control')}
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function simulateNewUser() {
+            // Clear browser cache and test
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+            
+            // Clear localStorage
+            localStorage.removeItem('bridalProducts');
+            localStorage.removeItem('bridalProductsTime');
+            
+            const results = document.getElementById('testResults');
+            results.innerHTML = '🔄 Simulating new user (cleared all caches)...';
+            
+            // Wait a moment then test
+            setTimeout(testSingleRequest, 1000);
+        }
+
+        async function clearAllCaches() {
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+            
+            localStorage.removeItem('bridalProducts');
+            localStorage.removeItem('bridalProductsTime');
+            
+            // Reset metrics
+            requestCount = 0;
+            cacheHitCount = 0;
+            totalBandwidthUsed = 0;
+            requestLog = [];
+            
+            updateMetrics();
+            updateLog();
+            
+            document.getElementById('testResults').innerHTML = '✅ All caches cleared and metrics reset.';
+        }
+
+        // Initialize
+        updateMetrics();
+    </script>
+</body>
+</html>
