@@ -137,6 +137,13 @@ Auric is a premium jewelry e-commerce platform built with a modern web stack fea
   - Removed ALL remaining Firestore code from `admin-panel.html` - now uses Cloud Storage exclusively
   - Admin panel now loads existing products from Cloud Storage, adds new product, and saves back to Cloud Storage
   - Products successfully display on homepage and admin panel works with Cloud Storage only
+- July 13, 2025: Diagnosed and documented Netlify deployment issue
+  - Issue: Local development shows actual products, Netlify deployment shows sample products
+  - Root cause: Missing Firebase Admin SDK environment variables in Netlify deployment
+  - Created `NETLIFY_DEPLOYMENT_FIX.md` with step-by-step setup instructions
+  - Created `test-netlify-deployment.html` for comprehensive deployment testing and diagnosis
+  - Enhanced error handling in `js/bridal-products-loader.js` to detect and report configuration issues
+  - Improved user messaging when Firebase Admin credentials are missing on Netlify
 
 ## User Preferences
 

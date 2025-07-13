@@ -102,6 +102,14 @@ const BridalProductsLoader = (function() {
             const data = await response.json();
             if (!data.success) {
                 console.error('Server returned error:', data.error);
+                console.error('Error message:', data.message);
+                
+                // Check if this is a Firebase configuration error on Netlify
+                if (data.error && data.error.includes('Firebase Admin not configured')) {
+                    console.error('NETLIFY DEPLOYMENT ISSUE: Firebase Admin credentials not set up');
+                    console.error('Please check NETLIFY_DEPLOYMENT_FIX.md for setup instructions');
+                }
+                
                 products = data.products || [];
                 
                 // If no products and there's an error, show a helpful message
@@ -244,11 +252,18 @@ const BridalProductsLoader = (function() {
             } else {
                 // No Firebase products found - show message
                 console.log('No products found in Firebase');
+                
+                // Check if we're on Netlify and show appropriate message
+                const isNetlify = window.location.hostname.includes('netlify') || window.location.hostname.includes('.app');
+                const messageText = isNetlify 
+                    ? 'If you recently deployed to Netlify, please ensure Firebase Admin credentials are configured in your Netlify environment variables.'
+                    : 'Products will appear here once they are added through the admin panel.';
+                
                 bridalGrid.innerHTML = `
                     <div class="no-products-message" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
                         <i class="fas fa-gem" style="font-size: 48px; color: #5a3f2a; margin-bottom: 20px;"></i>
                         <h3 style="color: #5a3f2a; margin-bottom: 10px;">No Products Available</h3>
-                        <p style="color: #666;">Products will appear here once they are added through the admin panel.</p>
+                        <p style="color: #666;">${messageText}</p>
                     </div>
                 `;
             }
