@@ -1,11 +1,10 @@
 
 /**
  * Bridal Products Loader
- * Dynamically loads products from Firebase Cloud Storage with Firestore fallback
+ * Dynamically loads products EXCLUSIVELY from Firebase Cloud Storage
  */
 
 const BridalProductsLoader = (function() {
-    let db;
     let storage;
     let isInitialized = false;
     let cachedProducts = null;
@@ -14,7 +13,7 @@ const BridalProductsLoader = (function() {
     const MAX_PRODUCTS_TO_FETCH = 6; // Limit products fetched
 
     /**
-     * Initialize Firebase connection
+     * Initialize Firebase Storage connection
      */
     function init() {
         try {
@@ -25,9 +24,7 @@ const BridalProductsLoader = (function() {
                 console.log('Firebase object:', firebase);
                 console.log('Firebase apps:', firebase.apps);
 
-                db = firebase.firestore();
                 storage = firebase.storage();
-                console.log('Firestore instance:', db);
                 console.log('Storage instance:', storage);
 
                 isInitialized = true;
@@ -49,7 +46,7 @@ const BridalProductsLoader = (function() {
     }
 
     /**
-     * Load bridal products from Cloud Storage with Firestore fallback
+     * Load bridal products EXCLUSIVELY from Firebase Cloud Storage
      */
     async function loadBridalProducts(forceRefresh = false) {
         if (!isInitialized) {

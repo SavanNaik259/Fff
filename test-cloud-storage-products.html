@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cloud Storage Products</title>
+</head>
+<body>
+    <h1>Test Cloud Storage Products Loading</h1>
+    <button id="testBtn">Load Products from Cloud Storage</button>
+    <button id="clearBtn">Clear Cache</button>
+    <div id="results"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.firebasestorage.app",
+            messagingSenderId: "878979958342",
+            appId: "1:878979958342:web:e6092f7522488d21eaec47",
+            measurementId: "G-ZYZ750JHMB"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        async function testCloudStorageLoad() {
+            const resultsDiv = document.getElementById('results');
+            const btn = document.getElementById('testBtn');
+            
+            try {
+                btn.disabled = true;
+                resultsDiv.innerHTML = '<p>Testing Cloud Storage connection...</p>';
+                
+                // Test loading from Cloud Storage
+                console.log('Testing Cloud Storage load...');
+                const storageRef = storage.ref('productData/bridal-products.json');
+                const downloadURL = await storageRef.getDownloadURL();
+                
+                console.log('Download URL:', downloadURL);
+                resultsDiv.innerHTML += `<p>✅ Download URL obtained: ${downloadURL}</p>`;
+                
+                const response = await fetch(downloadURL);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const products = await response.json();
+                console.log('Products loaded:', products);
+                
+                resultsDiv.innerHTML += `<p>✅ Products loaded successfully: ${products.length} products</p>`;
+                resultsDiv.innerHTML += `<h3>Products:</h3>`;
+                
+                products.forEach(product => {
+                    resultsDiv.innerHTML += `
+                        <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
+                            <h4>${product.name}</h4>
+                            <p>Price: ₹${product.price}</p>
+                            <p>Image: ${product.image}</p>
+                            <p>Stock: ${product.stock}</p>
+                        </div>
+                    `;
+                });
+                
+            } catch (error) {
+                console.error('Cloud Storage test failed:', error);
+                resultsDiv.innerHTML += `<p style="color: red;">❌ Failed: ${error.message}</p>`;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function clearCache() {
+            localStorage.removeItem('bridalProducts');
+            localStorage.removeItem('bridalProductsTime');
+            document.getElementById('results').innerHTML = '<p>✅ Cache cleared</p>';
+        }
+
+        document.getElementById('testBtn').addEventListener('click', testCloudStorageLoad);
+        document.getElementById('clearBtn').addEventListener('click', clearCache);
+    </script>
+</body>
+</html>
