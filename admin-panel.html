@@ -224,7 +224,7 @@
                     <label for="productCategory">Category</label>
                     <select id="productCategory" name="productCategory" required>
                         <option value="">Select Category</option>
-                        <option value="bridal-edit">Bridal Edit (Main Page)</option>
+                        <option value="bridal">Bridal Edit (Main Page)</option>
                         <option value="polki">Polki Collection</option>
                         <option value="new-arrivals">New Arrivals</option>
                         <option value="featured">Featured Collection</option>
@@ -277,7 +277,7 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 
     <script>
@@ -295,7 +295,7 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const storage = firebase.storage();
-        const firestore = firebase.firestore();
+
 
         // Test Firebase connection
         async function testFirebaseConnection() {
@@ -306,14 +306,8 @@
                     storageBucket: firebaseConfig.storageBucket
                 });
 
-                // Test Firestore connection with timeout
-                console.log('Testing Firestore connection...');
-                const testQuery = firestore.collection('products').limit(1);
-                await Promise.race([
-                    testQuery.get(),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 5000))
-                ]);
-                console.log('✅ Firestore connection successful');
+                // Skip Firestore test - using Cloud Storage only
+                console.log('✅ Firestore connection skipped (using Cloud Storage only)');
 
                 // Test Storage connection with timeout
                 console.log('Testing Firebase Storage connection...');
@@ -440,7 +434,7 @@
             });
         }
 
-        // Save product data to both Firestore and Firebase Storage
+        // Save product data EXCLUSIVELY to Firebase Cloud Storage
         async function saveProductData(productData, category) {
             try {
                 // Update loading message
@@ -448,49 +442,58 @@
                 if (loadingElement) {
                     loadingElement.innerHTML = `
                         <i class="fas fa-spinner"></i>
-                        <p>Saving product data...</p>
+                        <p>Loading existing products...</p>
                     `;
                 }
 
-                // Add timeout for Firestore operations
+                // Add timeout for operations
                 const timeoutPromise = (ms) => new Promise((_, reject) => 
                     setTimeout(() => reject(new Error('Operation timeout')), ms)
                 );
 
-                // First, save individual product to Firestore for easy querying
-                console.log('Attempting to save product to Firestore...');
-                await Promise.race([
-                    firestore.collection('products').doc(productData.id).set(productData),
-                    timeoutPromise(15000) // 15 second timeout
-                ]);
-                console.log('Product saved to Firestore successfully');
+                // First, load existing products from Cloud Storage
+                console.log('Loading existing products from Cloud Storage...');
+                let existingProducts = [];
+                
+                try {
+                    const storageRef = storage.ref(`productData/${category}-products.json`);
+                    const downloadURL = await storageRef.getDownloadURL();
+                    const response = await fetch(downloadURL);
+                    if (response.ok) {
+                        existingProducts = await response.json();
+                        console.log('Loaded', existingProducts.length, 'existing products');
+                    }
+                } catch (error) {
+                    console.log('No existing products file found, creating new one');
+                    existingProducts = [];
+                }
 
                 // Update loading message
                 if (loadingElement) {
                     loadingElement.innerHTML = `
                         <i class="fas fa-spinner"></i>
-                        <p>Updating product catalog...</p>
+                        <p>Adding new product...</p>
                     `;
                 }
 
-                // Then, get all products of this category from Firestore
-                const querySnapshot = await Promise.race([
-                    firestore.collection('products').where('category', '==', category).get(),
-                    timeoutPromise(15000)
-                ]);
-
-                const allProducts = [];
-                querySnapshot.forEach((doc) => {
-                    allProducts.push(doc.data());
-                });
+                // Add the new product to the list
+                existingProducts.push(productData);
 
                 // Sort products by creation date (newest first)
-                allProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                existingProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-                console.log('Retrieved all products for category:', category, 'Count:', allProducts.length);
+                console.log('Updated product list with', existingProducts.length, 'products');
 
-                // Save to Firebase Storage as JSON file
-                const jsonData = JSON.stringify(allProducts, null, 2);
+                // Update loading message
+                if (loadingElement) {
+                    loadingElement.innerHTML = `
+                        <i class="fas fa-spinner"></i>
+                        <p>Saving to Cloud Storage...</p>
+                    `;
+                }
+
+                // Save updated list to Firebase Storage as JSON file
+                const jsonData = JSON.stringify(existingProducts, null, 2);
                 const blob = new Blob([jsonData], { type: 'application/json' });
 
                 const storageRef = storage.ref(`productData/${category}-products.json`);
@@ -499,7 +502,7 @@
                     timeoutPromise(15000)
                 ]);
 
-                console.log('Products JSON file updated successfully with', allProducts.length, 'products');
+                console.log('Products JSON file updated successfully with', existingProducts.length, 'products');
                 return true;
             } catch (error) {
                 console.error('Error saving product data:', error);
@@ -508,7 +511,7 @@
                 if (error.code === 'permission-denied') {
                     throw new Error('Permission denied. Please check your Firebase security rules.');
                 } else if (error.code === 'failed-precondition') {
-                    throw new Error('Firebase configuration error. Please check your Firestore setup.');
+                    throw new Error('Firebase configuration error. Please check your Storage setup.');
                 } else if (error.message === 'Operation timeout') {
                     throw new Error('Operation timed out. Please check your internet connection and try again.');
                 } else {

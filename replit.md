@@ -130,6 +130,13 @@ Auric is a premium jewelry e-commerce platform built with a modern web stack fea
   - Created `upload-to-storage.html` for uploading product data to Cloud Storage
   - Added `FIREBASE_STORAGE_RULES.md` with proper Storage rules for public read access
   - Products load exclusively from `productData/bridal-products.json` in Cloud Storage
+- July 13, 2025: Fixed admin panel and product loading system
+  - Resolved CORS issues by creating server endpoint `/api/load-products/:category` in `simple-server.js`
+  - Updated `js/bridal-products-loader.js` to use server endpoint instead of direct Firebase Storage access
+  - Fixed admin panel category naming from "bridal-edit" to "bridal" for consistency
+  - Removed ALL remaining Firestore code from `admin-panel.html` - now uses Cloud Storage exclusively
+  - Admin panel now loads existing products from Cloud Storage, adds new product, and saves back to Cloud Storage
+  - Products successfully display on homepage and admin panel works with Cloud Storage only
 
 ## User Preferences
 
