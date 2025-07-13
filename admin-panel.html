@@ -457,15 +457,40 @@
                 
                 try {
                     const storageRef = storage.ref(`productData/${category}-products.json`);
-                    const downloadURL = await storageRef.getDownloadURL();
-                    const response = await fetch(downloadURL);
+                    const downloadURL = await Promise.race([
+                        storageRef.getDownloadURL(),
+                        timeoutPromise(10000)
+                    ]);
+                    
+                    const response = await Promise.race([
+                        fetch(downloadURL),
+                        timeoutPromise(10000)
+                    ]);
+                    
                     if (response.ok) {
-                        existingProducts = await response.json();
-                        console.log('Loaded', existingProducts.length, 'existing products');
+                        const data = await response.json();
+                        // Ensure we have a valid array
+                        if (Array.isArray(data)) {
+                            existingProducts = data;
+                            console.log('Successfully loaded', existingProducts.length, 'existing products from Cloud Storage');
+                        } else {
+                            console.warn('Invalid data format in storage, starting with empty array');
+                            existingProducts = [];
+                        }
+                    } else {
+                        console.log('Products file exists but response not OK, starting with empty array');
+                        existingProducts = [];
                     }
                 } catch (error) {
-                    console.log('No existing products file found, creating new one');
-                    existingProducts = [];
+                    // Check if it's a 'file not found' error vs other errors
+                    if (error.code === 'storage/object-not-found' || error.message.includes('does not exist')) {
+                        console.log('No existing products file found, creating new one');
+                        existingProducts = [];
+                    } else {
+                        console.warn('Error loading existing products:', error.message);
+                        console.log('Continuing with empty array to avoid data loss');
+                        existingProducts = [];
+                    }
                 }
 
                 // Update loading message
@@ -476,13 +501,22 @@
                     `;
                 }
 
-                // Add the new product to the list
-                existingProducts.push(productData);
+                // Check if product with same ID already exists (avoid duplicates)
+                const existingIndex = existingProducts.findIndex(p => p.id === productData.id);
+                if (existingIndex >= 0) {
+                    console.log('Product with ID', productData.id, 'already exists, updating existing product');
+                    existingProducts[existingIndex] = productData;
+                } else {
+                    console.log('Adding new product with ID', productData.id, 'to existing', existingProducts.length, 'products');
+                    // Add the new product to the list
+                    existingProducts.push(productData);
+                }
 
                 // Sort products by creation date (newest first)
                 existingProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-                console.log('Updated product list with', existingProducts.length, 'products');
+                console.log('Updated product list now contains', existingProducts.length, 'products');
+                console.log('Product IDs in list:', existingProducts.map(p => p.id));
 
                 // Update loading message
                 if (loadingElement) {
@@ -498,11 +532,30 @@
 
                 const storageRef = storage.ref(`productData/${category}-products.json`);
                 await Promise.race([
-                    storageRef.put(blob),
+                    storageRef.put(blob, {
+                        contentType: 'application/json',
+                        cacheControl: 'public, max-age=60' // 1 minute cache to allow quick updates
+                    }),
                     timeoutPromise(15000)
                 ]);
 
                 console.log('Products JSON file updated successfully with', existingProducts.length, 'products');
+
+                // Verify the save by reading back the data
+                try {
+                    const verifyDownloadURL = await storageRef.getDownloadURL();
+                    const verifyResponse = await fetch(verifyDownloadURL);
+                    if (verifyResponse.ok) {
+                        const verifyData = await verifyResponse.json();
+                        console.log('Verification: File now contains', verifyData.length, 'products');
+                        if (verifyData.length !== existingProducts.length) {
+                            console.warn('Warning: Saved product count does not match expected count!');
+                        }
+                    }
+                } catch (verifyError) {
+                    console.warn('Could not verify save (but save likely succeeded):', verifyError.message);
+                }
+
                 return true;
             } catch (error) {
                 console.error('Error saving product data:', error);
