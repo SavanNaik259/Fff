@@ -101,9 +101,13 @@ const BridalProductsLoader = (function() {
             
             const data = await response.json();
             if (!data.success) {
-                console.warn('Server returned error, using fallback:', data.error);
-                // Still try to use products if they exist in the response
+                console.error('Server returned error:', data.error);
                 products = data.products || [];
+                
+                // If no products and there's an error, show a helpful message
+                if (products.length === 0 && data.error) {
+                    console.error('No products loaded due to error:', data.error);
+                }
             } else {
                 products = data.products || [];
             }
