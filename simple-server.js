@@ -201,6 +201,9 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
   }
 });
 
+// Server-side cache for product data
+const productCache = new Map();
+
 /**
  * Load products from Firebase Cloud Storage
  * Used to bypass CORS issues with client-side Firebase Storage access
@@ -215,20 +218,15 @@ app.get('/api/load-products/:category', async (req, res) => {
       console.log(`Client sent ETag: ${clientETag}, checking for cache hit...`);
     }
     
-    console.log(`Loading ${category} products from Cloud Storage...`);
-    
     // Use server-side fetch to get data from Firebase Storage with proper caching
     const storageUrl = `https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2F${category}-products.json?alt=media&token=c6a2eb63-56e3-4fc0-96ac-66773cf45f96`;
     
-    // Add cache-friendly headers to the Firebase Storage request
-    const response = await fetch(storageUrl, {
-      headers: {
-        'Cache-Control': 'public, max-age=2592000' // 30 days
-      }
-    });
+    // First, do a HEAD request to check file metadata without downloading
+    console.log(`Checking ${category} products metadata from Cloud Storage...`);
+    const headResponse = await fetch(storageUrl, { method: 'HEAD' });
     
-    if (!response.ok) {
-      if (response.status === 404) {
+    if (!headResponse.ok) {
+      if (headResponse.status === 404) {
         console.log(`No ${category} products found in Firebase Storage`);
         return res.json({
           success: true,
@@ -238,6 +236,41 @@ app.get('/api/load-products/:category', async (req, res) => {
           message: `No ${category} products found - add some through the admin panel`
         });
       }
+      throw new Error(`Failed to fetch metadata from storage: ${headResponse.status}`);
+    }
+    
+    // Get Firebase Storage ETag from headers
+    const firebaseETag = headResponse.headers.get('etag');
+    const serverETag = `"products-${category}-${firebaseETag}"`;
+    
+    // Check if client has the same ETag (cache hit)
+    if (clientETag && clientETag === serverETag) {
+      console.log(`Cache hit! Client has current version, returning 304 Not Modified (no download)`);
+      res.setHeader('ETag', serverETag);
+      res.status(304).end();
+      return;
+    }
+    
+    // Check server-side cache
+    const cacheKey = `${category}-${firebaseETag}`;
+    if (productCache.has(cacheKey)) {
+      console.log(`Server cache hit! Using cached data for ${category}`);
+      const cachedData = productCache.get(cacheKey);
+      res.setHeader('ETag', serverETag);
+      res.json(cachedData);
+      return;
+    }
+    
+    // Cache miss - need to download the file
+    console.log(`Cache miss, downloading ${category} products from Firebase Storage...`);
+    
+    const response = await fetch(storageUrl, {
+      headers: {
+        'Cache-Control': 'public, max-age=2592000' // 30 days
+      }
+    });
+    
+    if (!response.ok) {
       throw new Error(`Failed to fetch from storage: ${response.status}`);
     }
     
@@ -251,20 +284,17 @@ app.get('/api/load-products/:category', async (req, res) => {
       category: category
     };
     
-    // Generate a proper ETag based on the actual data content
-    const crypto = require('crypto');
-    const dataHash = crypto.createHash('md5').update(JSON.stringify(responseData)).digest('hex');
-    const etag = `"products-${category}-${dataHash}"`;
+    // Cache the data on server
+    productCache.set(cacheKey, responseData);
     
-    // Check if client has the same ETag (cache hit)
-    if (clientETag && clientETag === etag) {
-      console.log(`Cache hit! Client has current version, returning 304 Not Modified`);
-      res.status(304).end();
-      return;
+    // Clear old cache entries (keep only last 10)
+    if (productCache.size > 10) {
+      const firstKey = productCache.keys().next().value;
+      productCache.delete(firstKey);
     }
     
-    res.setHeader('ETag', etag);
-    console.log(`Cache miss, sending fresh data with ETag: ${etag}`);
+    res.setHeader('ETag', serverETag);
+    console.log(`Sending fresh data with ETag: ${serverETag}`);
     
     res.json(responseData);
     
