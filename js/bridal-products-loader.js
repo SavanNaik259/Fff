@@ -85,7 +85,7 @@ const BridalProductsLoader = (function() {
             
             // Use different endpoint for Netlify vs local development
             const apiEndpoint = window.location.hostname.includes('netlify') || window.location.hostname.includes('.app') 
-                ? '/.netlify/functions/load-products-bridal'
+                ? '/.netlify/functions/load-products?category=bridal'
                 : '/api/load-products/bridal';
             
             const response = await fetch(apiEndpoint, {

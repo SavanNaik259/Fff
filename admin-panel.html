@@ -452,8 +452,16 @@
                 let existingProducts = [];
                 
                 try {
-                    // Use your server's API endpoint to load products
-                    const response = await fetch(`/api/load-products/${category}`, {
+                    // Detect environment and use appropriate endpoint
+                    const isNetlify = window.location.hostname.includes('netlify') || window.location.hostname.includes('.app');
+                    const apiEndpoint = isNetlify 
+                        ? `/.netlify/functions/load-products?category=${category}`
+                        : `/api/load-products/${category}`;
+                    
+                    console.log('Using endpoint:', apiEndpoint, '(Netlify:', isNetlify, ')');
+                    
+                    // Use the appropriate API endpoint to load products
+                    const response = await fetch(apiEndpoint, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'
