@@ -1,3 +1,4 @@
+
 /**
  * Netlify Function: Upload Bandwidth Test Product
  * 
@@ -14,7 +15,7 @@ if (!admin.apps.length) {
     // Check if all required environment variables are present
     const requiredVars = ['FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PROJECT_ID'];
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
-
+    
     if (missingVars.length > 0) {
       console.error('Missing Firebase environment variables:', missingVars);
     } else {
@@ -77,7 +78,7 @@ exports.handler = async (event, context) => {
     }
 
     const bucket = admin.storage().bucket();
-
+    
     // Parse multipart form data
     return new Promise((resolve) => {
       const bb = busboy({ 
@@ -99,11 +100,11 @@ exports.handler = async (event, context) => {
         fileName = info.filename;
         fileType = info.mimeType;
         const chunks = [];
-
+        
         file.on('data', (chunk) => {
           chunks.push(chunk);
         });
-
+        
         file.on('end', () => {
           fileBuffer = Buffer.concat(chunks);
         });
@@ -122,15 +123,18 @@ exports.handler = async (event, context) => {
 
           const { category, productName, productPrice, productDescription } = fields;
           const productId = `TEST-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-
-          // Upload image with comprehensive CDN cache metadata
+          
+          // Upload image with CDN headers
+          const imageFileName = `${category}_${productId}_${Date.now()}.jpg`;
+          const imageFile = bucket.file(`bandwidthTest/${imageFileName}`);
+          
           const metadata = {
-            cacheControl: 'public, max-age=2592000, immutable', // 30 days cache with immutable flag
+            cacheControl: 'public, max-age=2592000',
             contentType: fileType,
-            customMetadata: {
-              uploadTimestamp: new Date().toISOString(),
-              cacheOptimized: 'true',
-              cdnEnabled: 'true'
+            metadata: {
+              testCategory: category,
+              productId: productId,
+              uploadedAt: new Date().toISOString()
             }
           };
 
@@ -154,7 +158,7 @@ exports.handler = async (event, context) => {
           try {
             const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
             const [exists] = await jsonFile.exists();
-
+            
             if (exists) {
               const [fileContents] = await jsonFile.download();
               const data = JSON.parse(fileContents.toString());
@@ -169,18 +173,17 @@ exports.handler = async (event, context) => {
           // Add new product
           existingProducts.push(productData);
 
-          // Save updated products JSON with comprehensive CDN cache headers
+          // Save updated products JSON with CDN headers
           const jsonData = JSON.stringify(existingProducts, null, 2);
           const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
-
+          
           const jsonMetadata = {
-            cacheControl: 'public, max-age=2592000, must-revalidate', // 30 days but revalidate
             contentType: 'application/json',
-            customMetadata: {
-              lastUpdated: new Date().toISOString(),
-              cacheOptimized: 'true',
-              cdnEnabled: 'true',
-              productCount: existingProducts.length.toString()
+            cacheControl: 'public, max-age=2592000',
+            metadata: {
+              testCategory: category,
+              productsCount: existingProducts.length.toString(),
+              lastUpdated: new Date().toISOString()
             }
           };
 
