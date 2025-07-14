@@ -117,8 +117,9 @@
     </div>
 
     <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
 
     <script>
         // Firebase configuration (same as main site)
@@ -149,11 +150,18 @@
             storage = app.storage();
             console.log('Firebase Storage initialized successfully');
             
-            // Test storage connection
-            storage.ref().listAll().then(() => {
-                console.log('Storage connection test successful');
-            }).catch(err => {
-                console.error('Storage connection test failed:', err);
+            // Sign in anonymously to access storage
+            app.auth().signInAnonymously().then(() => {
+                console.log('Anonymous authentication successful');
+                // Test storage connection
+                storage.ref().listAll().then(() => {
+                    console.log('Storage connection test successful');
+                }).catch(err => {
+                    console.error('Storage connection test failed:', err);
+                });
+            }).catch((error) => {
+                console.error('Anonymous auth failed:', error);
+                showMessage(`Authentication failed: ${error.message}`, 'error');
             });
             
         } catch (error) {
