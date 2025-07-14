@@ -169,6 +169,12 @@ Auric is a premium jewelry e-commerce platform built with a modern web stack fea
   - Confirmed: Only updated files are downloaded by first visitor per region
   - Architecture validation: No need for Express memory caching, Netlify function caching, or localStorage caching
   - Firebase Storage CDN handles all caching automatically with proper Cache-Control headers
+- July 14, 2025: Created simple CDN testing tools for bandwidth verification
+  - Created `cdn-test-uploader.html` - Simple product uploader with proper CDN cache headers
+  - Created `cdn-test-loader.html` - Product loader that mimics bridal section behavior
+  - Tools designed for testing Firebase Storage CDN caching effectiveness
+  - User can monitor Firebase Console bandwidth usage to verify CDN behavior
+  - Separate "cdn-test" category to isolate testing from production products
 
 ## User Preferences
 
