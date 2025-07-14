@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netlify Firebase Integration Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Comprehensive Netlify Firebase Debug Tool</h1>
+    <p>This tool tests every aspect of the Firebase Storage integration on Netlify deployment.</p>
+
+    <div class="test-section">
+        <h3>1. Environment Detection</h3>
+        <div id="env-results"></div>
+        <button onclick="testEnvironment()">Test Environment</button>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Netlify Function Access Test</h3>
+        <div id="function-results"></div>
+        <button onclick="testNetlifyFunctions()">Test All Functions</button>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Firebase Storage Direct Access</h3>
+        <div id="storage-results"></div>
+        <button onclick="testDirectStorage()">Test Direct Storage Access</button>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Complete Product Loading Flow</h3>
+        <div id="flow-results"></div>
+        <button onclick="testCompleteFlow()">Test Complete Loading Flow</button>
+    </div>
+
+    <div class="test-section">
+        <h3>5. CORS and Network Diagnostics</h3>
+        <div id="cors-results"></div>
+        <button onclick="testCORS()">Test CORS & Network</button>
+    </div>
+
+    <script>
+        let logs = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toISOString();
+            logs.push({ timestamp, message, type });
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function displayResults(containerId, results) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = results;
+        }
+
+        async function testEnvironment() {
+            log('🌍 Testing environment detection...');
+            let html = '<h4>Environment Analysis:</h4>';
+            
+            // Detect environment
+            const isNetlify = window.location.hostname.includes('netlify') || 
+                             window.location.hostname.includes('.app');
+            const isLocal = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.port === '5000';
+            
+            html += `<p><strong>Current Host:</strong> ${window.location.hostname}</p>`;
+            html += `<p><strong>Full URL:</strong> ${window.location.href}</p>`;
+            html += `<p><strong>Detected Environment:</strong> ${isNetlify ? 'Netlify' : isLocal ? 'Local Development' : 'Unknown'}</p>`;
+            
+            // Test endpoint construction
+            const baseUrl = isLocal ? '' : '';
+            const functionPath = isLocal ? '/load-bandwidth-test-products' : '/.netlify/functions/load-bandwidth-test-products';
+            const fullUrl = baseUrl + functionPath + '?category=bandwidth-test-1';
+            
+            html += `<p><strong>Constructed Endpoint:</strong> <code>${fullUrl}</code></p>`;
+            
+            displayResults('env-results', html);
+        }
+
+        async function testNetlifyFunctions() {
+            log('🔧 Testing Netlify function accessibility...');
+            let html = '<h4>Function Accessibility Tests:</h4>';
+            
+            const functions = [
+                'load-bandwidth-test-products?category=bandwidth-test-1',
+                'load-bandwidth-test-products?category=bandwidth-test-2',
+                'load-products?category=bridal'
+            ];
+            
+            for (const func of functions) {
+                try {
+                    log(`Testing function: ${func}`);
+                    const url = `/.netlify/functions/${func}`;
+                    
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const statusClass = response.ok ? 'success' : 'error';
+                    html += `<div class="${statusClass}">`;
+                    html += `<strong>${func}:</strong> ${response.status} ${response.statusText}<br>`;
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        html += `<small>Response: ${JSON.stringify(data, null, 2).substring(0, 200)}...</small>`;
+                    } else {
+                        const text = await response.text();
+                        html += `<small>Error: ${text.substring(0, 200)}</small>`;
+                    }
+                    html += `</div>`;
+                    
+                } catch (error) {
+                    log(`Function ${func} failed: ${error.message}`, 'error');
+                    html += `<div class="error"><strong>${func}:</strong> Failed - ${error.message}</div>`;
+                }
+            }
+            
+            displayResults('function-results', html);
+        }
+
+        async function testDirectStorage() {
+            log('☁️ Testing direct Firebase Storage access...');
+            let html = '<h4>Direct Storage Access Tests:</h4>';
+            
+            const testUrls = [
+                'https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2Fbandwidth-test-1-products.json?alt=media',
+                'https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2Fbandwidth-test-2-products.json?alt=media',
+                'https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2Fbridal-products.json?alt=media'
+            ];
+            
+            for (const url of testUrls) {
+                try {
+                    log(`Testing direct access: ${url}`);
+                    const response = await fetch(url);
+                    
+                    const statusClass = response.ok ? 'success' : 'error';
+                    const filename = url.split('/').pop().split('?')[0];
+                    
+                    html += `<div class="${statusClass}">`;
+                    html += `<strong>${decodeURIComponent(filename)}:</strong> ${response.status} ${response.statusText}<br>`;
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        html += `<small>Products found: ${Array.isArray(data) ? data.length : 'Not an array'}</small>`;
+                    }
+                    html += `</div>`;
+                    
+                } catch (error) {
+                    const filename = url.split('/').pop().split('?')[0];
+                    log(`Direct access failed for ${filename}: ${error.message}`, 'error');
+                    html += `<div class="error"><strong>${decodeURIComponent(filename)}:</strong> Failed - ${error.message}</div>`;
+                }
+            }
+            
+            displayResults('storage-results', html);
+        }
+
+        async function testCompleteFlow() {
+            log('🔄 Testing complete product loading flow...');
+            let html = '<h4>Complete Flow Test:</h4>';
+            
+            try {
+                // Step 1: Get CDN URL from Netlify function
+                html += '<p><strong>Step 1:</strong> Getting CDN URL from Netlify function...</p>';
+                const functionResponse = await fetch('/.netlify/functions/load-bandwidth-test-products?category=bandwidth-test-1');
+                
+                if (!functionResponse.ok) {
+                    throw new Error(`Function failed: ${functionResponse.status} ${functionResponse.statusText}`);
+                }
+                
+                const functionData = await functionResponse.json();
+                html += `<div class="success">✅ Function returned: ${JSON.stringify(functionData, null, 2)}</div>`;
+                
+                // Step 2: Use the CDN URL to fetch products
+                if (functionData.downloadUrl) {
+                    html += '<p><strong>Step 2:</strong> Fetching products from CDN URL...</p>';
+                    const cdnResponse = await fetch(functionData.downloadUrl);
+                    
+                    if (!cdnResponse.ok) {
+                        throw new Error(`CDN fetch failed: ${cdnResponse.status} ${cdnResponse.statusText}`);
+                    }
+                    
+                    const products = await cdnResponse.json();
+                    html += `<div class="success">✅ CDN fetch successful: ${products.length} products loaded</div>`;
+                    html += `<pre>${JSON.stringify(products.slice(0, 2), null, 2)}</pre>`;
+                } else {
+                    html += `<div class="error">❌ No downloadUrl in function response</div>`;
+                }
+                
+            } catch (error) {
+                log(`Complete flow failed: ${error.message}`, 'error');
+                html += `<div class="error">❌ Flow failed: ${error.message}</div>`;
+            }
+            
+            displayResults('flow-results', html);
+        }
+
+        async function testCORS() {
+            log('🌐 Testing CORS and network diagnostics...');
+            let html = '<h4>CORS & Network Tests:</h4>';
+            
+            // Test different request methods and headers
+            const tests = [
+                {
+                    name: 'Basic GET request',
+                    options: { method: 'GET' }
+                },
+                {
+                    name: 'GET with JSON headers',
+                    options: {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                },
+                {
+                    name: 'OPTIONS preflight',
+                    options: { method: 'OPTIONS' }
+                }
+            ];
+            
+            for (const test of tests) {
+                try {
+                    log(`CORS test: ${test.name}`);
+                    const response = await fetch('/.netlify/functions/load-bandwidth-test-products?category=bandwidth-test-1', test.options);
+                    
+                    const statusClass = response.ok ? 'success' : 'info';
+                    html += `<div class="${statusClass}">`;
+                    html += `<strong>${test.name}:</strong> ${response.status} ${response.statusText}<br>`;
+                    html += `<small>Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}</small>`;
+                    html += `</div>`;
+                    
+                } catch (error) {
+                    log(`CORS test ${test.name} failed: ${error.message}`, 'error');
+                    html += `<div class="error"><strong>${test.name}:</strong> Failed - ${error.message}</div>`;
+                }
+            }
+            
+            displayResults('cors-results', html);
+        }
+
+        // Auto-run environment detection on load
+        document.addEventListener('DOMContentLoaded', () => {
+            testEnvironment();
+            log('🔧 Comprehensive debug tool loaded');
+        });
+    </script>
+</body>
+</html>

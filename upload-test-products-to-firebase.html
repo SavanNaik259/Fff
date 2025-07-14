@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Test Products to Firebase Storage</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .info { background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        button { padding: 12px 20px; margin: 10px 5px; cursor: pointer; border: none; border-radius: 4px; }
+        .primary { background: #007bff; color: white; }
+        .secondary { background: #6c757d; color: white; }
+        .success-btn { background: #28a745; color: white; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        .upload-section { border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Upload Test Products to Firebase Storage</h1>
+    <p>This tool ensures proper test data exists in Firebase Storage for CDN bandwidth testing.</p>
+
+    <div class="upload-section">
+        <h3>1. Initialize Firebase Connection</h3>
+        <div id="firebase-status" class="info">Initializing Firebase...</div>
+        <button class="primary" onclick="initializeFirebase()">🔧 Initialize Firebase</button>
+    </div>
+
+    <div class="upload-section">
+        <h3>2. Upload Test Products</h3>
+        <div id="upload-status"></div>
+        <button class="success-btn" onclick="uploadTestProducts()">📤 Upload Test Products</button>
+        <button class="secondary" onclick="checkExistingProducts()">🔍 Check Existing Products</button>
+    </div>
+
+    <div class="upload-section">
+        <h3>3. Verify Data Structure</h3>
+        <div id="verification-status"></div>
+        <button class="primary" onclick="verifyDataStructure()">✅ Verify All Data</button>
+    </div>
+
+    <div id="results"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.firebasestorage.app",
+            messagingSenderId: "878979958342",
+            appId: "1:878979958342:web:e6092f7522488d21eaec47",
+            measurementId: "G-ZYZ750JHMB"
+        };
+
+        let app, storage;
+
+        // Test product data
+        const testProducts = {
+            'bandwidth-test-1': [
+                {
+                    "id": "TEST-BT1-001",
+                    "name": "Golden Elegance Necklace",
+                    "price": 25000,
+                    "description": "Exquisite 18k gold necklace with intricate patterns",
+                    "category": "bandwidth-test-1",
+                    "imageUrl": "https://via.placeholder.com/300x300?text=Golden+Necklace",
+                    "uploadedAt": new Date().toISOString()
+                },
+                {
+                    "id": "TEST-BT1-002",
+                    "name": "Diamond Infinity Ring",
+                    "price": 45000,
+                    "description": "Stunning diamond ring with infinity design",
+                    "category": "bandwidth-test-1",
+                    "imageUrl": "https://via.placeholder.com/300x300?text=Diamond+Ring",
+                    "uploadedAt": new Date().toISOString()
+                },
+                {
+                    "id": "TEST-BT1-003",
+                    "name": "Pearl Drop Earrings",
+                    "price": 15000,
+                    "description": "Classic pearl earrings with gold accents",
+                    "category": "bandwidth-test-1",
+                    "imageUrl": "https://via.placeholder.com/300x300?text=Pearl+Earrings",
+                    "uploadedAt": new Date().toISOString()
+                }
+            ],
+            'bandwidth-test-2': [
+                {
+                    "id": "TEST-BT2-001",
+                    "name": "Emerald Pendant Set",
+                    "price": 55000,
+                    "description": "Royal emerald pendant with matching earrings",
+                    "category": "bandwidth-test-2",
+                    "imageUrl": "https://via.placeholder.com/300x300?text=Emerald+Set",
+                    "uploadedAt": new Date().toISOString()
+                },
+                {
+                    "id": "TEST-BT2-002",
+                    "name": "Ruby Bracelet Collection",
+                    "price": 35000,
+                    "description": "Elegant ruby bracelet with premium craftsmanship",
+                    "category": "bandwidth-test-2",
+                    "imageUrl": "https://via.placeholder.com/300x300?text=Ruby+Bracelet",
+                    "uploadedAt": new Date().toISOString()
+                }
+            ],
+            'bandwidth-test-3': [
+                {
+                    "id": "TEST-BT3-001",
+                    "name": "Sapphire Crown Ring",
+                    "price": 75000,
+                    "description": "Magnificent sapphire ring fit for royalty",
+                    "category": "bandwidth-test-3",
+                    "imageUrl": "https://via.placeholder.com/300x300?text=Sapphire+Ring",
+                    "uploadedAt": new Date().toISOString()
+                }
+            ]
+        };
+
+        // Global functions for buttons
+        window.initializeFirebase = async function() {
+            try {
+                app = initializeApp(firebaseConfig);
+                storage = getStorage(app);
+                
+                document.getElementById('firebase-status').innerHTML = 
+                    '<div class="success">✅ Firebase initialized successfully!</div>';
+                
+                console.log('Firebase initialized:', app);
+                return true;
+            } catch (error) {
+                document.getElementById('firebase-status').innerHTML = 
+                    `<div class="error">❌ Firebase initialization failed: ${error.message}</div>`;
+                console.error('Firebase init error:', error);
+                return false;
+            }
+        };
+
+        window.uploadTestProducts = async function() {
+            if (!storage) {
+                await initializeFirebase();
+                if (!storage) return;
+            }
+
+            const statusDiv = document.getElementById('upload-status');
+            statusDiv.innerHTML = '<div class="info">🔄 Uploading test products...</div>';
+
+            try {
+                const uploadPromises = [];
+
+                for (const [category, products] of Object.entries(testProducts)) {
+                    const fileName = `bandwidthTest/${category}-products.json`;
+                    const storageRef = ref(storage, fileName);
+                    const jsonData = JSON.stringify(products, null, 2);
+                    const blob = new Blob([jsonData], { type: 'application/json' });
+
+                    uploadPromises.push(
+                        uploadBytes(storageRef, blob, {
+                            cacheControl: 'public, max-age=2592000' // 30 days cache
+                        }).then(() => ({
+                            category,
+                            fileName,
+                            productCount: products.length,
+                            success: true
+                        })).catch(error => ({
+                            category,
+                            fileName,
+                            error: error.message,
+                            success: false
+                        }))
+                    );
+                }
+
+                const results = await Promise.all(uploadPromises);
+                
+                let html = '<h4>Upload Results:</h4>';
+                let allSuccess = true;
+
+                for (const result of results) {
+                    if (result.success) {
+                        html += `<div class="success">✅ ${result.category}: ${result.productCount} products uploaded to ${result.fileName}</div>`;
+                    } else {
+                        html += `<div class="error">❌ ${result.category}: Failed - ${result.error}</div>`;
+                        allSuccess = false;
+                    }
+                }
+
+                if (allSuccess) {
+                    html += '<div class="success"><strong>🎉 All test products uploaded successfully! You can now test CDN bandwidth loading.</strong></div>';
+                }
+
+                statusDiv.innerHTML = html;
+
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Upload failed: ${error.message}</div>`;
+                console.error('Upload error:', error);
+            }
+        };
+
+        window.checkExistingProducts = async function() {
+            if (!storage) {
+                await initializeFirebase();
+                if (!storage) return;
+            }
+
+            const statusDiv = document.getElementById('upload-status');
+            statusDiv.innerHTML = '<div class="info">🔍 Checking existing products...</div>';
+
+            try {
+                const checkPromises = Object.keys(testProducts).map(async (category) => {
+                    const fileName = `bandwidthTest/${category}-products.json`;
+                    const storageRef = ref(storage, fileName);
+                    
+                    try {
+                        const url = await getDownloadURL(storageRef);
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        
+                        return {
+                            category,
+                            fileName,
+                            exists: true,
+                            productCount: Array.isArray(data) ? data.length : 0,
+                            url: url.substring(0, 80) + '...'
+                        };
+                    } catch (error) {
+                        return {
+                            category,
+                            fileName,
+                            exists: false,
+                            error: error.message
+                        };
+                    }
+                });
+
+                const results = await Promise.all(checkPromises);
+                
+                let html = '<h4>Existing Products Check:</h4>';
+                for (const result of results) {
+                    if (result.exists) {
+                        html += `<div class="success">✅ ${result.category}: ${result.productCount} products found</div>`;
+                        html += `<small style="color: #666;">URL: ${result.url}</small><br>`;
+                    } else {
+                        html += `<div class="error">❌ ${result.category}: Not found - ${result.error}</div>`;
+                    }
+                }
+
+                statusDiv.innerHTML = html;
+
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Check failed: ${error.message}</div>`;
+                console.error('Check error:', error);
+            }
+        };
+
+        window.verifyDataStructure = async function() {
+            if (!storage) {
+                await initializeFirebase();
+                if (!storage) return;
+            }
+
+            const statusDiv = document.getElementById('verification-status');
+            statusDiv.innerHTML = '<div class="info">🔍 Verifying data structure...</div>';
+
+            try {
+                // List all files in bandwidthTest folder
+                const bandwidthTestRef = ref(storage, 'bandwidthTest');
+                const listResult = await listAll(bandwidthTestRef);
+                
+                let html = '<h4>Firebase Storage Structure Verification:</h4>';
+                html += `<div class="info">📁 Found ${listResult.items.length} files in bandwidthTest/ folder:</div>`;
+                
+                for (const itemRef of listResult.items) {
+                    try {
+                        const url = await getDownloadURL(itemRef);
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        
+                        html += `<div class="success">✅ ${itemRef.name}: ${Array.isArray(data) ? data.length : 'Invalid'} products</div>`;
+                    } catch (error) {
+                        html += `<div class="error">❌ ${itemRef.name}: Error - ${error.message}</div>`;
+                    }
+                }
+
+                // Test direct URLs
+                html += '<h4>Direct URL Access Test:</h4>';
+                const directTests = [
+                    'https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2Fbandwidth-test-1-products.json?alt=media',
+                    'https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2Fbandwidth-test-2-products.json?alt=media',
+                    'https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2Fbandwidth-test-3-products.json?alt=media'
+                ];
+
+                for (const directUrl of directTests) {
+                    try {
+                        const response = await fetch(directUrl);
+                        const data = await response.json();
+                        const fileName = directUrl.split('%2F').pop().split('?')[0];
+                        
+                        html += `<div class="success">✅ Direct access ${fileName}: ${data.length} products</div>`;
+                    } catch (error) {
+                        const fileName = directUrl.split('%2F').pop().split('?')[0];
+                        html += `<div class="error">❌ Direct access ${fileName}: Failed</div>`;
+                    }
+                }
+
+                html += '<div class="success"><strong>🎯 Data structure verification complete! All systems ready for CDN testing.</strong></div>';
+                statusDiv.innerHTML = html;
+
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Verification failed: ${error.message}</div>`;
+                console.error('Verification error:', error);
+            }
+        };
+
+        // Auto-initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase();
+        });
+    </script>
+</body>
+</html>

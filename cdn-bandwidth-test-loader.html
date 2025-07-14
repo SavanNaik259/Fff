@@ -260,14 +260,34 @@
                 const startTime = performance.now();
                 
                 // Step 1: Get download URL from function (fast, no bandwidth usage)
-                // Detect environment and use appropriate endpoint
+                // Detect environment and use appropriate endpoint with fallback
                 const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('replit');
-                const functionUrl = isLocalDevelopment 
-                    ? `/load-bandwidth-test-products?category=${category}`  // Local server endpoint
-                    : `/.netlify/functions/load-bandwidth-test-products?category=${category}`;  // Netlify function
+                
+                let functionUrl, fallbackUrl;
+                if (isLocalDevelopment) {
+                    functionUrl = `/load-bandwidth-test-products?category=${category}`;  // Local server endpoint
+                } else {
+                    functionUrl = `/.netlify/functions/load-bandwidth-test-products-fixed?category=${category}`;  // Enhanced Netlify function
+                    fallbackUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;  // Original function
+                }
                 
                 console.log(`🔗 Getting CDN URL from ${isLocalDevelopment ? 'local server' : 'Netlify function'}...`);
-                const urlResponse = await fetch(functionUrl, { method: 'GET' });
+                
+                let urlResponse;
+                try {
+                    urlResponse = await fetch(functionUrl, { method: 'GET' });
+                    if (!urlResponse.ok && fallbackUrl) {
+                        console.log(`⚠️ Enhanced function failed, trying fallback...`);
+                        urlResponse = await fetch(fallbackUrl, { method: 'GET' });
+                    }
+                } catch (error) {
+                    if (fallbackUrl) {
+                        console.log(`⚠️ Enhanced function error, trying fallback: ${error.message}`);
+                        urlResponse = await fetch(fallbackUrl, { method: 'GET' });
+                    } else {
+                        throw error;
+                    }
+                }
                 
                 if (!urlResponse.ok) {
                     throw new Error(`HTTP ${urlResponse.status}: ${urlResponse.statusText}`);
