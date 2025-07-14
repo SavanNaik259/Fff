@@ -133,25 +133,13 @@ exports.handler = async (event, context) => {
     const [metadata] = await file.getMetadata();
     const etag = metadata.etag || metadata.md5Hash;
     
-    // Check if client has cached version
-    const clientETag = event.headers['if-none-match'];
-    if (clientETag && clientETag === etag) {
-      console.log(`Client has cached version of ${category} products`);
-      return {
-        statusCode: 304,
-        headers: {
-          ...headers,
-          'ETag': etag,
-          'Cache-Control': 'public, max-age=1800'
-        }
-      };
-    }
+    // Instead of downloading, get the public download URL for direct CDN access
+    const [downloadUrl] = await file.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
 
-    // Download and parse the file
-    const [fileContents] = await file.download();
-    const products = JSON.parse(fileContents.toString());
-
-    console.log(`Successfully loaded ${products.length} ${category} bandwidth test products`);
+    console.log(`Generated CDN URL for ${category} bandwidth test products`);
 
     return {
       statusCode: 200,
@@ -162,10 +150,11 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify({
         success: true,
-        products: Array.isArray(products) ? products : [],
+        downloadUrl: downloadUrl,
         category: category,
         testType: 'bandwidth-test',
-        message: `Loaded ${products.length} test products from Firebase Storage`
+        etag: etag,
+        message: `Generated CDN URL for ${category} test products - client will fetch directly from Firebase Storage CDN`
       })
     };
 

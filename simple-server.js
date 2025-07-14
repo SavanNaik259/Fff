@@ -513,7 +513,7 @@ app.post('/upload-bandwidth-test-product', upload.single('productImage'), async 
   }
 });
 
-// Load bandwidth test products endpoint
+// Load bandwidth test products endpoint - returns CDN URL for direct access
 app.get('/load-bandwidth-test-products', async (req, res) => {
   try {
     const category = req.query.category || 'bandwidth-test-1';
@@ -525,26 +525,39 @@ app.get('/load-bandwidth-test-products', async (req, res) => {
     if (!exists) {
       return res.json({ 
         success: true, 
-        products: [],
-        message: `No products found for category: ${category}`,
-        fromCache: false
+        downloadUrl: null,
+        message: `No products found for category: ${category}`
       });
     }
 
-    const [fileContents] = await jsonFile.download();
-    const products = JSON.parse(fileContents.toString());
+    // Get signed URL for direct CDN access instead of downloading data
+    const [downloadUrl] = await jsonFile.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
 
     res.set({
-      'Cache-Control': 'public, max-age=3600',
-      'X-Data-Source': 'firebase-storage'
+      'Cache-Control': 'public, max-age=1800',
+      'X-Data-Source': 'firebase-storage-cdn-url'
     });
 
     res.json({
       success: true,
-      products: Array.isArray(products) ? products : [],
+      downloadUrl: downloadUrl,
       category: category,
-      fromCache: false,
+      message: `CDN URL generated for ${category} - client will fetch directly from Firebase Storage CDN`,
       loadedAt: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error(`Error generating CDN URL for ${req.query.category}:`, error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'Failed to generate CDN URL'
+    });
+  }
+});String()
     });
 
   } catch (error) {

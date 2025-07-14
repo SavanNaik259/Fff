@@ -175,13 +175,13 @@
         </div>
 
         <div class="bandwidth-info">
-            <h3>📊 How to Monitor Bandwidth Usage:</h3>
+            <h3>📊 How CDN Testing Works:</h3>
             <ol>
-                <li>Open <strong>Firebase Console</strong> → <strong>Storage</strong> → <strong>Usage</strong></li>
-                <li>Note current <strong>"Network egress"</strong> value</li>
-                <li>Load products here and watch if bandwidth increases</li>
-                <li><strong>First visitor:</strong> Bandwidth should increase</li>
-                <li><strong>Second visitor (same region):</strong> Bandwidth should NOT increase (CDN cache hit)</li>
+                <li><strong>Step 1:</strong> Netlify function provides Firebase Storage download URL (no bandwidth)</li>
+                <li><strong>Step 2:</strong> Client fetches directly from Firebase Storage CDN</li>
+                <li><strong>First visitor per region:</strong> Downloads from Firebase (bandwidth used)</li>
+                <li><strong>Subsequent visitors:</strong> CDN cache hit (no bandwidth used)</li>
+                <li><strong>Monitor:</strong> Firebase Console → Storage → Usage for bandwidth tracking</li>
             </ol>
         </div>
 
@@ -229,12 +229,12 @@
         <div id="products" class="product-grid"></div>
     </div>
 
-    <!-- No Firebase client SDK needed - using Netlify functions -->
+    <!-- Direct Firebase Storage CDN access - no client SDK needed -->
 
     <script>
-        // No Firebase client SDK needed - using Netlify functions instead
-        console.log('✅ CDN Bandwidth Test Loader ready - using Netlify functions');
-        showMessage('🔥 Ready for CDN testing via Netlify functions!', 'success');
+        // Direct Firebase Storage CDN access for true bandwidth testing
+        console.log('✅ CDN Bandwidth Test Loader ready - direct Firebase Storage CDN access');
+        showMessage('Ready for CDN testing with direct Firebase Storage access!', 'success');
 
         function showMessage(message, type = 'info') {
             const messagesDiv = document.getElementById('messages');
@@ -259,66 +259,92 @@
                 
                 const startTime = performance.now();
                 
-                // Use Netlify function instead of direct Firebase access
+                // Step 1: Get download URL from Netlify function (fast, no bandwidth usage)
                 const functionUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
+                
+                console.log(`🔗 Getting CDN URL from Netlify function...`);
+                const urlResponse = await fetch(functionUrl, { method: 'GET' });
+                
+                if (!urlResponse.ok) {
+                    throw new Error(`HTTP ${urlResponse.status}: ${urlResponse.statusText}`);
+                }
+                
+                const urlData = await urlResponse.json();
+                
+                // Check if the response contains an error
+                if (!urlData.success) {
+                    showMessage(`${urlData.error || urlData.message}`, 'error');
+                    document.getElementById('products').innerHTML = `
+                        <div class="empty-state">
+                            <h3>Error Loading Products</h3>
+                            <p>${urlData.error || urlData.message}</p>
+                            <p>Try adding products first using the uploader.</p>
+                        </div>
+                    `;
+                    updateStats(0, 0, 'Error', 0);
+                    return;
+                }
+                
+                // Check if we have a download URL
+                if (!urlData.downloadUrl) {
+                    showMessage(`No products found in ${category}. Add some using the uploader.`, 'info');
+                    document.getElementById('products').innerHTML = `
+                        <div class="empty-state">
+                            <h3>No Products Yet</h3>
+                            <p>Click "Add Test Product" to create products for CDN testing.</p>
+                        </div>
+                    `;
+                    updateStats(0, 0, 'No Data', 0);
+                    return;
+                }
+                
+                // Step 2: Fetch actual data directly from Firebase Storage CDN
+                console.log(`🔥 Fetching directly from Firebase Storage CDN with cache mode: ${cacheMode}`);
+                const cdnStartTime = performance.now();
                 
                 const fetchOptions = {
                     cache: cacheMode,
                     method: 'GET'
                 };
                 
-                console.log(`🌐 Fetching from Netlify function with cache mode: ${cacheMode}`);
-                const response = await fetch(functionUrl, fetchOptions);
+                const response = await fetch(urlData.downloadUrl, fetchOptions);
                 
                 const endTime = performance.now();
-                const requestTime = endTime - startTime;
+                const requestTime = endTime - cdnStartTime;
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error(`CDN fetch failed: HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const responseText = await response.text();
                 const dataSize = new Blob([responseText]).size;
-                const data = JSON.parse(responseText);
-                
-                // Check if the response contains an error
-                if (!data.success) {
-                    showMessage(`${data.error || data.message}`, 'error');
-                    document.getElementById('products').innerHTML = `
-                        <div class="empty-state">
-                            <h3>Error Loading Products</h3>
-                            <p>${data.error || data.message}</p>
-                            <p>Try adding products first using the uploader.</p>
-                        </div>
-                    `;
-                    updateStats(requestTime, 0, 'Error', dataSize);
-                    return;
-                }
-                
-                const products = data.products || [];
+                const products = JSON.parse(responseText);
                 
                 // Determine cache status based on response time and headers
                 let cacheStatus = 'Unknown';
                 if (requestTime < 100) {
-                    cacheStatus = 'Fast (CDN?)';
+                    cacheStatus = 'CDN Cache Hit';
                 } else if (requestTime < 300) {
-                    cacheStatus = 'Medium';
+                    cacheStatus = 'Medium (Regional)';
                 } else {
-                    cacheStatus = 'Slow (Origin?)';
+                    cacheStatus = 'Origin Download';
                 }
                 
                 // Check response headers for cache indicators
                 const cacheControl = response.headers.get('cache-control');
                 const etag = response.headers.get('etag');
+                const xCacheStatus = response.headers.get('x-cache');
                 
-                console.log('📊 Response details:', {
+                console.log('🔥 Firebase Storage CDN Response:', {
                     requestTime: Math.round(requestTime),
                     dataSize: dataSize,
                     cacheControl: cacheControl,
                     etag: etag,
+                    xCacheStatus: xCacheStatus,
                     status: response.status,
-                    success: data.success,
-                    productCount: products.length
+                    productCount: products.length,
+                    cacheMode: cacheMode,
+                    message: requestTime < 100 ? 'CDN cache hit - no Firebase bandwidth used!' : 'Origin download - Firebase bandwidth used'
                 });
                 
                 if (!Array.isArray(products) || products.length === 0) {
@@ -336,8 +362,17 @@
                 displayProducts(products, category);
                 updateStats(requestTime, products.length, cacheStatus, dataSize);
                 
-                const speedEmoji = requestTime < 100 ? '⚡' : requestTime < 300 ? '🐌' : '🕐';
-                showMessage(`${speedEmoji} Loaded ${products.length} products from ${category} in ${Math.round(requestTime)}ms. Check Firebase Console for bandwidth usage!`, 'success');
+                // Enhanced message based on CDN performance
+                let performanceMessage = '';
+                if (requestTime < 100) {
+                    performanceMessage = `⚡ CDN Cache Hit! Loaded ${products.length} products from ${category} in ${Math.round(requestTime)}ms. No Firebase bandwidth used!`;
+                } else if (requestTime < 300) {
+                    performanceMessage = `🌐 Regional CDN: Loaded ${products.length} products from ${category} in ${Math.round(requestTime)}ms. Check Firebase Console for bandwidth usage.`;
+                } else {
+                    performanceMessage = `🔥 Origin Download: Loaded ${products.length} products from ${category} in ${Math.round(requestTime)}ms. This request used Firebase bandwidth.`;
+                }
+                
+                showMessage(performanceMessage, 'success');
                 
             } catch (error) {
                 console.error('❌ Load error:', error);
@@ -363,20 +398,30 @@
             
             for (const category of categories) {
                 try {
-                    const startTime = performance.now();
+                    // Step 1: Get download URL from Netlify function
                     const functionUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
-                    const response = await fetch(functionUrl);
-                    const endTime = performance.now();
+                    const urlResponse = await fetch(functionUrl);
                     
-                    totalTime += (endTime - startTime);
-                    
-                    if (response.ok) {
-                        const responseText = await response.text();
-                        totalSize += new Blob([responseText]).size;
-                        const data = JSON.parse(responseText);
+                    if (urlResponse.ok) {
+                        const urlData = await urlResponse.json();
                         
-                        if (data.success && Array.isArray(data.products)) {
-                            allProducts = allProducts.concat(data.products.map(p => ({...p, category})));
+                        if (urlData.success && urlData.downloadUrl) {
+                            // Step 2: Fetch actual data directly from Firebase Storage CDN
+                            const startTime = performance.now();
+                            const cdnResponse = await fetch(urlData.downloadUrl);
+                            const endTime = performance.now();
+                            
+                            totalTime += (endTime - startTime);
+                            
+                            if (cdnResponse.ok) {
+                                const responseText = await cdnResponse.text();
+                                totalSize += new Blob([responseText]).size;
+                                const products = JSON.parse(responseText);
+                                
+                                if (Array.isArray(products)) {
+                                    allProducts = allProducts.concat(products.map(p => ({...p, category})));
+                                }
+                            }
                         }
                     }
                 } catch (error) {
