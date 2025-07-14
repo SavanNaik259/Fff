@@ -123,6 +123,10 @@ exports.handler = async (event, context) => {
           const { category, productName, productPrice, productDescription } = fields;
           const productId = `TEST-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
+          // Create unique filename and file reference
+          const imageFileName = `${productId}-${fileName}`;
+          const imageFile = bucket.file(`bandwidthTest/${imageFileName}`);
+
           // Upload image with comprehensive CDN cache metadata
           const metadata = {
             cacheControl: 'public, max-age=2592000, immutable', // 30 days cache with immutable flag
