@@ -360,3 +360,218 @@ Available Routes:
 Press Ctrl+C to stop the server
 `);
 });
+const express = require('express');
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const admin = require('firebase-admin');
+
+const app = express();
+const PORT = 5000;
+
+// Enable CORS for all routes
+app.use(cors());
+app.use(express.json());
+app.use(express.static('.'));
+
+// Multer configuration for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
+
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
+  try {
+    // Use service account from environment or file
+    let serviceAccount;
+    
+    if (process.env.FIREBASE_PRIVATE_KEY) {
+      serviceAccount = {
+        type: 'service_account',
+        project_id: 'auric-a0c92',
+        private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+        private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        client_id: process.env.FIREBASE_CLIENT_ID,
+        auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+        token_uri: 'https://oauth2.googleapis.com/token',
+        auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+        client_x509_cert_url: process.env.FIREBASE_CERT_URL
+      };
+    } else {
+      // Fallback to service account file (you'll need to add this)
+      console.log('Using default Firebase setup - environment variables not found');
+      serviceAccount = require('./firebase-service-account.json');
+    }
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      storageBucket: 'auric-a0c92.firebasestorage.app'
+    });
+
+    console.log('Firebase Admin initialized successfully');
+  } catch (error) {
+    console.error('Firebase Admin initialization error:', error);
+  }
+}
+
+// Bandwidth test product upload endpoint
+app.post('/upload-bandwidth-test-product', upload.single('productImage'), async (req, res) => {
+  try {
+    const { category, productName, productPrice, productDescription } = req.body;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ success: false, error: 'No file provided' });
+    }
+
+    const bucket = admin.storage().bucket();
+    const productId = `TEST-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    
+    // Upload image with CDN headers
+    const imageFileName = `${category}_${productId}_${Date.now()}.jpg`;
+    const imageFile = bucket.file(`bandwidthTest/${imageFileName}`);
+    
+    const metadata = {
+      cacheControl: 'public, max-age=2592000',
+      contentType: file.mimetype,
+      metadata: {
+        testCategory: category,
+        productId: productId,
+        uploadedAt: new Date().toISOString()
+      }
+    };
+
+    await imageFile.save(file.buffer, { metadata });
+    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2F${imageFileName}?alt=media`;
+
+    // Create product data
+    const productData = {
+      id: productId,
+      name: productName,
+      price: parseFloat(productPrice),
+      description: productDescription,
+      image: imageUrl,
+      category: category,
+      createdAt: new Date().toISOString(),
+      testNote: 'CDN bandwidth test product'
+    };
+
+    // Load existing products
+    let existingProducts = [];
+    try {
+      const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
+      const [exists] = await jsonFile.exists();
+      
+      if (exists) {
+        const [fileContents] = await jsonFile.download();
+        const data = JSON.parse(fileContents.toString());
+        if (Array.isArray(data)) {
+          existingProducts = data;
+        }
+      }
+    } catch (error) {
+      console.log('Creating new product file for category:', category);
+    }
+
+    // Add new product
+    existingProducts.push(productData);
+
+    // Save updated products JSON with CDN headers
+    const jsonData = JSON.stringify(existingProducts, null, 2);
+    const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
+    
+    const jsonMetadata = {
+      contentType: 'application/json',
+      cacheControl: 'public, max-age=2592000',
+      metadata: {
+        testCategory: category,
+        productsCount: existingProducts.length.toString(),
+        lastUpdated: new Date().toISOString()
+      }
+    };
+
+    await jsonFile.save(jsonData, { metadata: jsonMetadata });
+
+    res.json({
+      success: true,
+      message: `Product "${productName}" uploaded successfully!`,
+      productId: productId,
+      category: category,
+      totalProducts: existingProducts.length,
+      imageUrl: imageUrl
+    });
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({
+      success: false,
+      error: `Upload failed: ${error.message}`
+    });
+  }
+});
+
+// Load bandwidth test products endpoint
+app.get('/load-bandwidth-test-products', async (req, res) => {
+  try {
+    const category = req.query.category || 'bandwidth-test-1';
+    const bucket = admin.storage().bucket();
+    const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
+    
+    const [exists] = await jsonFile.exists();
+    
+    if (!exists) {
+      return res.json({ 
+        success: true, 
+        products: [],
+        message: `No products found for category: ${category}`,
+        fromCache: false
+      });
+    }
+
+    const [fileContents] = await jsonFile.download();
+    const products = JSON.parse(fileContents.toString());
+
+    res.set({
+      'Cache-Control': 'public, max-age=3600',
+      'X-Data-Source': 'firebase-storage'
+    });
+
+    res.json({
+      success: true,
+      products: Array.isArray(products) ? products : [],
+      category: category,
+      fromCache: false,
+      loadedAt: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error loading bandwidth test products:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      products: []
+    });
+  }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    firebase: admin.apps.length > 0 ? 'Connected' : 'Not Connected'
+  });
+});
+
+// Serve static files
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running at http://0.0.0.0:${PORT}`);
+  console.log(`Firebase Admin: ${admin.apps.length > 0 ? 'Connected' : 'Not Connected'}`);
+});
