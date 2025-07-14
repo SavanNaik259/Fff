@@ -378,6 +378,7 @@
             try {
                 submitBtn.disabled = true;
                 loading.style.display = 'block';
+                updateProgress(20);
                 
                 // Get form data
                 const category = document.getElementById('testCategory').value;
@@ -391,41 +392,43 @@
                     showMessage('⚠️ Consider using a larger image (50KB+) for better CDN testing', 'info');
                 }
 
-                const productId = generateProductId();
-
                 showMessage(`📤 Uploading ${productName} to category: ${category}`, 'info');
+                updateProgress(40);
 
-                // Upload image with CDN headers
-                const imageUrl = await uploadImageWithCDNHeaders(productImage, productId, category);
+                // Create FormData for Netlify function
+                const formData = new FormData();
+                formData.append('file', productImage);
+                formData.append('category', category);
+                formData.append('productName', productName);
+                formData.append('productPrice', productPrice);
+                formData.append('productDescription', productDescription);
+
+                updateProgress(60);
+
+                // Upload via Netlify function
+                const response = await fetch('/.netlify/functions/upload-bandwidth-test-product', {
+                    method: 'POST',
+                    body: formData
+                });
 
                 updateProgress(80);
 
-                // Create product data
-                const productData = {
-                    id: productId,
-                    name: productName,
-                    price: productPrice,
-                    description: productDescription,
-                    image: imageUrl,
-                    category: category,
-                    createdAt: new Date().toISOString(),
-                    testNote: 'CDN bandwidth test product'
-                };
+                const result = await response.json();
 
-                // Save product data with CDN headers
-                const totalProducts = await saveProductDataWithCDNHeaders(productData, category);
-
-                updateProgress(100);
-
-                showMessage(`🎉 Product "${productName}" added successfully! Total products in ${category}: ${totalProducts}. Open the loader to test CDN bandwidth behavior.`, 'success');
-                
-                // Reset form
-                form.reset();
-                
-                setTimeout(() => {
-                    loading.style.display = 'none';
-                    updateProgress(0);
-                }, 3000);
+                if (result.success) {
+                    updateProgress(100);
+                    showMessage(`🎉 ${result.message} Total products in ${category}: ${result.totalProducts}. Open the loader to test CDN bandwidth behavior.`, 'success');
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                        updateProgress(0);
+                    }, 3000);
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
 
             } catch (error) {
                 console.error('❌ Upload failed:', error);
