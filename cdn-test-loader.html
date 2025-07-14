@@ -153,7 +153,21 @@
                 
                 // Get the JSON file from Firebase Storage (just like bridal section)
                 const storageRef = storage.ref('productData/cdn-test-products.json');
-                const downloadURL = await storageRef.getDownloadURL();
+                
+                let downloadURL;
+                try {
+                    downloadURL = await storageRef.getDownloadURL();
+                } catch (urlError) {
+                    // File doesn't exist yet
+                    showMessage('No products found. Add some products first using the uploader.', 'info');
+                    document.getElementById('products').innerHTML = `
+                        <div class="empty-state">
+                            <h3>No Products Yet</h3>
+                            <p>Click "Add New Product" to create test products for CDN testing.</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
                 // Fetch the products (this is where CDN caching happens)
                 const response = await fetch(downloadURL);
@@ -183,6 +197,13 @@
                 
             } catch (error) {
                 showMessage(`Error loading products: ${error.message}`, 'error');
+                document.getElementById('products').innerHTML = `
+                    <div class="empty-state">
+                        <h3>Error Loading Products</h3>
+                        <p>${error.message}</p>
+                        <p>Try adding a product first using the uploader.</p>
+                    </div>
+                `;
                 console.error('Load error:', error);
             }
         }
