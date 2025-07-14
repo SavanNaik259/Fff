@@ -10,6 +10,12 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const admin = require('firebase-admin');
+const crypto = require('crypto');
+
+// In-memory cache for products
+const productCache = {};
+const PRODUCT_CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
 // Load environment variables
 dotenv.config();
@@ -62,7 +68,7 @@ app.post('/api/send-order-email', async (req, res) => {
   try {
     // Get order data from request body
     const orderData = req.body;
-    
+
     // Validate required data
     if (!orderData || !orderData.customer || !orderData.products) {
       return res.status(400).json({
@@ -70,12 +76,12 @@ app.post('/api/send-order-email', async (req, res) => {
         message: 'Missing required order data'
       });
     }
-    
+
     console.log('Received order email request for:', orderData.orderReference);
-    
+
     // Send emails
     const result = await emailService.sendOrderEmails(orderData);
-    
+
     if (result.success) {
       return res.status(200).json({
         success: true,
@@ -106,16 +112,16 @@ app.post('/api/create-razorpay-order', async (req, res) => {
   try {
     // Import Razorpay
     const Razorpay = require('razorpay');
-    
+
     // Create a Razorpay instance
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET
     });
-    
+
     // Get order details from request body
     const { amount, currency = 'INR', receipt, notes } = req.body;
-    
+
     // Validate required data
     if (!amount) {
       return res.status(400).json({
@@ -123,12 +129,12 @@ app.post('/api/create-razorpay-order', async (req, res) => {
         message: 'Missing required order data (amount)'
       });
     }
-    
+
     console.log('Creating Razorpay order for amount:', amount);
-    
+
     // Convert amount to paise (Razorpay uses smallest currency unit)
     const amountInPaise = Math.round(amount * 100);
-    
+
     // Create order
     const order = await razorpay.orders.create({
       amount: amountInPaise,
@@ -136,7 +142,7 @@ app.post('/api/create-razorpay-order', async (req, res) => {
       receipt,
       notes
     });
-    
+
     // Return order details
     return res.status(200).json({
       success: true,
@@ -160,7 +166,7 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
   try {
     // Get payment details from request body
     const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-    
+
     // Validate required data
     if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
       return res.status(400).json({
@@ -168,9 +174,9 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
         message: 'Missing required payment verification data'
       });
     }
-    
+
     console.log('Verifying Razorpay payment:', razorpay_payment_id);
-    
+
     // Create the signature verification data
     const crypto = require('crypto');
     const secret = process.env.RAZORPAY_KEY_SECRET;
@@ -178,7 +184,7 @@ app.post('/api/verify-razorpay-payment', async (req, res) => {
       .createHmac('sha256', secret)
       .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest('hex');
-    
+
     // Verify the signature
     if (generated_signature === razorpay_signature) {
       return res.status(200).json({
@@ -209,12 +215,12 @@ app.get('/api/load-products/:category', async (req, res) => {
   try {
     const { category } = req.params;
     console.log(`Loading ${category} products from Firebase Storage CDN...`);
-    
+
     // Simple fetch from Firebase Storage - their CDN handles all caching automatically
     const storageUrl = `https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/productData%2F${category}-products.json?alt=media&token=c6a2eb63-56e3-4fc0-96ac-66773cf45f96`;
-    
+
     const response = await fetch(storageUrl);
-    
+
     if (!response.ok) {
       if (response.status === 404) {
         console.log(`No ${category} products found in Firebase Storage`);
@@ -228,26 +234,26 @@ app.get('/api/load-products/:category', async (req, res) => {
       }
       throw new Error(`Failed to fetch from storage: ${response.status}`);
     }
-    
+
     const products = await response.json();
     console.log(`Successfully loaded ${products.length} ${category} products`);
-    
+
     // Pass through Firebase Storage cache headers
     const cacheControl = response.headers.get('cache-control');
     const etag = response.headers.get('etag');
-    
+
     if (cacheControl) res.setHeader('Cache-Control', cacheControl);
     if (etag) res.setHeader('ETag', etag);
-    
+
     const responseData = {
       success: true,
       products: products,
       count: products.length,
       category: category
     };
-    
+
     res.json(responseData);
-    
+
   } catch (error) {
     console.error('Error loading products:', error);
     res.status(500).json({
@@ -311,7 +317,7 @@ app.use((req, res) => {
   if (req.path === '/') {
     return res.sendFile(path.join(__dirname, 'index.html'));
   }
-  
+
   // For API requests that don't match a route, return 404 JSON
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({
@@ -319,7 +325,7 @@ app.use((req, res) => {
       message: 'API endpoint not found'
     });
   }
-  
+
   // For all other requests, try the exact file or fall back to index.html
   const filePath = path.join(__dirname, req.path);
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {

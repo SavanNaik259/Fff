@@ -43,11 +43,17 @@ if (!admin.apps.length) {
   }
 }
 
+// In-memory cache (persists across requests in the same function instance)
+let cachedProducts = null;
+let cacheTimestamp = 0;
+let cachedETag = null;
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
 exports.handler = async (event, context) => {
   // Set CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, If-None-Match',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Content-Type': 'application/json'
   };
@@ -73,6 +79,41 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    const now = Date.now();
+    
+    // Check memory cache first
+    if (cachedProducts && (now - cacheTimestamp) < CACHE_DURATION) {
+      console.log('Serving bridal products from Netlify function memory cache');
+      
+      // Check if client has cached version
+      const clientETag = event.headers['if-none-match'];
+      if (clientETag && clientETag === cachedETag) {
+        return {
+          statusCode: 304,
+          headers: {
+            ...headers,
+            'ETag': cachedETag,
+            'Cache-Control': 'public, max-age=1800'
+          }
+        };
+      }
+      
+      return {
+        statusCode: 200,
+        headers: {
+          ...headers,
+          'ETag': cachedETag,
+          'Cache-Control': 'public, max-age=1800'
+        },
+        body: JSON.stringify({
+          success: true,
+          products: cachedProducts,
+          message: `Loaded ${cachedProducts.length} products from Netlify cache`,
+          cached: true
+        })
+      };
+    }
+    
     console.log('Loading bridal products from Cloud Storage...');
 
     // Check if Firebase Admin is properly initialized
@@ -112,19 +153,46 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Get file metadata for ETag
+    const [metadata] = await file.getMetadata();
+    const etag = metadata.etag || metadata.md5Hash;
+    
+    // Check if client has cached version
+    const clientETag = event.headers['if-none-match'];
+    if (clientETag && clientETag === etag) {
+      return {
+        statusCode: 304,
+        headers: {
+          ...headers,
+          'ETag': etag,
+          'Cache-Control': 'public, max-age=300'
+        }
+      };
+    }
+
     // Download and parse the file
     const [fileContents] = await file.download();
     const products = JSON.parse(fileContents.toString());
+    
+    // Cache the results in memory
+    cachedProducts = Array.isArray(products) ? products : [];
+    cacheTimestamp = now;
+    cachedETag = etag;
 
-    console.log(`Successfully loaded ${products.length} bridal products from Firebase Storage`);
+    console.log(`Successfully loaded and cached ${products.length} bridal products from Firebase Storage`);
 
     return {
       statusCode: 200,
-      headers,
+      headers: {
+        ...headers,
+        'ETag': etag,
+        'Cache-Control': 'public, max-age=1800'
+      },
       body: JSON.stringify({
         success: true,
-        products: Array.isArray(products) ? products : [],
-        message: `Loaded ${products.length} products from Firebase Storage`
+        products: cachedProducts,
+        message: `Loaded ${cachedProducts.length} products from Firebase Storage`,
+        cached: false
       })
     };
 
