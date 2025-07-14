@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Product Uploader - CDN Optimized</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .message {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .progress-bar {
+            background: #f0f0f0;
+            height: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #007bff;
+            height: 100%;
+            transition: width 0.3s;
+            width: 0%;
+        }
+        #log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Simple Product Uploader</h1>
+        <p>Upload products directly to Firebase Storage with proper CDN cache headers.</p>
+
+        <form id="productForm">
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productPrice">Price (₹)</label>
+                <input type="number" id="productPrice" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productCategory">Category</label>
+                <select id="productCategory" required>
+                    <option value="">Select Category</option>
+                    <option value="bridal">Bridal Edit</option>
+                    <option value="rings">Rings</option>
+                    <option value="necklaces">Necklaces</option>
+                    <option value="earrings">Earrings</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productDescription">Description</label>
+                <textarea id="productDescription" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="productImage">Product Image</label>
+                <input type="file" id="productImage" accept="image/*" required>
+            </div>
+
+            <button type="submit" id="submitBtn">Add Product</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div>Adding product...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="loadingText">Preparing...</div>
+        </div>
+
+        <div id="messages"></div>
+        <div id="log"></div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKFVNPuYMgO5GzqrxEuTdoKgdGwL4vFCg",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.firebasestorage.app",
+            messagingSenderId: "246063593968",
+            appId: "1:246063593968:web:f5fd5c55c2b7b88b4d5ac5",
+            measurementId: "G-3TC4T7CRB9"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function showMessage(message, type = 'info') {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messagesDiv.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        function updateProgress(progress, text) {
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('loadingText').textContent = text;
+        }
+
+        async function uploadImage(file, productId) {
+            log('Starting image upload with CDN cache headers...');
+            
+            const fileName = `${productId}_${Date.now()}.jpg`;
+            const storageRef = storage.ref(`productImages/${fileName}`);
+
+            return new Promise((resolve, reject) => {
+                // Set metadata with 30-day CDN caching
+                const metadata = {
+                    cacheControl: 'public, max-age=2592000', // 30 days
+                    contentType: file.type,
+                    customMetadata: {
+                        uploadedAt: new Date().toISOString(),
+                        productId: productId
+                    }
+                };
+
+                log(`Image metadata: cacheControl="${metadata.cacheControl}"`);
+                log(`Image size: ${(file.size / 1024).toFixed(1)} KB`);
+
+                const uploadTask = storageRef.put(file, metadata);
+
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        updateProgress(progress, `Uploading image... ${Math.round(progress)}%`);
+                        log(`Image upload progress: ${Math.round(progress)}%`);
+                    },
+                    (error) => {
+                        log(`Image upload error: ${error.message}`);
+                        reject(error);
+                    },
+                    async () => {
+                        try {
+                            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                            log(`Image uploaded successfully: ${downloadURL}`);
+                            resolve(downloadURL);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    }
+                );
+            });
+        }
+
+        async function uploadProductData(productData, category) {
+            log('Loading existing products from Firebase Storage...');
+            
+            let existingProducts = [];
+            
+            try {
+                // Try to load existing product data
+                const storageRef = storage.ref(`productData/${category}-products.json`);
+                const downloadURL = await storageRef.getDownloadURL();
+                const response = await fetch(downloadURL);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        existingProducts = data;
+                        log(`Loaded ${existingProducts.length} existing products`);
+                    }
+                }
+            } catch (error) {
+                log('No existing products found, starting with empty array');
+                existingProducts = [];
+            }
+
+            // Add new product
+            existingProducts.push(productData);
+            log(`Added new product. Total products: ${existingProducts.length}`);
+
+            // Sort by creation date (newest first)
+            existingProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            updateProgress(80, 'Saving product data to Firebase Storage...');
+
+            // Upload updated product list with CDN cache headers
+            const jsonData = JSON.stringify(existingProducts, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            
+            const storageRef = storage.ref(`productData/${category}-products.json`);
+            
+            const metadata = {
+                contentType: 'application/json',
+                cacheControl: 'public, max-age=2592000', // 30 days CDN cache
+                customMetadata: {
+                    lastUpdated: new Date().toISOString(),
+                    productCount: existingProducts.length.toString()
+                }
+            };
+
+            log(`JSON metadata: cacheControl="${metadata.cacheControl}"`);
+            log(`JSON size: ${(blob.size / 1024).toFixed(1)} KB`);
+
+            await storageRef.put(blob, metadata);
+            log('Product data uploaded successfully with CDN cache headers');
+
+            updateProgress(100, 'Upload completed!');
+        }
+
+        function generateProductId(category) {
+            const timestamp = Date.now();
+            const random = Math.random().toString(36).substring(2, 8);
+            const prefix = category.toUpperCase().substring(0, 3);
+            return `${prefix}-${timestamp}-${random}`;
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const form = document.getElementById('productForm');
+            
+            try {
+                submitBtn.disabled = true;
+                loading.style.display = 'block';
+                form.style.display = 'none';
+                
+                // Get form data
+                const productName = document.getElementById('productName').value;
+                const productPrice = parseFloat(document.getElementById('productPrice').value);
+                const productCategory = document.getElementById('productCategory').value;
+                const productDescription = document.getElementById('productDescription').value;
+                const productImage = document.getElementById('productImage').files[0];
+
+                log('Starting product upload process...');
+                log(`Product: ${productName}, Category: ${productCategory}, Price: ₹${productPrice}`);
+
+                // Generate unique product ID
+                const productId = generateProductId(productCategory);
+                log(`Generated product ID: ${productId}`);
+
+                updateProgress(10, 'Starting image upload...');
+
+                // Upload image
+                const imageUrl = await uploadImage(productImage, productId);
+
+                updateProgress(60, 'Creating product data...');
+
+                // Create product data object
+                const productData = {
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    category: productCategory,
+                    description: productDescription,
+                    image: imageUrl,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                log(`Product data created: ${JSON.stringify(productData, null, 2)}`);
+
+                // Upload product data
+                await uploadProductData(productData, productCategory);
+
+                showMessage(`Product "${productName}" added successfully!`, 'success');
+                log('✅ Product upload completed successfully!');
+                
+                // Reset form
+                form.reset();
+                
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    form.style.display = 'block';
+                }, 2000);
+
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                showMessage(`Error: ${error.message}`, 'error');
+                loading.style.display = 'none';
+                form.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Initialize
+        log('🔥 Simple Product Uploader Ready');
+        log('📝 This uploader sets proper CDN cache headers on all files');
+        log('⚡ Files uploaded with cacheControl: "public, max-age=2592000"');
+    </script>
+</body>
+</html>
