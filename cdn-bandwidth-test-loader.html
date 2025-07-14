@@ -263,28 +263,59 @@
                 // Detect environment and use appropriate endpoint with fallback
                 const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('replit');
                 
-                let functionUrl, fallbackUrl;
+                let functionUrl, fallbackUrls = [];
                 if (isLocalDevelopment) {
                     functionUrl = `/load-bandwidth-test-products?category=${category}`;  // Local server endpoint
                 } else {
-                    functionUrl = `/.netlify/functions/load-bandwidth-test-products-fixed?category=${category}`;  // Enhanced Netlify function
-                    fallbackUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;  // Original function
+                    // Try CORS proxy first (avoids signed URL CORS issues)
+                    functionUrl = `/.netlify/functions/load-bandwidth-test-products-proxy?category=${category}`;
+                    fallbackUrls = [
+                        `/.netlify/functions/load-bandwidth-test-products-fixed?category=${category}`,
+                        `/.netlify/functions/load-bandwidth-test-products?category=${category}`
+                    ];
                 }
                 
                 console.log(`🔗 Getting CDN URL from ${isLocalDevelopment ? 'local server' : 'Netlify function'}...`);
                 
                 let urlResponse;
+                let methodUsed = 'primary';
+                
                 try {
                     urlResponse = await fetch(functionUrl, { method: 'GET' });
-                    if (!urlResponse.ok && fallbackUrl) {
-                        console.log(`⚠️ Enhanced function failed, trying fallback...`);
-                        urlResponse = await fetch(fallbackUrl, { method: 'GET' });
+                    
+                    // If primary fails and we have fallbacks, try them
+                    if (!urlResponse.ok && fallbackUrls.length > 0) {
+                        for (let i = 0; i < fallbackUrls.length; i++) {
+                            console.log(`⚠️ Primary function failed, trying fallback ${i + 1}...`);
+                            try {
+                                urlResponse = await fetch(fallbackUrls[i], { method: 'GET' });
+                                if (urlResponse.ok) {
+                                    methodUsed = `fallback-${i + 1}`;
+                                    break;
+                                }
+                            } catch (fallbackError) {
+                                console.log(`Fallback ${i + 1} error:`, fallbackError.message);
+                            }
+                        }
                     }
                 } catch (error) {
-                    if (fallbackUrl) {
-                        console.log(`⚠️ Enhanced function error, trying fallback: ${error.message}`);
-                        urlResponse = await fetch(fallbackUrl, { method: 'GET' });
-                    } else {
+                    // If primary fails completely, try fallbacks
+                    if (fallbackUrls.length > 0) {
+                        for (let i = 0; i < fallbackUrls.length; i++) {
+                            console.log(`⚠️ Primary function error, trying fallback ${i + 1}: ${error.message}`);
+                            try {
+                                urlResponse = await fetch(fallbackUrls[i], { method: 'GET' });
+                                if (urlResponse.ok) {
+                                    methodUsed = `fallback-${i + 1}`;
+                                    break;
+                                }
+                            } catch (fallbackError) {
+                                console.log(`Fallback ${i + 1} error:`, fallbackError.message);
+                            }
+                        }
+                    }
+                    
+                    if (!urlResponse || !urlResponse.ok) {
                         throw error;
                     }
                 }
@@ -309,7 +340,33 @@
                     return;
                 }
                 
-                // Check if we have a download URL
+                // Check if this is a CORS proxy response (contains products directly)
+                if (urlData.products !== undefined) {
+                    console.log(`🔥 CORS proxy response - products loaded directly (${methodUsed})`);
+                    const requestTime = performance.now() - startTime;
+                    
+                    if (!Array.isArray(urlData.products) || urlData.products.length === 0) {
+                        showMessage(`No products found in ${category}. Add some using the uploader.`, 'info');
+                        document.getElementById('products').innerHTML = `
+                            <div class="empty-state">
+                                <h3>No Products Yet</h3>
+                                <p>Click "Add Test Product" to create products for CDN testing.</p>
+                            </div>
+                        `;
+                        updateStats(requestTime, 0, 'CORS Proxy - No Data', 0);
+                        return;
+                    }
+                    
+                    const dataSize = new Blob([JSON.stringify(urlData.products)]).size;
+                    displayProducts(urlData.products, category);
+                    updateStats(requestTime, urlData.products.length, 'CORS Proxy', dataSize);
+                    
+                    const methodMessage = methodUsed === 'primary' ? 'CORS proxy (primary)' : `CORS proxy (${methodUsed})`;
+                    showMessage(`⚡ Loaded ${urlData.products.length} products via ${methodMessage} in ${Math.round(requestTime)}ms`, 'success');
+                    return;
+                }
+                
+                // Check if we have a download URL (signed URL method)
                 if (!urlData.downloadUrl) {
                     showMessage(`No products found in ${category}. Add some using the uploader.`, 'info');
                     document.getElementById('products').innerHTML = `
@@ -322,7 +379,7 @@
                     return;
                 }
                 
-                // Step 2: Fetch actual data directly from Firebase Storage CDN
+                // Step 2: Fetch actual data directly from Firebase Storage CDN using signed URL
                 console.log(`🔥 Fetching directly from Firebase Storage CDN with cache mode: ${cacheMode}`);
                 const cdnStartTime = performance.now();
                 
@@ -388,12 +445,13 @@
                 
                 // Enhanced message based on CDN performance
                 let performanceMessage = '';
+                const methodDescription = methodUsed === 'primary' ? 'signed URL' : `signed URL (${methodUsed})`;
                 if (requestTime < 100) {
-                    performanceMessage = `⚡ CDN Cache Hit! Loaded ${products.length} products from ${category} in ${Math.round(requestTime)}ms. No Firebase bandwidth used!`;
+                    performanceMessage = `⚡ CDN Cache Hit! Loaded ${products.length} products via ${methodDescription} in ${Math.round(requestTime)}ms. No Firebase bandwidth used!`;
                 } else if (requestTime < 300) {
-                    performanceMessage = `🌐 Regional CDN: Loaded ${products.length} products from ${category} in ${Math.round(requestTime)}ms. Check Firebase Console for bandwidth usage.`;
+                    performanceMessage = `🌐 Regional CDN: Loaded ${products.length} products via ${methodDescription} in ${Math.round(requestTime)}ms. Check Firebase Console for bandwidth usage.`;
                 } else {
-                    performanceMessage = `🔥 Origin Download: Loaded ${products.length} products from ${category} in ${Math.round(requestTime)}ms. This request used Firebase bandwidth.`;
+                    performanceMessage = `📡 Origin Download: Loaded ${products.length} products via ${methodDescription} in ${Math.round(requestTime)}ms. This was likely the first request for this data in your region.`;
                 }
                 
                 showMessage(performanceMessage, 'success');
