@@ -1,2 +1,374 @@
-I will replace the specified code block with the corrected Netlify function implementation, ensuring proper environment detection and error handling.
-</tool_code>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDN Bandwidth Test - Product Uploader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-input {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-input input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .file-input:hover .file-input-label {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result.success {
+            background: #d1edff;
+            border: 1px solid #74b9ff;
+            color: #0984e3;
+        }
+
+        .result.error {
+            background: #ffebee;
+            border: 1px solid #ff7675;
+            color: #d63031;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .info-section h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .info-section ul {
+            color: #555;
+            padding-left: 20px;
+        }
+
+        .info-section li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 CDN Bandwidth Test Uploader</h1>
+            <p>Upload products to test Firebase Storage CDN caching</p>
+        </div>
+
+        <div class="form-container">
+            <div class="warning">
+                <strong>⚠️ NETLIFY DEPLOYMENT REQUIRED:</strong> This uploader only works on your deployed Netlify site with proper Firebase Admin SDK configuration.
+            </div>
+
+            <div class="info-section">
+                <h3>📋 Upload Instructions:</h3>
+                <ul>
+                    <li>Upload products with different categories (bandwidth-test-1, bandwidth-test-2, etc.)</li>
+                    <li>Each upload creates optimized files with CDN cache headers</li>
+                    <li>Use the loader to test if subsequent loads use CDN cache</li>
+                    <li>Monitor Firebase Console → Storage → Usage for bandwidth tracking</li>
+                </ul>
+            </div>
+
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="category">Test Category:</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="bandwidth-test-1">Bandwidth Test 1</option>
+                        <option value="bandwidth-test-2">Bandwidth Test 2</option>
+                        <option value="bandwidth-test-3">Bandwidth Test 3</option>
+                        <option value="bandwidth-test-4">Bandwidth Test 4</option>
+                        <option value="bandwidth-test-5">Bandwidth Test 5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="productName">Product Name:</label>
+                    <input type="text" id="productName" name="productName" required 
+                           placeholder="e.g., Test Necklace, Sample Ring">
+                </div>
+
+                <div class="form-group">
+                    <label for="productPrice">Product Price (₹):</label>
+                    <input type="number" id="productPrice" name="productPrice" 
+                           min="1" step="0.01" required placeholder="e.g., 25000">
+                </div>
+
+                <div class="form-group">
+                    <label for="productDescription">Product Description:</label>
+                    <textarea id="productDescription" name="productDescription" 
+                              rows="3" required placeholder="Describe the test product..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="productImage">Product Image:</label>
+                    <div class="file-input">
+                        <input type="file" id="productImage" name="productImage" 
+                               accept="image/*" required>
+                        <label for="productImage" class="file-input-label">
+                            📸 Click to select an image file
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="upload-btn" id="uploadBtn">
+                    🚀 Upload Test Product
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Uploading to Firebase Storage with CDN headers...</p>
+            </div>
+
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('uploadForm');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const fileInput = document.getElementById('productImage');
+            const fileLabel = document.querySelector('.file-input-label');
+
+            // Update file input label when file is selected
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    fileLabel.textContent = `📎 ${e.target.files[0].name}`;
+                } else {
+                    fileLabel.textContent = '📸 Click to select an image file';
+                }
+            });
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                uploadBtn.disabled = true;
+                loading.style.display = 'block';
+                result.style.display = 'none';
+
+                try {
+                    // Create FormData object
+                    const formData = new FormData();
+                    
+                    // Add form fields
+                    formData.append('category', document.getElementById('category').value);
+                    formData.append('productName', document.getElementById('productName').value);
+                    formData.append('productPrice', document.getElementById('productPrice').value);
+                    formData.append('productDescription', document.getElementById('productDescription').value);
+                    formData.append('productImage', fileInput.files[0]);
+
+                    console.log('Uploading bandwidth test product...');
+
+                    // Upload to Netlify function
+                    const response = await fetch('/.netlify/functions/upload-bandwidth-test-product', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showResult('success', `
+                            <h3>✅ Upload Successful!</h3>
+                            <p><strong>Product:</strong> ${data.message}</p>
+                            <p><strong>Product ID:</strong> ${data.productId}</p>
+                            <p><strong>Category:</strong> ${data.category}</p>
+                            <p><strong>Total Products:</strong> ${data.totalProducts}</p>
+                            <p><strong>Image URL:</strong> <a href="${data.imageUrl}" target="_blank">View Image</a></p>
+                            <br>
+                            <p>🎯 <strong>Next Step:</strong> Use the <strong>CDN Bandwidth Test Loader</strong> to test caching behavior!</p>
+                        `);
+                        
+                        // Reset form
+                        form.reset();
+                        fileLabel.textContent = '📸 Click to select an image file';
+                    } else {
+                        showResult('error', `
+                            <h3>❌ Upload Failed</h3>
+                            <p><strong>Error:</strong> ${data.error || data.message}</p>
+                            <p>Make sure your Netlify environment variables are properly configured.</p>
+                        `);
+                    }
+
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    showResult('error', `
+                        <h3>❌ Upload Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>Please check your network connection and try again.</p>
+                    `);
+                }
+
+                // Hide loading state
+                uploadBtn.disabled = false;
+                loading.style.display = 'none';
+            });
+
+            function showResult(type, message) {
+                result.className = `result ${type}`;
+                result.innerHTML = message;
+                result.style.display = 'block';
+                
+                // Scroll to result
+                result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    </script>
+</body>
+</html>
