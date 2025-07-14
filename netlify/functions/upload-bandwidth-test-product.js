@@ -153,37 +153,25 @@ exports.handler = async (event, context) => {
             testNote: 'CDN bandwidth test product'
           };
 
-          // Load existing products from the category collection
+          // Load existing products
           let existingProducts = [];
-          const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
-          
           try {
+            const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
             const [exists] = await jsonFile.exists();
 
             if (exists) {
-              console.log(`Loading existing ${category} products...`);
               const [fileContents] = await jsonFile.download();
               const data = JSON.parse(fileContents.toString());
-              
               if (Array.isArray(data)) {
                 existingProducts = data;
-                console.log(`Found ${existingProducts.length} existing products in ${category}`);
-              } else {
-                console.log(`Invalid data format in ${category}, starting fresh`);
-                existingProducts = [];
               }
-            } else {
-              console.log(`No existing products file for ${category}, creating new collection`);
             }
           } catch (error) {
-            console.log(`Error loading existing products for ${category}:`, error.message);
-            console.log('Starting with empty collection');
-            existingProducts = [];
+            console.log('Creating new product file for category:', category);
           }
 
-          // Add new product to the collection
+          // Add new product
           existingProducts.push(productData);
-          console.log(`Updated ${category} collection now has ${existingProducts.length} products`);
 
           // Save updated products JSON with comprehensive CDN cache headers
           const jsonData = JSON.stringify(existingProducts, null, 2);

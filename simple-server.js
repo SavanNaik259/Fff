@@ -363,8 +363,8 @@ Press Ctrl+C to stop the server
 // Express already declared above
 // cors already declared above
 const multer = require('multer');
-// path already declared above
-// fs already declared above
+const path = require('path');
+const fs = require('fs');
 const admin = require('firebase-admin');
 
 const app = express();
