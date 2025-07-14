@@ -88,16 +88,42 @@ const BridalProductsLoader = (function() {
                 ? '/.netlify/functions/load-products-bridal'
                 : '/api/load-products/bridal';
             
+            // Prepare headers for cache validation
+            const requestHeaders = {
+                'Content-Type': 'application/json'
+            };
+            
+            // Add ETag for cache validation if we have one
+            const storedETag = localStorage.getItem('bridalProductsETag');
+            if (storedETag && !forceRefresh) {
+                requestHeaders['If-None-Match'] = storedETag;
+            }
+            
             const response = await fetch(apiEndpoint, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                cache: 'default' // Use browser's default caching behavior
+                headers: requestHeaders,
+                cache: 'default'
             });
+            
+            // Handle 304 Not Modified responses
+            if (response.status === 304) {
+                console.log('Products not modified, using local cache');
+                const stored = localStorage.getItem('bridalProducts');
+                if (stored) {
+                    cachedProducts = JSON.parse(stored);
+                    lastFetchTime = now;
+                    return cachedProducts;
+                }
+            }
             
             if (!response.ok) {
                 throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
+            
+            // Store ETag for future requests
+            const responseETag = response.headers.get('ETag');
+            if (responseETag) {
+                localStorage.setItem('bridalProductsETag', responseETag);
             }
             
             const data = await response.json();
