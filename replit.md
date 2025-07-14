@@ -161,6 +161,14 @@ Auric is a premium jewelry e-commerce platform built with a modern web stack fea
   - When adding new product: Only updated JSON (~10KB) + new image (~50KB) download, existing images stay cached
   - Server simplified: Removed complex caching logic, Firebase Storage CDN does everything needed
   - Result: 90%+ bandwidth savings with zero additional complexity
+- July 14, 2025: Comprehensive review of Firebase Storage CDN behavior confirmed optimal architecture
+  - User requested confirmation that Firebase Storage CDN works correctly without additional caching layers
+  - Confirmed: Firebase Storage acts as CDN with zero additional code when cacheControl header is set
+  - Confirmed: ETags automatically change when files are overwritten, triggering cache invalidation
+  - Confirmed: Unchanged files remain cached at CDN edge servers globally
+  - Confirmed: Only updated files are downloaded by first visitor per region
+  - Architecture validation: No need for Express memory caching, Netlify function caching, or localStorage caching
+  - Firebase Storage CDN handles all caching automatically with proper Cache-Control headers
 
 ## User Preferences
 
