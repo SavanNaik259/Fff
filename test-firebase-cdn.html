@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Storage CDN Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .file-input {
+            margin: 10px 0;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+        }
+        #results {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Storage CDN Test</h1>
+    <p>This tool tests Firebase Storage CDN caching behavior to verify bandwidth savings.</p>
+
+    <div class="test-container">
+        <h3>📤 Upload Test File</h3>
+        <p>Upload a test file to Firebase Storage with proper cache headers:</p>
+        
+        <div class="file-input">
+            <input type="file" id="testFile" accept="image/*,application/json">
+            <p><small>Choose an image or JSON file to test CDN caching</small></p>
+        </div>
+        
+        <button id="uploadBtn" onclick="uploadTestFile()">Upload with CDN Cache Headers</button>
+        <button id="verifyBtn" onclick="verifyCDNCaching()" disabled>Verify CDN Caching</button>
+    </div>
+
+    <div class="test-container">
+        <h3>🧪 CDN Test Results</h3>
+        <div id="results">Click "Upload" to start testing...</div>
+    </div>
+
+    <div class="test-container">
+        <h3>📊 Bandwidth Analysis</h3>
+        <button onclick="analyzeFirebaseBandwidth()">Check Firebase Storage Usage</button>
+        <button onclick="testMultipleRequests()">Test Multiple Requests</button>
+        <div id="bandwidthResults"></div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKFVNPuYMgO5GzqrxEuTdoKgdGwL4vFCg",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.firebasestorage.app",
+            messagingSenderId: "246063593968",
+            appId: "1:246063593968:web:f5fd5c55c2b7b88b4d5ac5",
+            measurementId: "G-3TC4T7CRB9"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        let testFileUrl = null;
+        let uploadedFileName = null;
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            results.textContent += logEntry;
+            results.scrollTop = results.scrollHeight;
+            console.log(message);
+        }
+
+        async function uploadTestFile() {
+            const fileInput = document.getElementById('testFile');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const verifyBtn = document.getElementById('verifyBtn');
+            
+            if (!fileInput.files[0]) {
+                log('❌ Please select a file first', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            uploadedFileName = `cdn-test-${Date.now()}-${file.name}`;
+            
+            try {
+                uploadBtn.disabled = true;
+                log('🚀 Starting upload with CDN cache headers...');
+                log(`📁 File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+
+                // Create Firebase Storage reference
+                const storageRef = storage.ref(`cdn-test/${uploadedFileName}`);
+
+                // Upload with proper CDN cache headers
+                const metadata = {
+                    cacheControl: 'public, max-age=2592000', // 30 days
+                    contentType: file.type,
+                    customMetadata: {
+                        testUploadTime: new Date().toISOString(),
+                        originalName: file.name
+                    }
+                };
+
+                log('📋 Upload metadata:');
+                log(`   Cache-Control: ${metadata.cacheControl}`);
+                log(`   Content-Type: ${metadata.contentType}`);
+
+                const uploadTask = storageRef.put(file, metadata);
+
+                // Track upload progress
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        log(`📤 Upload progress: ${Math.round(progress)}%`);
+                    },
+                    (error) => {
+                        log(`❌ Upload failed: ${error.message}`, 'error');
+                        uploadBtn.disabled = false;
+                    },
+                    async () => {
+                        try {
+                            testFileUrl = await uploadTask.snapshot.ref.getDownloadURL();
+                            log('✅ Upload completed successfully!');
+                            log(`🔗 Download URL: ${testFileUrl}`);
+                            
+                            uploadBtn.disabled = false;
+                            verifyBtn.disabled = false;
+                            
+                            // Immediately test the uploaded file
+                            await verifyCDNCaching();
+                            
+                        } catch (error) {
+                            log(`❌ Error getting download URL: ${error.message}`, 'error');
+                            uploadBtn.disabled = false;
+                        }
+                    }
+                );
+
+            } catch (error) {
+                log(`❌ Upload error: ${error.message}`, 'error');
+                uploadBtn.disabled = false;
+            }
+        }
+
+        async function verifyCDNCaching() {
+            if (!testFileUrl) {
+                log('❌ No test file uploaded yet', 'error');
+                return;
+            }
+
+            log('🔍 Testing CDN caching behavior...');
+            
+            try {
+                // First request - should come from Firebase origin
+                log('📡 Making first request (should hit Firebase origin)...');
+                const start1 = performance.now();
+                const response1 = await fetch(testFileUrl, { cache: 'no-cache' });
+                const end1 = performance.now();
+                
+                log(`✅ First request completed in ${(end1 - start1).toFixed(0)}ms`);
+                log(`📋 Response headers:`);
+                log(`   Status: ${response1.status}`);
+                log(`   Cache-Control: ${response1.headers.get('cache-control')}`);
+                log(`   ETag: ${response1.headers.get('etag')}`);
+                log(`   Server: ${response1.headers.get('server') || 'Not specified'}`);
+                log(`   X-Goog-Storage-Class: ${response1.headers.get('x-goog-storage-class') || 'Not specified'}`);
+
+                // Wait a moment, then make second request
+                log('⏳ Waiting 2 seconds before second request...');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Second request - should come from CDN cache
+                log('📡 Making second request (should hit CDN cache)...');
+                const start2 = performance.now();
+                const response2 = await fetch(testFileUrl, { cache: 'default' });
+                const end2 = performance.now();
+                
+                log(`✅ Second request completed in ${(end2 - start2).toFixed(0)}ms`);
+                
+                // Compare response times
+                const speedDiff = end1 - end2;
+                if (speedDiff > 50) {
+                    log(`🚀 CDN caching appears to be working! Second request was ${speedDiff.toFixed(0)}ms faster`);
+                } else if (end2 < 100) {
+                    log(`⚡ Very fast response (${(end2).toFixed(0)}ms) - likely cached`);
+                } else {
+                    log(`⚠️  Response times similar - CDN caching may not be active yet`);
+                }
+
+                // Third request with If-None-Match to test ETag validation
+                const etag = response1.headers.get('etag');
+                if (etag) {
+                    log('🏷️  Testing ETag validation...');
+                    const response3 = await fetch(testFileUrl, {
+                        headers: { 'If-None-Match': etag }
+                    });
+                    
+                    if (response3.status === 304) {
+                        log('✅ ETag validation working - got 304 Not Modified');
+                    } else {
+                        log(`ℹ️  ETag validation returned: ${response3.status}`);
+                    }
+                }
+
+            } catch (error) {
+                log(`❌ CDN test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testMultipleRequests() {
+            if (!testFileUrl) {
+                log('❌ No test file uploaded yet', 'error');
+                return;
+            }
+
+            log('🔄 Testing multiple sequential requests...');
+            
+            const requests = 5;
+            const times = [];
+            
+            for (let i = 1; i <= requests; i++) {
+                const start = performance.now();
+                const response = await fetch(testFileUrl);
+                const end = performance.now();
+                
+                times.push(end - start);
+                log(`Request ${i}: ${(end - start).toFixed(0)}ms (${response.status})`);
+                
+                // Small delay between requests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
+            const firstTime = times[0];
+            const lastTime = times[times.length - 1];
+            
+            log(`📊 Results Summary:`);
+            log(`   First request: ${firstTime.toFixed(0)}ms`);
+            log(`   Last request: ${lastTime.toFixed(0)}ms`);
+            log(`   Average: ${avgTime.toFixed(0)}ms`);
+            
+            if (lastTime < firstTime * 0.7) {
+                log('✅ Performance improved - CDN caching is working!');
+            } else {
+                log('⚠️  Performance similar - check CDN configuration');
+            }
+        }
+
+        async function analyzeFirebaseBandwidth() {
+            const results = document.getElementById('bandwidthResults');
+            results.innerHTML = `
+                <div class="info">
+                    <h4>📈 Firebase Storage Bandwidth Analysis</h4>
+                    <p><strong>To check your Firebase Storage bandwidth usage:</strong></p>
+                    <ol>
+                        <li>Go to <a href="https://console.firebase.google.com/project/auric-a0c92/storage" target="_blank">Firebase Console - Storage</a></li>
+                        <li>Click on "Usage" tab</li>
+                        <li>Monitor "Download operations" and "Network egress"</li>
+                        <li>If CDN is working: You should see downloads only on first visitor per region</li>
+                        <li>If CDN is NOT working: Every visitor will show in download operations</li>
+                    </ol>
+                    <p><strong>Expected behavior:</strong></p>
+                    <ul>
+                        <li>✅ First visitor: Downloads from Firebase (shows in bandwidth)</li>
+                        <li>✅ Subsequent visitors: Served from CDN (no bandwidth usage)</li>
+                        <li>✅ File updates: Only new/changed files download</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Auto-clear old test files on load
+        window.addEventListener('load', () => {
+            log('🔥 Firebase Storage CDN Test Tool Ready');
+            log('📝 This tool will help verify CDN caching behavior');
+            log('💡 Upload a test file to see if CDN caching is working properly');
+        });
+    </script>
+</body>
+</html>
