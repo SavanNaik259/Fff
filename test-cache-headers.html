@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Storage Cache Headers Test</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0a0a0a;
+            color: #00ff00;
+        }
+        .container {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        h1 {
+            color: #ff6600;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: #111;
+        }
+        .test-url {
+            background: #222;
+            padding: 10px;
+            border-radius: 3px;
+            word-break: break-all;
+            margin: 10px 0;
+            border-left: 4px solid #0066ff;
+        }
+        .result {
+            background: #001100;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff4444; }
+        .warning { color: #ffaa00; }
+        .info { color: #00aaff; }
+        button {
+            background: #0066ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-family: inherit;
+        }
+        button:hover { background: #0088ff; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        .expected {
+            background: #003300;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff00;
+        }
+        .section-title {
+            color: #ffaa00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Storage Cache Headers Test</h1>
+        
+        <div class="test-section">
+            <div class="section-title">Current Bridal Products JSON Test</div>
+            <div class="test-url" id="bridalUrl">Loading URL...</div>
+            <button onclick="testBridalProducts()">Test Bridal Products Cache Headers</button>
+            <div class="result" id="bridalResult">Click button to test...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="section-title">Test Any Firebase Storage URL</div>
+            <input type="text" id="customUrl" placeholder="Paste Firebase Storage URL here..." style="width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #444; margin: 10px 0;">
+            <button onclick="testCustomUrl()">Test Custom URL</button>
+            <div class="result" id="customResult">Enter a URL and click test...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="section-title">Expected Results</div>
+            <div class="expected">
+✅ cache-control: public, max-age=2592000
+✅ etag: "some-hash-value"
+✅ last-modified: recent date
+✅ x-goog-stored-content-length: file size
+✅ content-type: application/json or image/jpeg
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="section-title">CDN Behavior Analysis</div>
+            <button onclick="testCDNBehavior()">Run CDN Performance Test</button>
+            <div class="result" id="cdnResult">Click button to analyze CDN caching behavior...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKFVNPuYMgO5GzqrxEuTdoKgdGwL4vFCg",
+            authDomain: "auric-a0c92.firebaseapp.com",
+            projectId: "auric-a0c92",
+            storageBucket: "auric-a0c92.firebasestorage.app",
+            messagingSenderId: "246063593968",
+            appId: "1:246063593968:web:f5fd5c55c2b7b88b4d5ac5",
+            measurementId: "G-3TC4T7CRB9"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        let bridalProductsUrl = '';
+
+        function log(elementId, message, className = '') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = `[${timestamp}] ${message}`;
+            
+            if (element.textContent === 'Click button to test...' || 
+                element.textContent === 'Enter a URL and click test...' ||
+                element.textContent === 'Click button to analyze CDN caching behavior...') {
+                element.textContent = logLine;
+            } else {
+                element.textContent += '\n' + logLine;
+            }
+            
+            if (className) {
+                element.className = `result ${className}`;
+            }
+            
+            console.log(logLine);
+        }
+
+        async function getBridalProductsUrl() {
+            try {
+                const storageRef = storage.ref('productData/bridal-products.json');
+                const url = await storageRef.getDownloadURL();
+                bridalProductsUrl = url;
+                document.getElementById('bridalUrl').textContent = url;
+                return url;
+            } catch (error) {
+                document.getElementById('bridalUrl').textContent = `Error: ${error.message}`;
+                return null;
+            }
+        }
+
+        async function testHeaders(url, resultElementId) {
+            try {
+                log(resultElementId, 'Testing URL: ' + url);
+                log(resultElementId, 'Making HEAD request to get headers...');
+
+                // Try different approaches to get headers
+                let response;
+                
+                try {
+                    // Try HEAD request first
+                    response = await fetch(url, { 
+                        method: 'HEAD',
+                        cache: 'no-cache'
+                    });
+                } catch (headError) {
+                    log(resultElementId, 'HEAD request failed, trying GET...', 'warning');
+                    
+                    // Fall back to GET request
+                    response = await fetch(url, { 
+                        method: 'GET',
+                        cache: 'no-cache'
+                    });
+                }
+
+                log(resultElementId, `Response Status: ${response.status} ${response.statusText}`);
+
+                // Analyze headers
+                const headers = {};
+                for (const [key, value] of response.headers.entries()) {
+                    headers[key] = value;
+                }
+
+                log(resultElementId, '\n=== RESPONSE HEADERS ===');
+                
+                // Check cache-control
+                const cacheControl = headers['cache-control'];
+                if (cacheControl) {
+                    if (cacheControl.includes('max-age=2592000')) {
+                        log(resultElementId, `✅ cache-control: ${cacheControl}`, 'success');
+                    } else {
+                        log(resultElementId, `⚠️  cache-control: ${cacheControl} (not 30 days)`, 'warning');
+                    }
+                } else {
+                    log(resultElementId, '❌ cache-control: NOT SET', 'error');
+                }
+
+                // Check other important headers
+                const importantHeaders = ['etag', 'last-modified', 'content-type', 'content-length', 'x-goog-stored-content-length'];
+                
+                importantHeaders.forEach(header => {
+                    if (headers[header]) {
+                        log(resultElementId, `✅ ${header}: ${headers[header]}`, 'success');
+                    } else {
+                        log(resultElementId, `⚠️  ${header}: not present`, 'warning');
+                    }
+                });
+
+                // Check for CDN indicators
+                const cdnHeaders = ['x-goog-generation', 'x-goog-metageneration', 'x-goog-storage-class'];
+                log(resultElementId, '\n=== CDN/STORAGE INFO ===');
+                
+                cdnHeaders.forEach(header => {
+                    if (headers[header]) {
+                        log(resultElementId, `ℹ️  ${header}: ${headers[header]}`, 'info');
+                    }
+                });
+
+                // Overall assessment
+                log(resultElementId, '\n=== ASSESSMENT ===');
+                if (cacheControl && cacheControl.includes('max-age=2592000')) {
+                    log(resultElementId, '🚀 CDN caching is properly configured!', 'success');
+                    log(resultElementId, '   Files should be cached by CDN for 30 days', 'success');
+                } else {
+                    log(resultElementId, '❌ CDN caching is NOT properly configured', 'error');
+                    log(resultElementId, '   Files need to be re-uploaded with cache headers', 'error');
+                }
+
+            } catch (error) {
+                log(resultElementId, `❌ Error testing headers: ${error.message}`, 'error');
+                log(resultElementId, 'This might be due to CORS restrictions or network issues', 'warning');
+            }
+        }
+
+        async function testBridalProducts() {
+            const url = bridalProductsUrl || await getBridalProductsUrl();
+            if (url) {
+                await testHeaders(url, 'bridalResult');
+            }
+        }
+
+        async function testCustomUrl() {
+            const url = document.getElementById('customUrl').value.trim();
+            if (!url) {
+                log('customResult', 'Please enter a Firebase Storage URL', 'error');
+                return;
+            }
+            
+            if (!url.includes('firebasestorage.googleapis.com')) {
+                log('customResult', 'Warning: This doesn\'t look like a Firebase Storage URL', 'warning');
+            }
+            
+            await testHeaders(url, 'customResult');
+        }
+
+        async function testCDNBehavior() {
+            const url = bridalProductsUrl || await getBridalProductsUrl();
+            if (!url) {
+                log('cdnResult', 'Could not get bridal products URL', 'error');
+                return;
+            }
+
+            log('cdnResult', 'Starting CDN performance analysis...');
+            log('cdnResult', 'This will make multiple requests to measure caching behavior');
+
+            const times = [];
+            const requestCount = 5;
+
+            for (let i = 1; i <= requestCount; i++) {
+                try {
+                    log('cdnResult', `Making request ${i}/${requestCount}...`);
+                    
+                    const startTime = performance.now();
+                    const response = await fetch(url, {
+                        cache: i === 1 ? 'no-cache' : 'default',
+                        method: 'HEAD'
+                    });
+                    const endTime = performance.now();
+                    
+                    const requestTime = endTime - startTime;
+                    times.push(requestTime);
+                    
+                    log('cdnResult', `  Request ${i}: ${Math.round(requestTime)}ms (Status: ${response.status})`);
+                    
+                    // Wait between requests
+                    if (i < requestCount) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                    
+                } catch (error) {
+                    log('cdnResult', `  Request ${i}: Failed - ${error.message}`, 'error');
+                    times.push(999999);
+                }
+            }
+
+            // Analyze results
+            log('cdnResult', '\n=== CDN PERFORMANCE ANALYSIS ===');
+            
+            const validTimes = times.filter(t => t < 999999);
+            if (validTimes.length >= 2) {
+                const firstTime = validTimes[0];
+                const avgSubsequent = validTimes.slice(1).reduce((a, b) => a + b, 0) / (validTimes.length - 1);
+                const improvement = ((firstTime - avgSubsequent) / firstTime) * 100;
+
+                log('cdnResult', `First request: ${Math.round(firstTime)}ms`);
+                log('cdnResult', `Avg subsequent: ${Math.round(avgSubsequent)}ms`);
+                log('cdnResult', `Improvement: ${Math.round(improvement)}%`);
+
+                if (improvement > 30) {
+                    log('cdnResult', '🚀 CDN caching appears to be working!', 'success');
+                    log('cdnResult', '   Subsequent requests are significantly faster', 'success');
+                } else if (avgSubsequent < 100) {
+                    log('cdnResult', '⚡ Fast responses - CDN likely working', 'info');
+                } else {
+                    log('cdnResult', '⚠️  No clear performance improvement detected', 'warning');
+                    log('cdnResult', '   CDN caching may not be active', 'warning');
+                }
+            } else {
+                log('cdnResult', 'Not enough valid responses to analyze', 'error');
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', async () => {
+            await getBridalProductsUrl();
+        });
+    </script>
+</body>
+</html>

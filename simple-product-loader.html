@@ -190,29 +190,63 @@
                 log(`Loading ${category} products from Firebase Storage...`);
                 log(`Cache mode: ${cacheMode}`);
 
-                // Get Firebase Storage download URL
-                const storageRef = storage.ref(`productData/${category}-products.json`);
-                const downloadURL = await storageRef.getDownloadURL();
-                
-                log(`Download URL: ${downloadURL}`);
-
-                // Fetch with timing
+                // Try server endpoint first (works on localhost), then direct Firebase Storage
+                let response;
+                let downloadURL;
                 const startTime = performance.now();
-                
-                const fetchOptions = {
-                    cache: cacheMode,
-                    method: 'GET'
-                };
 
-                // Add ETag header if we have one and using default cache
-                if (lastETag && cacheMode === 'default') {
-                    fetchOptions.headers = {
-                        'If-None-Match': lastETag
+                try {
+                    // Try server endpoint first
+                    downloadURL = `/api/load-products/${category}`;
+                    log(`Trying server endpoint: ${downloadURL}`);
+                    
+                    const fetchOptions = {
+                        cache: cacheMode,
+                        method: 'GET'
                     };
-                    log(`Using ETag for cache validation: ${lastETag}`);
-                }
 
-                const response = await fetch(downloadURL, fetchOptions);
+                    response = await fetch(downloadURL, fetchOptions);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Server endpoint failed: ${response.status}`);
+                    }
+                    
+                    log(`✅ Successfully loaded via server endpoint`);
+                    
+                } catch (serverError) {
+                    log(`Server endpoint failed: ${serverError.message}, trying direct Firebase Storage...`);
+                    
+                    // Fall back to direct Firebase Storage
+                    const storageRef = storage.ref(`productData/${category}-products.json`);
+                    downloadURL = await storageRef.getDownloadURL();
+                    
+                    log(`Firebase Storage URL: ${downloadURL}`);
+                    
+                    // Use direct URL without tokens if possible
+                    const cleanURL = downloadURL.split('?')[0] + '?alt=media';
+                    log(`Clean URL (no token): ${cleanURL}`);
+
+                    const fetchOptions = {
+                        cache: cacheMode,
+                        method: 'GET',
+                        mode: 'cors'
+                    };
+
+                    // Add ETag header if we have one and using default cache
+                    if (lastETag && cacheMode === 'default') {
+                        fetchOptions.headers = {
+                            'If-None-Match': lastETag
+                        };
+                        log(`Using ETag for cache validation: ${lastETag}`);
+                    }
+
+                    try {
+                        response = await fetch(cleanURL, fetchOptions);
+                    } catch (corsError) {
+                        log(`CORS error with clean URL, trying original: ${corsError.message}`);
+                        response = await fetch(downloadURL, fetchOptions);
+                    }
+                }
                 const endTime = performance.now();
                 const requestTime = endTime - startTime;
                 
