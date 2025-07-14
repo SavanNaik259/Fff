@@ -88,44 +88,88 @@
         }
 
         async function testNetlifyFunctions() {
-            log('🔧 Testing Netlify function accessibility...');
+            log('🔧 Testing function accessibility...');
             let html = '<h4>Function Accessibility Tests:</h4>';
             
-            const functions = [
-                'load-bandwidth-test-products?category=bandwidth-test-1',
-                'load-bandwidth-test-products?category=bandwidth-test-2',
-                'load-products?category=bridal'
-            ];
+            const isLocal = window.location.hostname === 'localhost' || 
+                           window.location.hostname.includes('replit') ||
+                           window.location.port === '5000';
             
-            for (const func of functions) {
-                try {
-                    log(`Testing function: ${func}`);
-                    const url = `/.netlify/functions/${func}`;
-                    
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
+            if (isLocal) {
+                html += '<div class="info">🏠 <strong>Local Environment Detected</strong> - Testing local server endpoints</div>';
+                
+                const localEndpoints = [
+                    '/load-bandwidth-test-products?category=bandwidth-test-1',
+                    '/load-bandwidth-test-products?category=bandwidth-test-2',
+                    '/api/load-products/bridal'
+                ];
+                
+                for (const endpoint of localEndpoints) {
+                    try {
+                        log(`Testing local endpoint: ${endpoint}`);
+                        const response = await fetch(endpoint, {
+                            method: 'GET',
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        
+                        const statusClass = response.ok ? 'success' : 'error';
+                        html += `<div class="${statusClass}">`;
+                        html += `<strong>${endpoint}:</strong> ${response.status} ${response.statusText}<br>`;
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            html += `<small>Response: ${JSON.stringify(data, null, 2).substring(0, 200)}...</small>`;
+                        } else {
+                            const text = await response.text();
+                            html += `<small>Error: ${text.substring(0, 200)}</small>`;
                         }
-                    });
-                    
-                    const statusClass = response.ok ? 'success' : 'error';
-                    html += `<div class="${statusClass}">`;
-                    html += `<strong>${func}:</strong> ${response.status} ${response.statusText}<br>`;
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        html += `<small>Response: ${JSON.stringify(data, null, 2).substring(0, 200)}...</small>`;
-                    } else {
-                        const text = await response.text();
-                        html += `<small>Error: ${text.substring(0, 200)}</small>`;
+                        html += `</div>`;
+                        
+                    } catch (error) {
+                        log(`Local endpoint ${endpoint} failed: ${error.message}`, 'error');
+                        html += `<div class="error"><strong>${endpoint}:</strong> Failed - ${error.message}</div>`;
                     }
-                    html += `</div>`;
-                    
-                } catch (error) {
-                    log(`Function ${func} failed: ${error.message}`, 'error');
-                    html += `<div class="error"><strong>${func}:</strong> Failed - ${error.message}</div>`;
+                }
+            } else {
+                html += '<div class="info">☁️ <strong>Netlify Environment Detected</strong> - Testing Netlify functions</div>';
+                
+                const functions = [
+                    'load-bandwidth-test-products-fixed?category=bandwidth-test-1',
+                    'load-bandwidth-test-products?category=bandwidth-test-1',
+                    'load-bandwidth-test-products?category=bandwidth-test-2',
+                    'load-products?category=bridal'
+                ];
+                
+                for (const func of functions) {
+                    try {
+                        log(`Testing function: ${func}`);
+                        const url = `/.netlify/functions/${func}`;
+                        
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        const statusClass = response.ok ? 'success' : 'error';
+                        html += `<div class="${statusClass}">`;
+                        html += `<strong>${func}:</strong> ${response.status} ${response.statusText}<br>`;
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            html += `<small>Response: ${JSON.stringify(data, null, 2).substring(0, 200)}...</small>`;
+                        } else {
+                            const text = await response.text();
+                            html += `<small>Error: ${text.substring(0, 200)}</small>`;
+                        }
+                        html += `</div>`;
+                        
+                    } catch (error) {
+                        log(`Function ${func} failed: ${error.message}`, 'error');
+                        html += `<div class="error"><strong>${func}:</strong> Failed - ${error.message}</div>`;
+                    }
                 }
             }
             
@@ -173,37 +217,97 @@
             log('🔄 Testing complete product loading flow...');
             let html = '<h4>Complete Flow Test:</h4>';
             
+            const isLocal = window.location.hostname === 'localhost' || 
+                           window.location.hostname.includes('replit') ||
+                           window.location.port === '5000';
+            
             try {
-                // Step 1: Get CDN URL from Netlify function
-                html += '<p><strong>Step 1:</strong> Getting CDN URL from Netlify function...</p>';
-                const functionResponse = await fetch('/.netlify/functions/load-bandwidth-test-products?category=bandwidth-test-1');
-                
-                if (!functionResponse.ok) {
-                    throw new Error(`Function failed: ${functionResponse.status} ${functionResponse.statusText}`);
-                }
-                
-                const functionData = await functionResponse.json();
-                html += `<div class="success">✅ Function returned: ${JSON.stringify(functionData, null, 2)}</div>`;
-                
-                // Step 2: Use the CDN URL to fetch products
-                if (functionData.downloadUrl) {
-                    html += '<p><strong>Step 2:</strong> Fetching products from CDN URL...</p>';
-                    const cdnResponse = await fetch(functionData.downloadUrl);
+                // Step 1: Get CDN URL from appropriate endpoint
+                if (isLocal) {
+                    html += '<p><strong>Step 1:</strong> Getting CDN URL from local server...</p>';
+                    const functionResponse = await fetch('/load-bandwidth-test-products?category=bandwidth-test-1');
                     
-                    if (!cdnResponse.ok) {
-                        throw new Error(`CDN fetch failed: ${cdnResponse.status} ${cdnResponse.statusText}`);
+                    if (!functionResponse.ok) {
+                        throw new Error(`Local server failed: ${functionResponse.status} ${functionResponse.statusText}`);
                     }
                     
-                    const products = await cdnResponse.json();
-                    html += `<div class="success">✅ CDN fetch successful: ${products.length} products loaded</div>`;
-                    html += `<pre>${JSON.stringify(products.slice(0, 2), null, 2)}</pre>`;
+                    const functionData = await functionResponse.json();
+                    html += `<div class="success">✅ Local server returned: ${JSON.stringify(functionData, null, 2)}</div>`;
+                    
+                    // Step 2: Use the CDN URL to fetch products
+                    if (functionData.downloadUrl) {
+                        html += '<p><strong>Step 2:</strong> Fetching products from CDN URL...</p>';
+                        const cdnResponse = await fetch(functionData.downloadUrl);
+                        
+                        if (!cdnResponse.ok) {
+                            throw new Error(`CDN fetch failed: ${cdnResponse.status} ${cdnResponse.statusText}`);
+                        }
+                        
+                        const products = await cdnResponse.json();
+                        html += `<div class="success">✅ CDN fetch successful: ${products.length} products loaded</div>`;
+                        html += `<pre>${JSON.stringify(products.slice(0, 2), null, 2)}</pre>`;
+                    } else {
+                        html += `<div class="error">❌ No downloadUrl in server response</div>`;
+                    }
                 } else {
-                    html += `<div class="error">❌ No downloadUrl in function response</div>`;
+                    html += '<p><strong>Step 1:</strong> Getting CDN URL from Netlify function...</p>';
+                    
+                    // Try enhanced function first, then fallback
+                    let functionResponse;
+                    try {
+                        functionResponse = await fetch('/.netlify/functions/load-bandwidth-test-products-fixed?category=bandwidth-test-1');
+                        if (!functionResponse.ok) {
+                            html += '<p><em>Enhanced function failed, trying fallback...</em></p>';
+                            functionResponse = await fetch('/.netlify/functions/load-bandwidth-test-products?category=bandwidth-test-1');
+                        }
+                    } catch (error) {
+                        html += '<p><em>Enhanced function error, trying fallback...</em></p>';
+                        functionResponse = await fetch('/.netlify/functions/load-bandwidth-test-products?category=bandwidth-test-1');
+                    }
+                    
+                    if (!functionResponse.ok) {
+                        throw new Error(`Netlify function failed: ${functionResponse.status} ${functionResponse.statusText}`);
+                    }
+                    
+                    const functionData = await functionResponse.json();
+                    html += `<div class="success">✅ Netlify function returned: ${JSON.stringify(functionData, null, 2)}</div>`;
+                    
+                    // Step 2: Use the CDN URL to fetch products
+                    if (functionData.downloadUrl) {
+                        html += '<p><strong>Step 2:</strong> Fetching products from CDN URL...</p>';
+                        const cdnResponse = await fetch(functionData.downloadUrl);
+                        
+                        if (!cdnResponse.ok) {
+                            throw new Error(`CDN fetch failed: ${cdnResponse.status} ${cdnResponse.statusText}`);
+                        }
+                        
+                        const products = await cdnResponse.json();
+                        html += `<div class="success">✅ CDN fetch successful: ${products.length} products loaded</div>`;
+                        html += `<pre>${JSON.stringify(products.slice(0, 2), null, 2)}</pre>`;
+                    } else {
+                        html += `<div class="error">❌ No downloadUrl in function response</div>`;
+                    }
                 }
                 
             } catch (error) {
                 log(`Complete flow failed: ${error.message}`, 'error');
                 html += `<div class="error">❌ Flow failed: ${error.message}</div>`;
+                
+                // Try direct Firebase Storage access as fallback
+                html += '<p><strong>Fallback:</strong> Trying direct Firebase Storage access...</p>';
+                try {
+                    const directUrl = 'https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2Fbandwidth-test-1-products.json?alt=media';
+                    const directResponse = await fetch(directUrl);
+                    
+                    if (directResponse.ok) {
+                        const products = await directResponse.json();
+                        html += `<div class="success">✅ Direct Firebase access successful: ${products.length} products</div>`;
+                    } else {
+                        html += `<div class="error">❌ Direct Firebase access failed: ${directResponse.status}</div>`;
+                    }
+                } catch (directError) {
+                    html += `<div class="error">❌ Direct Firebase access error: ${directError.message}</div>`;
+                }
             }
             
             displayResults('flow-results', html);
