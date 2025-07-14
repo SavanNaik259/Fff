@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netlify Environment Check</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Netlify Environment & Firebase Check</h1>
+    
+    <div id="status"></div>
+    
+    <button onclick="checkEnvironment()">Check Environment</button>
+    <button onclick="testFirebase()">Test Firebase Connection</button>
+    <button onclick="testBandwidthLoad()">Test Bandwidth Function</button>
+    
+    <div id="results"></div>
+
+    <script>
+        async function checkEnvironment() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            statusDiv.innerHTML = '<div class="info">Checking Netlify environment...</div>';
+            
+            try {
+                // Test the bandwidth function to see what error we get
+                const response = await fetch('/.netlify/functions/load-bandwidth-test-products?category=bandwidth-test-1');
+                const data = await response.json();
+                
+                console.log('Environment check response:', data);
+                
+                if (data.error && data.error.includes('Firebase Admin not configured')) {
+                    statusDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Environment Variables Missing</h3>
+                            <p>Your Netlify site is missing Firebase environment variables.</p>
+                            <p><strong>Required variables:</strong></p>
+                            <ul>
+                                <li>FIREBASE_PRIVATE_KEY</li>
+                                <li>FIREBASE_CLIENT_EMAIL</li>
+                                <li>FIREBASE_PROJECT_ID</li>
+                            </ul>
+                        </div>
+                    `;
+                } else if (data.success) {
+                    statusDiv.innerHTML = '<div class="success">✅ Environment looks good!</div>';
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="error">
+                            <h3>⚠️ Environment Issue</h3>
+                            <p>Error: ${data.error || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+                
+                resultsDiv.innerHTML = `
+                    <h3>Raw Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Network Error</h3>
+                        <p>Could not connect to Netlify function: ${error.message}</p>
+                    </div>
+                `;
+                console.error('Environment check failed:', error);
+            }
+        }
+        
+        async function testFirebase() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '<div class="info">Testing Firebase connection...</div>';
+            
+            try {
+                // Try to access Firebase directly
+                if (typeof firebase === 'undefined') {
+                    // Load Firebase
+                    const script = document.createElement('script');
+                    script.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+                    document.head.appendChild(script);
+                    
+                    await new Promise(resolve => script.onload = resolve);
+                }
+                
+                statusDiv.innerHTML = '<div class="success">✅ Firebase SDK loaded successfully</div>';
+                
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Firebase Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testBandwidthLoad() {
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            statusDiv.innerHTML = '<div class="info">Testing bandwidth function specifically...</div>';
+            
+            try {
+                const startTime = performance.now();
+                const response = await fetch('/.netlify/functions/load-bandwidth-test-products?category=bandwidth-test-1');
+                const endTime = performance.now();
+                const data = await response.json();
+                
+                const loadTime = endTime - startTime;
+                
+                resultsDiv.innerHTML = `
+                    <h3>Bandwidth Function Test Results:</h3>
+                    <p><strong>Load Time:</strong> ${loadTime.toFixed(2)}ms</p>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+                if (data.success) {
+                    statusDiv.innerHTML = '<div class="success">✅ Bandwidth function working!</div>';
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Function Error</h3>
+                            <p>${data.error || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Test Failed</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+                resultsDiv.innerHTML = `<pre>Error: ${error.message}</pre>`;
+            }
+        }
+        
+        // Auto-run environment check on page load
+        window.onload = () => {
+            checkEnvironment();
+        };
+    </script>
+</body>
+</html>
