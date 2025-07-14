@@ -134,14 +134,51 @@
             measurementId: "G-ZYZ750JHMB"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const storage = firebase.storage();
+        // Initialize Firebase with detailed error handling
+        let app;
+        let storage;
+        try {
+            console.log('Initializing Firebase for CDN test uploader...');
+            try {
+                app = firebase.app('cdn-test-uploader');
+                console.log('Using existing Firebase app');
+            } catch (error) {
+                console.log('Creating new Firebase app:', firebaseConfig);
+                app = firebase.initializeApp(firebaseConfig, 'cdn-test-uploader');
+                console.log('Firebase app created successfully');
+            }
+            
+            storage = app.storage();
+            console.log('Firebase Storage initialized successfully');
+            
+            // Test storage connection
+            storage.ref().listAll().then(() => {
+                console.log('Storage connection test successful');
+            }).catch(err => {
+                console.error('Storage connection test failed:', err);
+            });
+            
+        } catch (error) {
+            console.error('Firebase initialization failed:', error);
+            document.getElementById('messages').innerHTML = `<div class="message error">Firebase initialization failed: ${error.message}</div>`;
+        }
 
         function showMessage(message, type = 'success') {
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
         }
+
+        // Global error handling
+        window.addEventListener('error', (event) => {
+            console.error('Global error caught:', event.error);
+            showMessage(`Unexpected error: ${event.error.message}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            showMessage(`Promise error: ${event.reason.message || event.reason}`, 'error');
+            event.preventDefault();
+        });
 
         async function uploadImage(file, productId) {
             const fileName = `${productId}_${Date.now()}.jpg`;

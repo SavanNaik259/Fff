@@ -132,9 +132,34 @@
             measurementId: "G-ZYZ750JHMB"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const storage = firebase.storage();
+        // Initialize Firebase with detailed error handling
+        let app;
+        let storage;
+        try {
+            console.log('Initializing Firebase for CDN test loader...');
+            try {
+                app = firebase.app('cdn-test-loader');
+                console.log('Using existing Firebase app');
+            } catch (error) {
+                console.log('Creating new Firebase app:', firebaseConfig);
+                app = firebase.initializeApp(firebaseConfig, 'cdn-test-loader');
+                console.log('Firebase app created successfully');
+            }
+            
+            storage = app.storage();
+            console.log('Firebase Storage initialized successfully');
+            
+            // Test storage connection
+            storage.ref().listAll().then(() => {
+                console.log('Storage connection test successful');
+            }).catch(err => {
+                console.error('Storage connection test failed:', err);
+            });
+            
+        } catch (error) {
+            console.error('Firebase initialization failed:', error);
+            document.getElementById('messages').innerHTML = `<div class="message error">Firebase initialization failed: ${error.message}</div>`;
+        }
 
         function showMessage(message, type = 'info') {
             const messagesDiv = document.getElementById('messages');
@@ -196,6 +221,10 @@
                 showMessage(`Loaded ${products.length} products in ${loadTime}ms. Check Firebase Console for bandwidth usage.`, 'success');
                 
             } catch (error) {
+                console.error('Complete error details:', error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
                 showMessage(`Error loading products: ${error.message}`, 'error');
                 document.getElementById('products').innerHTML = `
                     <div class="empty-state">
@@ -207,6 +236,18 @@
                 console.error('Load error:', error);
             }
         }
+
+        // Global error handling
+        window.addEventListener('error', (event) => {
+            console.error('Global error caught:', event.error);
+            showMessage(`Unexpected error: ${event.error.message}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            showMessage(`Promise error: ${event.reason.message || event.reason}`, 'error');
+            event.preventDefault();
+        });
 
         function displayProducts(products) {
             const productsDiv = document.getElementById('products');
