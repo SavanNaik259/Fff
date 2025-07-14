@@ -121,15 +121,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
 
     <script>
-        // Firebase configuration
+        // Firebase configuration (same as main site)
         const firebaseConfig = {
-            apiKey: "AIzaSyAKFVNPuYMgO5GzqrxEuTdoKgdGwL4vFCg",
+            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
             authDomain: "auric-a0c92.firebaseapp.com",
             projectId: "auric-a0c92",
             storageBucket: "auric-a0c92.firebasestorage.app",
-            messagingSenderId: "246063593968",
-            appId: "1:246063593968:web:f5fd5c55c2b7b88b4d5ac5",
-            measurementId: "G-3TC4T7CRB9"
+            messagingSenderId: "878979958342",
+            appId: "1:878979958342:web:e6092f7522488d21eaec47",
+            measurementId: "G-ZYZ750JHMB"
         };
 
         // Initialize Firebase
@@ -229,9 +229,9 @@
             showMessage('Display cleared.', 'info');
         }
 
-        // Auto-load products when page opens
+        // Remove auto-load to prevent errors on empty state
         window.addEventListener('load', () => {
-            loadProducts();
+            showMessage('Ready to load products. Click "Load Products" to test CDN caching.', 'info');
         });
     </script>
 </body>
