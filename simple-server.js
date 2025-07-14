@@ -357,6 +357,63 @@ app.get('/load-bandwidth-test-products', async (req, res) => {
 });
 
 /**
+ * Upload test products endpoint
+ * Uploads test products to Firebase Storage for bandwidth testing
+ */
+app.post('/api/upload-test-products', async (req, res) => {
+    const { category } = req.query;
+    const products = req.body;
+    
+    if (!category) {
+        return res.status(400).json({
+            success: false,
+            error: 'Missing category parameter'
+        });
+    }
+    
+    if (!Array.isArray(products)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Request body must be an array of products'
+        });
+    }
+    
+    try {
+        console.log(`Uploading ${products.length} test products for category: ${category}`);
+        
+        const bucket = admin.storage().bucket();
+        const fileName = `bandwidthTest/${category}-products.json`;
+        const file = bucket.file(fileName);
+        
+        const jsonData = JSON.stringify(products, null, 2);
+        
+        await file.save(jsonData, {
+            metadata: {
+                contentType: 'application/json',
+                cacheControl: 'public, max-age=2592000' // 30 days
+            }
+        });
+        
+        console.log(`Successfully uploaded ${products.length} products to ${fileName}`);
+        
+        res.json({
+            success: true,
+            message: `Uploaded ${products.length} products to ${fileName}`,
+            category: category,
+            productCount: products.length
+        });
+        
+    } catch (error) {
+        console.error(`Error uploading test products for ${category}:`, error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            category: category
+        });
+    }
+});
+
+/**
  * Health check endpoint
  * Used to verify server is running properly
  */
