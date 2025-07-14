@@ -265,6 +265,70 @@ app.get('/api/load-products/:category', async (req, res) => {
 });
 
 /**
+ * Load bandwidth test products endpoint
+ * Returns download URL for direct Firebase Storage CDN access
+ */
+app.get('/load-bandwidth-test-products', async (req, res) => {
+  try {
+    const category = req.query.category || 'bandwidth-test-1';
+    console.log(`Generating CDN URL for bandwidth test category: ${category}`);
+
+    // Check if Firebase Admin is initialized
+    if (admin.apps.length === 0) {
+      return res.json({
+        success: false,
+        downloadUrl: null,
+        error: 'Firebase Admin not initialized',
+        message: 'Firebase configuration missing'
+      });
+    }
+
+    const bucket = admin.storage().bucket();
+    const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
+
+    // Check if file exists
+    const [exists] = await jsonFile.exists();
+
+    if (!exists) {
+      console.log(`No ${category} bandwidth test products found`);
+      return res.json({
+        success: true,
+        downloadUrl: null,
+        message: `No products found for category: ${category}`
+      });
+    }
+
+    // Get signed URL for direct CDN access instead of downloading data
+    const [downloadUrl] = await jsonFile.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
+
+    res.set({
+      'Cache-Control': 'public, max-age=1800',
+      'X-Data-Source': 'firebase-storage-cdn-url'
+    });
+
+    res.json({
+      success: true,
+      downloadUrl: downloadUrl,
+      category: category,
+      message: `CDN URL generated for ${category} - client will fetch directly from Firebase Storage CDN`,
+      loadedAt: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error(`Error generating CDN URL for ${req.query.category}:`, error);
+    res.status(500).json({
+      success: false,
+      downloadUrl: null,
+      error: error.message,
+      message: 'Failed to generate CDN URL'
+    });
+  }
+});
+
+/**
  * Health check endpoint
  * Used to verify server is running properly
  */

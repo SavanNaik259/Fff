@@ -259,10 +259,14 @@
                 
                 const startTime = performance.now();
                 
-                // Step 1: Get download URL from Netlify function (fast, no bandwidth usage)
-                const functionUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
+                // Step 1: Get download URL from function (fast, no bandwidth usage)
+                // Detect environment and use appropriate endpoint
+                const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('replit');
+                const functionUrl = isLocalDevelopment 
+                    ? `/load-bandwidth-test-products?category=${category}`  // Local server endpoint
+                    : `/.netlify/functions/load-bandwidth-test-products?category=${category}`;  // Netlify function
                 
-                console.log(`🔗 Getting CDN URL from Netlify function...`);
+                console.log(`🔗 Getting CDN URL from ${isLocalDevelopment ? 'local server' : 'Netlify function'}...`);
                 const urlResponse = await fetch(functionUrl, { method: 'GET' });
                 
                 if (!urlResponse.ok) {
@@ -398,8 +402,11 @@
             
             for (const category of categories) {
                 try {
-                    // Step 1: Get download URL from Netlify function
-                    const functionUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
+                    // Step 1: Get download URL from function (environment-aware)
+                    const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('replit');
+                    const functionUrl = isLocalDevelopment 
+                        ? `/load-bandwidth-test-products?category=${category}`
+                        : `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
                     const urlResponse = await fetch(functionUrl);
                     
                     if (urlResponse.ok) {
