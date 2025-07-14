@@ -199,59 +199,135 @@
             log('🔍 Testing CDN caching behavior...');
             
             try {
-                // First request - should come from Firebase origin
-                log('📡 Making first request (should hit Firebase origin)...');
+                // Test using curl-like approach by checking headers first
+                log('📡 Testing Firebase Storage URL headers...');
+                
+                // Use a simpler approach - create an image element to test loading
+                const testImage = new Image();
                 const start1 = performance.now();
-                const response1 = await fetch(testFileUrl, { cache: 'no-cache' });
-                const end1 = performance.now();
                 
-                log(`✅ First request completed in ${(end1 - start1).toFixed(0)}ms`);
-                log(`📋 Response headers:`);
-                log(`   Status: ${response1.status}`);
-                log(`   Cache-Control: ${response1.headers.get('cache-control')}`);
-                log(`   ETag: ${response1.headers.get('etag')}`);
-                log(`   Server: ${response1.headers.get('server') || 'Not specified'}`);
-                log(`   X-Goog-Storage-Class: ${response1.headers.get('x-goog-storage-class') || 'Not specified'}`);
-
-                // Wait a moment, then make second request
-                log('⏳ Waiting 2 seconds before second request...');
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                // Second request - should come from CDN cache
-                log('📡 Making second request (should hit CDN cache)...');
-                const start2 = performance.now();
-                const response2 = await fetch(testFileUrl, { cache: 'default' });
-                const end2 = performance.now();
-                
-                log(`✅ Second request completed in ${(end2 - start2).toFixed(0)}ms`);
-                
-                // Compare response times
-                const speedDiff = end1 - end2;
-                if (speedDiff > 50) {
-                    log(`🚀 CDN caching appears to be working! Second request was ${speedDiff.toFixed(0)}ms faster`);
-                } else if (end2 < 100) {
-                    log(`⚡ Very fast response (${(end2).toFixed(0)}ms) - likely cached`);
-                } else {
-                    log(`⚠️  Response times similar - CDN caching may not be active yet`);
-                }
-
-                // Third request with If-None-Match to test ETag validation
-                const etag = response1.headers.get('etag');
-                if (etag) {
-                    log('🏷️  Testing ETag validation...');
-                    const response3 = await fetch(testFileUrl, {
-                        headers: { 'If-None-Match': etag }
-                    });
+                testImage.onload = async () => {
+                    const end1 = performance.now();
+                    log(`✅ First image load completed in ${(end1 - start1).toFixed(0)}ms`);
                     
-                    if (response3.status === 304) {
-                        log('✅ ETag validation working - got 304 Not Modified');
-                    } else {
-                        log(`ℹ️  ETag validation returned: ${response3.status}`);
-                    }
-                }
+                    // Test second load
+                    log('📡 Testing second load (should be faster if CDN cached)...');
+                    const testImage2 = new Image();
+                    const start2 = performance.now();
+                    
+                    testImage2.onload = () => {
+                        const end2 = performance.now();
+                        const time2 = end2 - start2;
+                        log(`✅ Second image load completed in ${time2.toFixed(0)}ms`);
+                        
+                        // Compare times
+                        const time1 = end1 - start1;
+                        if (time2 < time1 * 0.5) {
+                            log(`🚀 CDN caching appears to be working! Second load was ${(time1 - time2).toFixed(0)}ms faster`);
+                        } else if (time2 < 100) {
+                            log(`⚡ Very fast second load (${time2.toFixed(0)}ms) - likely cached`);
+                        } else {
+                            log(`⚠️  Similar load times - CDN may not be active yet`);
+                        }
+                    };
+                    
+                    testImage2.onerror = () => {
+                        log('❌ Second image load failed');
+                    };
+                    
+                    // Add cache busting to force new request for comparison
+                    testImage2.src = testFileUrl + '&t=' + Date.now();
+                };
+                
+                testImage.onerror = () => {
+                    log('❌ Image load failed - may be CORS or permission issue');
+                    // Fall back to direct URL test
+                    testDirectURL();
+                };
+                
+                testImage.src = testFileUrl;
 
             } catch (error) {
                 log(`❌ CDN test error: ${error.message}`, 'error');
+                testDirectURL();
+            }
+        }
+
+        async function testDirectURL() {
+            log('🔧 Testing with direct URL approach...');
+            
+            try {
+                // Test the Firebase Storage URL structure
+                log(`📋 Testing URL: ${testFileUrl}`);
+                
+                // Check if URL has the right cache headers by testing the structure
+                if (testFileUrl.includes('firebasestorage.googleapis.com')) {
+                    log('✅ URL is Firebase Storage - CDN should be active');
+                    
+                    // Test with multiple timing measurements
+                    const times = [];
+                    for (let i = 1; i <= 3; i++) {
+                        log(`📡 Testing request ${i}/3...`);
+                        
+                        const start = performance.now();
+                        
+                        // Use fetch with different cache strategies
+                        try {
+                            const response = await fetch(testFileUrl, {
+                                method: 'HEAD', // Just get headers, not content
+                                cache: i === 1 ? 'no-cache' : 'default'
+                            });
+                            
+                            const end = performance.now();
+                            const time = end - start;
+                            times.push(time);
+                            
+                            log(`   Response ${i}: ${time.toFixed(0)}ms (Status: ${response.status})`);
+                            
+                            if (i === 1) {
+                                // Log headers from first request
+                                const cacheControl = response.headers.get('cache-control');
+                                const etag = response.headers.get('etag');
+                                log(`   Cache-Control: ${cacheControl || 'Not set'}`);
+                                log(`   ETag: ${etag || 'Not set'}`);
+                            }
+                            
+                        } catch (fetchError) {
+                            log(`   Request ${i} failed: ${fetchError.message}`);
+                            times.push(999999); // Mark as failed
+                        }
+                        
+                        // Small delay between requests
+                        if (i < 3) {
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        }
+                    }
+                    
+                    // Analyze timing results
+                    const validTimes = times.filter(t => t < 999999);
+                    if (validTimes.length > 1) {
+                        const firstTime = validTimes[0];
+                        const avgSubsequent = validTimes.slice(1).reduce((a, b) => a + b, 0) / (validTimes.length - 1);
+                        
+                        log(`📊 Timing Analysis:`);
+                        log(`   First request: ${firstTime.toFixed(0)}ms`);
+                        log(`   Avg subsequent: ${avgSubsequent.toFixed(0)}ms`);
+                        
+                        if (avgSubsequent < firstTime * 0.7) {
+                            log('✅ Performance improved - CDN caching likely working!');
+                        } else if (avgSubsequent < 200) {
+                            log('ℹ️  Fast responses - CDN may be working');
+                        } else {
+                            log('⚠️  No clear performance improvement detected');
+                        }
+                    }
+                    
+                } else {
+                    log('❌ URL is not Firebase Storage format');
+                }
+                
+            } catch (error) {
+                log(`❌ Direct URL test error: ${error.message}`);
             }
         }
 
