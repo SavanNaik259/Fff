@@ -361,7 +361,7 @@ Press Ctrl+C to stop the server
 `);
 });
 // Express already declared above
-const cors = require('cors');
+// cors already declared above
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
