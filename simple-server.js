@@ -360,7 +360,7 @@ Available Routes:
 Press Ctrl+C to stop the server
 `);
 });
-const express = require('express');
+// Express already declared above
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
@@ -386,7 +386,7 @@ if (!admin.apps.length) {
   try {
     // Use service account from environment or file
     let serviceAccount;
-    
+
     if (process.env.FIREBASE_PRIVATE_KEY) {
       serviceAccount = {
         type: 'service_account',
@@ -429,11 +429,11 @@ app.post('/upload-bandwidth-test-product', upload.single('productImage'), async 
 
     const bucket = admin.storage().bucket();
     const productId = `TEST-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    
+
     // Upload image with CDN headers
     const imageFileName = `${category}_${productId}_${Date.now()}.jpg`;
     const imageFile = bucket.file(`bandwidthTest/${imageFileName}`);
-    
+
     const metadata = {
       cacheControl: 'public, max-age=2592000',
       contentType: file.mimetype,
@@ -464,7 +464,7 @@ app.post('/upload-bandwidth-test-product', upload.single('productImage'), async 
     try {
       const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
       const [exists] = await jsonFile.exists();
-      
+
       if (exists) {
         const [fileContents] = await jsonFile.download();
         const data = JSON.parse(fileContents.toString());
@@ -482,7 +482,7 @@ app.post('/upload-bandwidth-test-product', upload.single('productImage'), async 
     // Save updated products JSON with CDN headers
     const jsonData = JSON.stringify(existingProducts, null, 2);
     const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
-    
+
     const jsonMetadata = {
       contentType: 'application/json',
       cacheControl: 'public, max-age=2592000',
@@ -519,9 +519,9 @@ app.get('/load-bandwidth-test-products', async (req, res) => {
     const category = req.query.category || 'bandwidth-test-1';
     const bucket = admin.storage().bucket();
     const jsonFile = bucket.file(`bandwidthTest/${category}-products.json`);
-    
+
     const [exists] = await jsonFile.exists();
-    
+
     if (!exists) {
       return res.json({ 
         success: true, 

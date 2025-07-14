@@ -229,40 +229,12 @@
         <div id="products" class="product-grid"></div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+    <!-- No Firebase client SDK needed - using Netlify functions -->
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCrLCButDevLeILcBjrUCd9e7amXVjW-uI",
-            authDomain: "auric-a0c92.firebaseapp.com",
-            projectId: "auric-a0c92",
-            storageBucket: "auric-a0c92.firebasestorage.app",
-            messagingSenderId: "878979958342",
-            appId: "1:878979958342:web:e6092f7522488d21eaec47",
-            measurementId: "G-ZYZ750JHMB"
-        };
-
-        // Initialize Firebase
-        let app, storage;
-        try {
-            app = firebase.initializeApp(firebaseConfig, 'bandwidth-test-loader');
-            storage = app.storage();
-            
-            app.auth().signInAnonymously().then(() => {
-                console.log('✅ Firebase authenticated for CDN testing');
-                showMessage('🔥 Firebase connected - Ready for CDN testing!', 'success');
-            }).catch((error) => {
-                console.error('❌ Firebase auth failed:', error);
-                showMessage(`Authentication failed: ${error.message}`, 'error');
-            });
-        } catch (error) {
-            console.error('❌ Firebase initialization failed:', error);
-            showMessage(`Firebase initialization failed: ${error.message}`, 'error');
-        }
+        // No Firebase client SDK needed - using Netlify functions instead
+        console.log('✅ CDN Bandwidth Test Loader ready - using Netlify functions');
+        showMessage('🔥 Ready for CDN testing via Netlify functions!', 'success');
 
         function showMessage(message, type = 'info') {
             const messagesDiv = document.getElementById('messages');
@@ -287,33 +259,16 @@
                 
                 const startTime = performance.now();
                 
-                // Get the JSON file from Firebase Storage
-                const storageRef = storage.ref(`bandwidthTest/${category}-products.json`);
+                // Use Netlify function instead of direct Firebase access
+                const functionUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
                 
-                let downloadURL;
-                try {
-                    downloadURL = await storageRef.getDownloadURL();
-                    console.log(`📂 Found products file for ${category}:`, downloadURL);
-                } catch (urlError) {
-                    showMessage(`No products found for ${category}. Add some using the uploader.`, 'info');
-                    document.getElementById('products').innerHTML = `
-                        <div class="empty-state">
-                            <h3>No Products in ${category}</h3>
-                            <p>Click "Add Test Product" to create products for CDN testing.</p>
-                        </div>
-                    `;
-                    updateStats(0, 0, 'No Data', 0);
-                    return;
-                }
-                
-                // Fetch the products with specified cache mode
                 const fetchOptions = {
                     cache: cacheMode,
                     method: 'GET'
                 };
                 
-                console.log(`🌐 Fetching with cache mode: ${cacheMode}`);
-                const response = await fetch(downloadURL, fetchOptions);
+                console.log(`🌐 Fetching from Netlify function with cache mode: ${cacheMode}`);
+                const response = await fetch(functionUrl, fetchOptions);
                 
                 const endTime = performance.now();
                 const requestTime = endTime - startTime;
@@ -324,7 +279,23 @@
                 
                 const responseText = await response.text();
                 const dataSize = new Blob([responseText]).size;
-                const products = JSON.parse(responseText);
+                const data = JSON.parse(responseText);
+                
+                // Check if the response contains an error
+                if (!data.success) {
+                    showMessage(`${data.error || data.message}`, 'error');
+                    document.getElementById('products').innerHTML = `
+                        <div class="empty-state">
+                            <h3>Error Loading Products</h3>
+                            <p>${data.error || data.message}</p>
+                            <p>Try adding products first using the uploader.</p>
+                        </div>
+                    `;
+                    updateStats(requestTime, 0, 'Error', dataSize);
+                    return;
+                }
+                
+                const products = data.products || [];
                 
                 // Determine cache status based on response time and headers
                 let cacheStatus = 'Unknown';
@@ -345,7 +316,9 @@
                     dataSize: dataSize,
                     cacheControl: cacheControl,
                     etag: etag,
-                    status: response.status
+                    status: response.status,
+                    success: data.success,
+                    productCount: products.length
                 });
                 
                 if (!Array.isArray(products) || products.length === 0) {
@@ -391,9 +364,8 @@
             for (const category of categories) {
                 try {
                     const startTime = performance.now();
-                    const storageRef = storage.ref(`bandwidthTest/${category}-products.json`);
-                    const downloadURL = await storageRef.getDownloadURL();
-                    const response = await fetch(downloadURL);
+                    const functionUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
+                    const response = await fetch(functionUrl);
                     const endTime = performance.now();
                     
                     totalTime += (endTime - startTime);
@@ -401,10 +373,10 @@
                     if (response.ok) {
                         const responseText = await response.text();
                         totalSize += new Blob([responseText]).size;
-                        const products = JSON.parse(responseText);
+                        const data = JSON.parse(responseText);
                         
-                        if (Array.isArray(products)) {
-                            allProducts = allProducts.concat(products.map(p => ({...p, category})));
+                        if (data.success && Array.isArray(data.products)) {
+                            allProducts = allProducts.concat(data.products.map(p => ({...p, category})));
                         }
                     }
                 } catch (error) {
