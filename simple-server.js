@@ -12,6 +12,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const admin = require('firebase-admin');
 const crypto = require('crypto');
+const multer = require('multer');
 
 // In-memory cache for products
 const productCache = {};
@@ -360,20 +361,7 @@ Available Routes:
 Press Ctrl+C to stop the server
 `);
 });
-// Express already declared above
-// cors already declared above
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const admin = require('firebase-admin');
 
-const app = express();
-const PORT = 5000;
-
-// Enable CORS for all routes
-app.use(cors());
-app.use(express.json());
-app.use(express.static('.'));
 
 // Multer configuration for file uploads
 const upload = multer({ 

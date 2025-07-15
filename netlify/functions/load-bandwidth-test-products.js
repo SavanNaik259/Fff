@@ -45,11 +45,12 @@ if (!admin.apps.length) {
 }
 
 exports.handler = async (event, context) => {
-  // Set CORS headers
+  // Set CORS headers with proper cache support
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, If-None-Match',
+    'Access-Control-Allow-Headers': 'Content-Type, If-None-Match, If-Modified-Since',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Expose-Headers': 'ETag, Cache-Control, Last-Modified',
     'Content-Type': 'application/json'
   };
 
@@ -129,27 +130,25 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Get file metadata for ETag
-    const [metadata] = await file.getMetadata();
-    const etag = metadata.etag || metadata.md5Hash;
+    // Get public URL for CDN access instead of downloading
+    const [url] = await file.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 1000 * 60 * 60 * 24 * 365 // 1 year
+    });
+
+    // Use fetch to get the file from Firebase Storage CDN
+    const response = await fetch(url);
     
-    // Check if client has cached version
-    const clientETag = event.headers['if-none-match'];
-    if (clientETag && clientETag === etag) {
-      console.log(`Client has cached version of ${category} products`);
-      return {
-        statusCode: 304,
-        headers: {
-          ...headers,
-          'ETag': etag,
-          'Cache-Control': 'public, max-age=1800'
-        }
-      };
+    if (!response.ok) {
+      throw new Error(`Failed to fetch from Firebase Storage: ${response.status}`);
     }
 
-    // Download and parse the file
-    const [fileContents] = await file.download();
-    const products = JSON.parse(fileContents.toString());
+    const products = await response.json();
+    
+    // Get ETag from Firebase Storage response
+    const etag = response.headers.get('etag') || response.headers.get('ETag');
+    
+    console.log(`Fetched ${products.length} products from Firebase Storage CDN`);
 
     console.log(`Successfully loaded ${products.length} ${category} bandwidth test products`);
 
@@ -157,7 +156,7 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers: {
         ...headers,
-        'ETag': etag,
+        'ETag': `"${etag}"`,
         'Cache-Control': 'public, max-age=1800'
       },
       body: JSON.stringify({

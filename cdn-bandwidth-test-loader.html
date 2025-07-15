@@ -259,43 +259,38 @@
                 
                 const startTime = performance.now();
                 
-                // Use Netlify function instead of direct Firebase access
-                const functionUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
+                // Use direct Firebase Storage CDN URL for maximum caching efficiency
+                const firebaseUrl = `https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2F${category}-products.json?alt=media`;
                 
                 const fetchOptions = {
                     cache: cacheMode,
                     method: 'GET'
                 };
                 
-                console.log(`🌐 Fetching from Netlify function with cache mode: ${cacheMode}`);
-                const response = await fetch(functionUrl, fetchOptions);
+                console.log(`🌐 Fetching directly from Firebase Storage CDN with cache mode: ${cacheMode}`);
+                const response = await fetch(firebaseUrl, fetchOptions);
                 
                 const endTime = performance.now();
                 const requestTime = endTime - startTime;
                 
                 if (!response.ok) {
+                    if (response.status === 404) {
+                        showMessage(`No products found in ${category}. Add some using the uploader.`, 'info');
+                        document.getElementById('products').innerHTML = `
+                            <div class="empty-state">
+                                <h3>No Products Yet</h3>
+                                <p>Click "Add Test Product" to create products for CDN testing.</p>
+                            </div>
+                        `;
+                        updateStats(requestTime, 0, 'Not Found', 0);
+                        return;
+                    }
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const responseText = await response.text();
                 const dataSize = new Blob([responseText]).size;
-                const data = JSON.parse(responseText);
-                
-                // Check if the response contains an error
-                if (!data.success) {
-                    showMessage(`${data.error || data.message}`, 'error');
-                    document.getElementById('products').innerHTML = `
-                        <div class="empty-state">
-                            <h3>Error Loading Products</h3>
-                            <p>${data.error || data.message}</p>
-                            <p>Try adding products first using the uploader.</p>
-                        </div>
-                    `;
-                    updateStats(requestTime, 0, 'Error', dataSize);
-                    return;
-                }
-                
-                const products = data.products || [];
+                const products = JSON.parse(responseText);
                 
                 // Determine cache status based on response time and headers
                 let cacheStatus = 'Unknown';
@@ -364,8 +359,8 @@
             for (const category of categories) {
                 try {
                     const startTime = performance.now();
-                    const functionUrl = `/.netlify/functions/load-bandwidth-test-products?category=${category}`;
-                    const response = await fetch(functionUrl);
+                    const firebaseUrl = `https://firebasestorage.googleapis.com/v0/b/auric-a0c92.firebasestorage.app/o/bandwidthTest%2F${category}-products.json?alt=media`;
+                    const response = await fetch(firebaseUrl);
                     const endTime = performance.now();
                     
                     totalTime += (endTime - startTime);
@@ -373,10 +368,10 @@
                     if (response.ok) {
                         const responseText = await response.text();
                         totalSize += new Blob([responseText]).size;
-                        const data = JSON.parse(responseText);
+                        const products = JSON.parse(responseText);
                         
-                        if (data.success && Array.isArray(data.products)) {
-                            allProducts = allProducts.concat(data.products.map(p => ({...p, category})));
+                        if (Array.isArray(products)) {
+                            allProducts = allProducts.concat(products.map(p => ({...p, category})));
                         }
                     }
                 } catch (error) {
